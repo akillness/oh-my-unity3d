@@ -1,0 +1,32 @@
+N:jeo
+D:[jeo] Integrated AI orchestration. ralph+plannotator planning -> team/bmad execution -> agent-browser browser verification -> automatic worktree cleanup. Supports Claude/Codex/Gemini/OpenCode. Installation: omc omx ohmg bmad ralph plannotator agent-browser.
+G:jeo orchestration ralph plannotator team bmad omc omx ohmg agent-browser multi-agent workflow worktree cleanup browser-verification plan execute verify cleanup
+
+U[5]:
+  Automate the full flow for multi-agent tasks: plan -> execute -> verify -> cleanup
+  Review plans with ralph+plannotator before coding starts
+  Execute through Claude team mode or BMAD fallback
+  Verify browser-facing behavior with agent-browser
+  Reuse one workflow package across Claude, Codex, Gemini, and OpenCode
+
+S[8]{n,action,details}:
+  1,Install,bash scripts/install.sh --all
+  2,Setup-Claude,bash scripts/setup-claude.sh
+  3,Setup-Codex,bash scripts/setup-codex.sh
+  4,Setup-Gemini,bash scripts/setup-gemini.sh
+  5,Setup-OpenCode,bash scripts/setup-opencode.sh
+  6,Plan,write plan.md -> run plannotator blocking -> require approved=true
+  7,Execute,Claude uses /omc:team and others use BMAD
+  8,Verify-Cleanup,agent-browser snapshot <url> -> bash scripts/worktree-cleanup.sh
+
+R[5]:
+  Never skip PLAN or the plannotator gate
+  Never enter EXECUTE without approved=true or explicit manual approval
+  Use agent-browser for browser verification
+  Claude requires team mode; non-Claude tools use BMAD fallback
+  Persist workflow progress in .omc/state/jeo-state.json
+
+E[3]{desc,in,out}:
+  "Full install","bash scripts/install.sh --all && bash scripts/check-status.sh","Core tools and platform integrations verified"
+  "Plan->Execute->Verify","jeo 'ship feature' -> approved plan -> execution -> agent-browser snapshot","Verified implementation with browser evidence"
+  "Cleanup","bash scripts/worktree-cleanup.sh","Extra worktrees pruned"

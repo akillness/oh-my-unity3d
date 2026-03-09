@@ -1,0 +1,16 @@
+N:pptx-presentation-builder
+D:Unity3D 게임 피치덱 및 프레젠테이션을 자동 생성 — 브랜드 일관성, 슬라이드 구조, 스토리텔링
+G:presentation pptx slides pitch-deck storytelling branding game-studio unity3d
+V:0.1.0
+U[3]:
+1 | 게임 피치덱 생성 → pptx-presentation-builder "Unity3D 게임 피치덱"
+2 | 투자자 덱 → pptx-presentation-builder "Series A 투자 유치 덱"
+3 | 로드맵 덱 → pptx-presentation-builder "Q2-Q4 개발 로드맵"
+S[4]{n,action}:
+1 | Brief | 브랜드 제약 및 덱 목적 정의
+2 | Structure | 슬라이드 순서 및 내러티브 아크 설계
+3 | Generate | 슬라이드별 콘텐츠 및 스피커 노트 생성
+4 | Review | 레이아웃 균형, 타이포그래피, 접근성 검증
+E[2]{desc,in,out}:
+1 | 게임 스튜디오 피치덱 | 게임 컨셉 + 팀 정보 + 시장 규모 | 10슬라이드 투자자 덱 + 스피커 노트
+2 | 제품 로드맵 덱 | 분기별 마일스톤 + 의존성 | 5슬라이드 로드맵 + 간트 차트

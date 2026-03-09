@@ -1,0 +1,16 @@
+N:remotion-video-production
+D:Remotion으로 Unity3D 게임 트레일러 및 마케팅 비디오를 프로그래머블하게 자동 제작
+G:video remotion animation react game-trailer marketing automation unity3d
+V:0.1.0
+U[3]:
+1 | 게임 트레일러 제작 → remotion-video-production "Unity3D 게임 트레일러 60초"
+2 | 온보딩 워크스루 → remotion-video-production "모바일 온보딩 45초 9:16"
+3 | 프로모션 비디오 → remotion-video-production "앱스토어 프리뷰 30초"
+S[4]{n,action}:
+1 | Spec | 비디오 목적, 길이, 비율, 톤 정의
+2 | Scenes | 씬별 비주얼, 오디오, 전환 효과 설계
+3 | Assets | 로고, 스크린샷, 오디오, 폰트 준비 및 검증
+4 | Render | Remotion 컴포지션 구현 및 QA 렌더링
+E[2]{desc,in,out}:
+1 | 게임 런칭 트레일러 | 게임 스크린샷 + 로고 + BGM | 60초 16:9 트레일러 Remotion 코드
+2 | 앱스토어 프리뷰 | 핵심 기능 3개 + 브랜드 에셋 | 30초 9:16 모바일 프리뷰 비디오

@@ -1,0 +1,15 @@
+N:marketing-skills-collection
+D:게임 스튜디오를 위한 AI 마케팅 자동화 — CRO, 카피라이팅, SEO, 애널리틱스, 그로스
+G:marketing cro seo copywriting analytics growth game-studio
+V:0.1.0
+U[3]:
+1 | 마케팅 전략 → marketing-skills-collection
+2 | 게임 런칭 카피 → marketing-copy
+3 | SEO 최적화 → marketing-seo
+S[3]{n,action}:
+1 | Analyze | 타겟 오디언스 분석 및 시장 조사
+2 | Create | 마케팅 콘텐츠 생성 및 카피라이팅
+3 | Optimize | CRO 및 SEO 최적화 적용
+E[2]{desc,in,out}:
+1 | 게임 런칭 캠페인 | 게임 컨셉 + 타겟 | 런칭 카피 + 채널 전략
+2 | SEO 콘텐츠 | 키워드 리스트 | SEO 최적화 블로그 포스트
