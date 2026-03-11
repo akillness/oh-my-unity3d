@@ -11,7 +11,7 @@
 [![Codex CLI](https://img.shields.io/badge/Codex%20CLI-supported-green?style=flat-square)](https://openai.com)
 [![Gemini CLI](https://img.shields.io/badge/Gemini%20CLI-supported-blue?style=flat-square)](https://gemini.google.com)
 [![OpenCode](https://img.shields.io/badge/OpenCode-supported-purple?style=flat-square)](https://opencode.ai)
-[![Skills](https://img.shields.io/badge/skills-44-yellow?style=flat-square)](#-skills-index)
+[![Skills](https://img.shields.io/badge/skills-45-yellow?style=flat-square)](#-skills-index)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
 **AI-driven Unity3D game development orchestration — Plan → Execute → Verify → Cleanup**
@@ -206,7 +206,7 @@ All workflows are orchestrated by `omu` with an automatic Unity3D verification l
 
 ## 📚 Skills Index
 
-44 skills organized by category:
+45 skills organized by category:
 
 ### 🎮 Game Development (Unity3D)
 
@@ -249,6 +249,12 @@ All workflows are orchestrated by `omu` with an automatic Unity3D verification l
 
 `image-generation` · `video-production` · `marketing-skills-collection` · `pptx-presentation-builder` · `remotion-video-production` · `opencontext` · `prompt-repetition` · `vibe-kanban` · `ralphmode`
 
+### 🤖 AI/ML Research
+
+| Skill | Description | Keyword |
+|-------|-------------|---------|
+| **autoresearch** 🆕 | Autonomous ML experimentation loop by Karpathy — AI agent runs 5-min GPU experiments, git-ratchets improvements overnight | `autoresearch` |
+
 > Full index with quick-select guide → [SKILLS-INDEX.md](SKILLS-INDEX.md)
 
 ---
@@ -290,6 +296,7 @@ oh-my-unity3d/
     ├── oh-my-codex/             ← Codex CLI setup (keyword: omx)
     ├── ralph/                   ← Spec-first dev loop
     ├── plannotator/             ← Plan review gate
+    ├── autoresearch/            ← Autonomous ML experimentation (Karpathy) 🆕
     └── [35 domain skills]/
 ```
 
@@ -309,6 +316,10 @@ oh-my-unity3d/
 ---
 
 ## 📋 Changelog
+
+### `v2.4.0` — Autonomous ML Research
+
+- **Added** `autoresearch` skill — Karpathy's autonomous ML experimentation framework; AI agent runs 5-min GPU experiments, git-ratchets improvements, logs to `results.tsv`
 
 ### `v2.3.0` — AI Auto-Configure MCP
 

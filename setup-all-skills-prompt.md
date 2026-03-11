@@ -64,7 +64,7 @@ npx skills add "$REPO_URL" --skill bmad-idea --yes --global
 
 > **Do not skip this step unless the user explicitly requests "minimal install" or "core only".**
 
-Install all 44 available skills:
+Install all 45 available skills:
 
 ```bash
 # Platform setup skills
@@ -115,6 +115,9 @@ npx skills add "$REPO_URL" --skill remotion-video-production  --yes --global
 npx skills add "$REPO_URL" --skill opencontext                --yes --global
 npx skills add "$REPO_URL" --skill prompt-repetition          --yes --global
 npx skills add "$REPO_URL" --skill vibe-kanban                --yes --global
+
+# AI/ML Research
+npx skills add "$REPO_URL" --skill autoresearch               --yes --global
 ```
 
 ---
