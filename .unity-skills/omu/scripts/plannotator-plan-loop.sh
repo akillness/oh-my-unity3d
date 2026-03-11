@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLAN_FILE="${1:-plan.md}"
 FEEDBACK_FILE="${2:-}"
 MAX_RESTARTS="${3:-3}"
-PORT_ERROR_REGEX='Failed to start server\. Is port .* in use|EADDRINUSE|EPERM|operation not permitted|Failed to listen'
+PORT_ERROR_REGEX='Failed to start server\. Is port .* in use|EADDRINUSE|EPERM|operation not permitted|Failed to listen|Cannot GET|404 Not Found|500 Internal Server Error|SyntaxError|Unexpected token|page error|ReferenceError|TypeError.*Cannot read'
 
 if ! command -v plannotator >/dev/null 2>&1; then
   if ! bash "$SCRIPT_DIR/ensure-plannotator.sh" --quiet; then
@@ -138,24 +138,51 @@ if [[ "${OMU_SKIP_LISTEN_PROBE:-0}" != "1" ]]; then
   fi
 fi
 
+STDERR_FILE="${FEEDBACK_DIR}/plannotator_stderr.txt"
+# Ensure lock is always cleaned up on script exit
+trap 'rm -f /tmp/omu-plannotator-direct.lock' EXIT INT TERM
+
 attempt=1
 while (( attempt <= MAX_RESTARTS )); do
   : > "$FEEDBACK_FILE"
+  : > "$STDERR_FILE"
+  # Create lock BEFORE starting plannotator to prevent ExitPlanMode hook double-launch
   touch /tmp/omu-plannotator-direct.lock
 
   python3 -c "
 import json, sys
 plan = open(sys.argv[1]).read()
 sys.stdout.write(json.dumps({'tool_input': {'plan': plan, 'permission_mode': 'acceptEdits'}}))
-" "$PLAN_FILE" | env HOME="$RUNTIME_HOME" PLANNOTATOR_HOME="$RUNTIME_HOME" plannotator > "$FEEDBACK_FILE" 2>&1 || true
+" "$PLAN_FILE" | env HOME="$RUNTIME_HOME" PLANNOTATOR_HOME="$RUNTIME_HOME" plannotator > "$FEEDBACK_FILE" 2>"$STDERR_FILE" || true
+
+  # Release lock immediately after plannotator exits
+  rm -f /tmp/omu-plannotator-direct.lock
+
+  # Merge stderr into feedback for error detection (keep JSON intact at start of FEEDBACK_FILE)
+  if [[ -s "$STDERR_FILE" ]]; then
+    echo "" >> "$FEEDBACK_FILE"
+    cat "$STDERR_FILE" >> "$FEEDBACK_FILE"
+  fi
 
   set +e
   python3 - "$FEEDBACK_FILE" <<'PYEOF'
 import json, sys
 path = sys.argv[1]
+payload = None
+# Read only the first valid JSON object (ignore appended stderr lines)
 try:
-    payload = json.load(open(path))
+    with open(path) as fh:
+        content = fh.read()
+    # Try full file first, then first non-empty line
+    for chunk in [content, content.split('\n')[0]]:
+        try:
+            payload = json.loads(chunk.strip())
+            break
+        except Exception:
+            pass
 except Exception:
+    pass
+if payload is None:
     sys.exit(20)
 approved = payload.get("approved")
 if approved is True:
@@ -179,12 +206,14 @@ if os.path.exists(state_path):
         s['plan_approved'] = True
         s['phase'] = 'execute'
         s['plan_gate_status'] = 'approved'
+        s['ralphmode_requested'] = True
         s['updated_at'] = datetime.datetime.utcnow().isoformat() + 'Z'
         with open(state_path, 'w') as f:
             json.dump(s, f, indent=2)
     except Exception:
         pass
 PYEOF
+    echo "[OMU][PLAN] ralphmode: permission profile activation requested — invoke /ralphmode before executing"
     exit 0
   fi
 

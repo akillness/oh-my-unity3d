@@ -62,6 +62,8 @@ if [ -f "$SETTINGS_FILE" ] && grep -q "plannotator" "$SETTINGS_FILE" 2>/dev/null
 fi
 
 # The hook JSON to inject
+# Guard: skip if omu plan-loop is already running plannotator directly
+# (prevents double-launch when both the hook and plannotator-plan-loop.sh are active)
 HOOK_JSON='{
   "PermissionRequest": [
     {
@@ -69,7 +71,7 @@ HOOK_JSON='{
       "hooks": [
         {
           "type": "command",
-          "command": "plannotator",
+          "command": "bash -c '\''[ -f /tmp/omu-plannotator-direct.lock ] && exit 0 || plannotator'\''",
           "timeout": 1800
         }
       ]
