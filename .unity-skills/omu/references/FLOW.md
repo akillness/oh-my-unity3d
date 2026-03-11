@@ -1,11 +1,11 @@
-# JEO Workflow Reference
+# OMU Workflow Reference
 
-This reference matches `JEO v2.0.0`.
+This reference matches `OMU v2.0.0`.
 
 ## Primary Flow
 
 ```text
-jeo "<task>"
+omu "<task>"
   |
   v
 [PLAN]
@@ -39,7 +39,7 @@ plan -> execute -> verify -> cleanup -> done
 plan -> plan     on plan feedback
 ```
 
-Persist state in `.omc/state/jeo-state.json`.
+Persist state in `.omc/state/omu-state.json`.
 
 ## PLAN Gate
 
@@ -71,14 +71,14 @@ Requirements:
 ### Codex CLI
 
 ```text
-/prompts:jeo
+/prompts:omu
 /workflow-init
 ```
 
 Requirements:
 
-- `~/.codex/config.toml` contains JEO developer instructions
-- `~/.codex/hooks/jeo-notify.py` exists
+- `~/.codex/config.toml` contains OMU developer instructions
+- `~/.codex/hooks/omu-notify.py` exists
 
 ### Gemini CLI
 
@@ -89,17 +89,17 @@ gemini --approval-mode plan
 
 Requirements:
 
-- `~/.gemini/settings.json` contains the JEO plannotator hook
-- `~/.gemini/GEMINI.md` includes the JEO section
+- `~/.gemini/settings.json` contains the OMU plannotator hook
+- `~/.gemini/GEMINI.md` includes the OMU section
 
 ### OpenCode
 
 Slash commands registered by setup:
 
-- `/jeo-plan`
-- `/jeo-exec`
-- `/jeo-verify`
-- `/jeo-cleanup`
+- `/omu-plan`
+- `/omu-exec`
+- `/omu-verify`
+- `/omu-cleanup`
 
 ## Verification
 

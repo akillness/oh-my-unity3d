@@ -94,7 +94,7 @@ Create `~/.claude/hooks/ralph-safety-check.sh`:
 
 ```bash
 #!/usr/bin/env bash
-# Blocks Tier 1 dangerous commands during ralph/jeo runs.
+# Blocks Tier 1 dangerous commands during ralph/omu runs.
 # Reads tool input from CLAUDE_TOOL_INPUT env var (JSON).
 CMD=$(echo "$CLAUDE_TOOL_INPUT" | python3 -c \
   "import sys,json; print(json.load(sys.stdin).get('command',''))" 2>/dev/null)

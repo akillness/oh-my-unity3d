@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# JEO Skill - Claude Code Setup
+# OMU Skill - Claude Code Setup
 # Configures: omc plugin guidance, plannotator hook, team mode, and removes legacy agentation entries
 # Usage: bash setup-claude.sh [--dry-run]
 
@@ -16,7 +16,7 @@ DRY_RUN=false
 CLAUDE_SETTINGS="${HOME}/.claude/settings.json"
 
 echo ""
-echo "JEO - Claude Code Setup"
+echo "OMU - Claude Code Setup"
 echo "======================="
 
 if ! command -v claude >/dev/null 2>&1; then
@@ -25,8 +25,8 @@ fi
 
 mkdir -p "$(dirname "$CLAUDE_SETTINGS")"
 if [[ -f "$CLAUDE_SETTINGS" ]] && ! $DRY_RUN; then
-  cp "$CLAUDE_SETTINGS" "${CLAUDE_SETTINGS}.jeo.bak"
-  ok "Backup created: ${CLAUDE_SETTINGS}.jeo.bak"
+  cp "$CLAUDE_SETTINGS" "${CLAUDE_SETTINGS}.omu.bak"
+  ok "Backup created: ${CLAUDE_SETTINGS}.omu.bak"
 fi
 
 if $DRY_RUN; then

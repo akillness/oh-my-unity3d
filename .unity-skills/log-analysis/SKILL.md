@@ -196,8 +196,8 @@ Unity3D 콘솔 로그 분석 시나리오 (`unity-mcp: read_console` 사용):
 
 ## Workflow Context
 
-JEO VERIFY loop에서 `unity-mcp: read_console` 출력을 분석합니다.
-- **트리거**: JEO Workflow 2 (C# 구현), Workflow 5 (성능 최적화) VERIFY 단계
+OMU VERIFY loop에서 `unity-mcp: read_console` 출력을 분석합니다.
+- **트리거**: OMU Workflow 2 (C# 구현), Workflow 5 (성능 최적화) VERIFY 단계
 - **입력**: unity-mcp read_console 출력 (Error/Warning/Exception)
 - **출력**: 에러 분류 + 수정 우선순위 + bmad-gds-create-story 입력
-- **연동**: `jeo` → `unity-mcp` → `log-analysis` → `bmad-gds-create-story`
+- **연동**: `omu` → `unity-mcp` → `log-analysis` → `bmad-gds-create-story`

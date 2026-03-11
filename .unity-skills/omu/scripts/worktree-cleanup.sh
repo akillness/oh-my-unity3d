@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# JEO Skill — Worktree Cleanup Script
+# OMU Skill — Worktree Cleanup Script
 # Removes stale git worktrees after task completion
 # Usage: bash worktree-cleanup.sh [--force] [--dry-run] [--list]
 
@@ -27,7 +27,7 @@ for arg in "$@"; do
 done
 
 echo ""
-echo "JEO — Worktree Cleanup"
+echo "OMU — Worktree Cleanup"
 echo "====================="
 
 # ── Check git repo ─────────────────────────────────────────────────────────────
@@ -123,11 +123,11 @@ else
   ok "Stale worktree references pruned"
 fi
 
-# ── Update JEO state ──────────────────────────────────────────────────────────
-STATE_FILE="$GIT_ROOT/.omc/state/jeo-state.json"
+# ── Update OMU state ──────────────────────────────────────────────────────────
+STATE_FILE="$GIT_ROOT/.omc/state/omu-state.json"
 if [[ -f "$STATE_FILE" ]] && command -v python3 >/dev/null 2>&1; then
   if $DRY_RUN; then
-    echo -e "${YELLOW}[DRY-RUN]${NC} Would update JEO state: phase=cleanup, cleanup_completed=true"
+    echo -e "${YELLOW}[DRY-RUN]${NC} Would update OMU state: phase=cleanup, cleanup_completed=true"
   else
     STATE_FILE="$STATE_FILE" python3 - <<'PYEOF'
 import json, os
@@ -140,7 +140,7 @@ try:
     state["cleanup_completed"] = True
     with open(state_path, "w") as f:
         json.dump(state, f, indent=2)
-    print("✓ JEO state updated: cleanup complete")
+    print("✓ OMU state updated: cleanup complete")
 except Exception as e:
     print(f"⚠  Could not update state: {e}")
 PYEOF

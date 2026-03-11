@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# JEO Skill - Status Check
-# Verifies the release-supported JEO components and flags legacy agentation leftovers
+# OMU Skill - Status Check
+# Verifies the release-supported OMU components and flags legacy agentation leftovers
 # Usage: bash check-status.sh [--resume]
 
 set -euo pipefail
@@ -42,7 +42,7 @@ legacy_warn() {
 
 echo ""
 echo "╔══════════════════════════════════════════╗"
-echo "║   JEO Skill - Status Check              ║"
+echo "║   OMU Skill - Status Check              ║"
 echo "╚══════════════════════════════════════════╝"
 echo ""
 
@@ -81,17 +81,17 @@ else
 fi
 
 if [[ -f "${HOME}/.codex/config.toml" ]]; then
-  if grep -q "Keyword: jeo | Platforms: Codex, Claude, Gemini, OpenCode" "${HOME}/.codex/config.toml" 2>/dev/null; then
-    ok "Codex CLI - JEO developer instructions configured"; ((PASS++)) || true
+  if grep -q "Keyword: omu | Platforms: Codex, Claude, Gemini, OpenCode" "${HOME}/.codex/config.toml" 2>/dev/null; then
+    ok "Codex CLI - OMU developer instructions configured"; ((PASS++)) || true
   else
-    warn "Codex CLI - JEO developer instructions missing"; ((WARN++)) || true
+    warn "Codex CLI - OMU developer instructions missing"; ((WARN++)) || true
   fi
-  if [[ -f "${HOME}/.codex/prompts/jeo.md" ]]; then
-    ok "Codex CLI - /prompts:jeo available"; ((PASS++)) || true
+  if [[ -f "${HOME}/.codex/prompts/omu.md" ]]; then
+    ok "Codex CLI - /prompts:omu available"; ((PASS++)) || true
   else
-    warn "Codex CLI - /prompts:jeo missing"; ((WARN++)) || true
+    warn "Codex CLI - /prompts:omu missing"; ((WARN++)) || true
   fi
-  if grep -q "jeo-notify.py" "${HOME}/.codex/config.toml" 2>/dev/null; then
+  if grep -q "omu-notify.py" "${HOME}/.codex/config.toml" 2>/dev/null; then
     ok "Codex CLI - notify hook configured"; ((PASS++)) || true
   else
     warn "Codex CLI - notify hook missing"; ((WARN++)) || true
@@ -104,7 +104,7 @@ else
 fi
 
 if [[ -f "${HOME}/.gemini/settings.json" ]]; then
-  if grep -q "jeo-plannotator" "${HOME}/.gemini/settings.json" 2>/dev/null || grep -q "plannotator" "${HOME}/.gemini/settings.json" 2>/dev/null; then
+  if grep -q "omu-plannotator" "${HOME}/.gemini/settings.json" 2>/dev/null || grep -q "plannotator" "${HOME}/.gemini/settings.json" 2>/dev/null; then
     ok "Gemini CLI - plannotator hook configured"; ((PASS++)) || true
   else
     warn "Gemini CLI - plannotator hook missing"; ((WARN++)) || true
@@ -117,10 +117,10 @@ else
 fi
 
 if [[ -f "${HOME}/.gemini/GEMINI.md" ]]; then
-  if grep -q "## JEO Orchestration Workflow" "${HOME}/.gemini/GEMINI.md" 2>/dev/null; then
-    ok "Gemini CLI - JEO section present"; ((PASS++)) || true
+  if grep -q "## OMU Orchestration Workflow" "${HOME}/.gemini/GEMINI.md" 2>/dev/null; then
+    ok "Gemini CLI - OMU section present"; ((PASS++)) || true
   else
-    warn "Gemini CLI - JEO section missing"; ((WARN++)) || true
+    warn "Gemini CLI - OMU section missing"; ((WARN++)) || true
   fi
 fi
 
@@ -139,9 +139,9 @@ for candidate in "./opencode.json" "${HOME}/opencode.json" "${HOME}/.config/open
 done
 echo ""
 
-info "JEO State"
+info "OMU State"
 GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
-STATE_FILE="$GIT_ROOT/.omc/state/jeo-state.json"
+STATE_FILE="$GIT_ROOT/.omc/state/omu-state.json"
 if [[ -f "$STATE_FILE" ]]; then
   ok "State file found: $STATE_FILE"
   if command -v python3 >/dev/null 2>&1; then
@@ -159,7 +159,7 @@ if last_error:
 PYEOF
   fi
 else
-  warn "No active JEO state"
+  warn "No active OMU state"
   if $RESUME; then
     mkdir -p "$GIT_ROOT/.omc/state" "$GIT_ROOT/.omc/plans"
     python3 - <<PYEOF
@@ -167,7 +167,7 @@ import datetime
 import json
 import os
 state = {
-    "mode": "jeo",
+    "mode": "omu",
     "phase": "plan",
     "task": "resumed session",
     "plan_approved": False,
@@ -179,10 +179,10 @@ state = {
     "created_at": datetime.datetime.utcnow().isoformat() + "Z",
     "updated_at": datetime.datetime.utcnow().isoformat() + "Z",
 }
-path = os.path.join("$GIT_ROOT", ".omc", "state", "jeo-state.json")
+path = os.path.join("$GIT_ROOT", ".omc", "state", "omu-state.json")
 with open(path, "w") as f:
     json.dump(state, f, indent=2)
-print(f"✓ Fresh JEO state initialized at {path}")
+print(f"✓ Fresh OMU state initialized at {path}")
 PYEOF
   fi
 fi
@@ -205,6 +205,6 @@ if [[ $FAIL -gt 0 ]]; then
 elif [[ $WARN -gt 0 ]]; then
   echo "Warnings remain. Re-run the relevant platform setup scripts."
 else
-  echo -e "${GREEN}All checks passed. JEO is aligned with the v2.0.0 release contract.${NC}"
+  echo -e "${GREEN}All checks passed. OMU is aligned with the v2.0.0 release contract.${NC}"
 fi
 echo ""

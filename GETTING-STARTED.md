@@ -4,12 +4,12 @@
 
 ```bash
 # 전체 스킬 설치
-npx skills add https://github.com/akillness/oh-unity3d --all
+npx skills add https://github.com/supercent-io/skills-template --all
 
 # 또는 개별 스킬 설치
-npx skills add https://github.com/akillness/oh-unity3d --skill jeo
-npx skills add https://github.com/akillness/oh-unity3d --skill unity-mcp
-npx skills add https://github.com/akillness/oh-unity3d --skill bmad-gds
+npx skills add https://github.com/supercent-io/skills-template --skill omu
+npx skills add https://github.com/supercent-io/skills-template --skill unity-mcp
+npx skills add https://github.com/supercent-io/skills-template --skill bmad-gds
 ```
 
 ## 2. AI 플랫폼 초기 설정
@@ -21,7 +21,7 @@ npx skills add https://github.com/akillness/oh-unity3d --skill bmad-gds
 | Claude Code | omc | `/omc` → omc-setup 실행 |
 | Gemini CLI | ohmg | `/ohmg` |
 | Codex CLI | omx | `/omx` |
-| OpenCode | jeo | `bash .unity-skills/jeo/scripts/setup-opencode.sh` |
+| OpenCode | omu | `bash .unity-skills/omu/scripts/setup-opencode.sh` |
 
 ## 3. Unity3D 연동 (unity-mcp)
 
@@ -41,13 +41,13 @@ curl http://localhost:8080/health
 
 ```bash
 # 1. 게임 기획 → 씬 프로토타이핑
-jeo "씬 프로토타이핑: 내 첫 번째 게임"
+omu "씬 프로토타이핑: 내 첫 번째 게임"
 
 # 2. 스프린트 스토리 구현
-jeo "스토리 구현: 플레이어 이동 시스템"
+omu "스토리 구현: 플레이어 이동 시스템"
 
 # 3. 성능 최적화
-jeo "성능 최적화: 프레임 드랍 문제"
+omu "성능 최적화: 프레임 드랍 문제"
 ```
 
 ### bmad-gds 게임 개발 워크플로우
@@ -65,7 +65,7 @@ jeo "성능 최적화: 프레임 드랍 문제"
 
 - "게임 개발을 시작하고 싶다" → `bmad-gds`
 - "Unity Editor를 AI로 제어하고 싶다" → `unity-mcp`
-- "전체 워크플로우를 자동화하고 싶다" → `jeo`
+- "전체 워크플로우를 자동화하고 싶다" → `omu`
 - "새로운 아이디어가 필요하다" → `bmad-idea`
 - "코드를 리뷰받고 싶다" → `code-review`
 

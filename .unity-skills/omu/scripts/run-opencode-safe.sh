@@ -10,7 +10,7 @@ if ! command -v opencode >/dev/null 2>&1; then
 fi
 
 SESSION_KEY="$(python3 -c "import hashlib,os; print(hashlib.md5(os.getcwd().encode()).hexdigest()[:8])" 2>/dev/null || echo "default")"
-RUNTIME_ROOT="/tmp/jeo-opencode-${SESSION_KEY}"
+RUNTIME_ROOT="/tmp/omu-opencode-${SESSION_KEY}"
 
 export XDG_DATA_HOME="${RUNTIME_ROOT}/data"
 export XDG_STATE_HOME="${RUNTIME_ROOT}/state"

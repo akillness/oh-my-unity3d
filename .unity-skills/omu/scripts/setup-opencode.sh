@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# JEO Skill - OpenCode Setup
-# Configures: opencode plugin entries and JEO slash commands, and removes legacy agentation config
+# OMU Skill - OpenCode Setup
+# Configures: opencode plugin entries and OMU slash commands, and removes legacy agentation config
 # Usage: bash setup-opencode.sh [--dry-run]
 
 set -euo pipefail
@@ -19,7 +19,7 @@ for candidate in "./opencode.json" "${HOME}/.config/opencode/opencode.json" "${H
 done
 
 echo ""
-echo "JEO - OpenCode Setup"
+echo "OMU - OpenCode Setup"
 echo "===================="
 
 if ! command -v opencode >/dev/null 2>&1; then
@@ -34,7 +34,7 @@ if $DRY_RUN; then
   echo -e "${YELLOW}[DRY-RUN]${NC} Would update $OPENCODE_JSON"
 else
   mkdir -p "$(dirname "$OPENCODE_JSON")"
-  [[ -f "$OPENCODE_JSON" ]] && cp "$OPENCODE_JSON" "${OPENCODE_JSON}.jeo.bak"
+  [[ -f "$OPENCODE_JSON" ]] && cp "$OPENCODE_JSON" "${OPENCODE_JSON}.omu.bak"
 
   OPENCODE_JSON_PATH="$OPENCODE_JSON" python3 - <<'PYEOF'
 import json
@@ -57,23 +57,23 @@ mcp = config.setdefault("mcp", {})
 mcp.pop("agentation", None)
 
 commands = config.setdefault("command", {})
-commands.pop("jeo-annotate", None)
-commands.pop("jeo-agentui", None)
-commands["jeo-plan"] = {
-    "description": "JEO planning workflow",
-    "template": "Write plan.md and run bash .unity-skills/jeo/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3."
+commands.pop("omu-annotate", None)
+commands.pop("omu-agentui", None)
+commands["omu-plan"] = {
+    "description": "OMU planning workflow",
+    "template": "Write plan.md and run bash .unity-skills/omu/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3."
 }
-commands["jeo-exec"] = {
-    "description": "JEO execution workflow",
-    "template": "Execute the approved JEO plan with team mode or BMAD."
+commands["omu-exec"] = {
+    "description": "OMU execution workflow",
+    "template": "Execute the approved OMU plan with team mode or BMAD."
 }
-commands["jeo-verify"] = {
-    "description": "JEO browser verification",
+commands["omu-verify"] = {
+    "description": "OMU browser verification",
     "template": "Run agent-browser snapshot for the current browser-facing task."
 }
-commands["jeo-cleanup"] = {
-    "description": "JEO cleanup workflow",
-    "template": "Run bash .unity-skills/jeo/scripts/worktree-cleanup.sh"
+commands["omu-cleanup"] = {
+    "description": "OMU cleanup workflow",
+    "template": "Run bash .unity-skills/omu/scripts/worktree-cleanup.sh"
 }
 
 with open(config_path, "w") as f:
@@ -87,10 +87,10 @@ fi
 
 echo ""
 echo "OpenCode commands after setup:"
-echo "  /jeo-plan"
-echo "  /jeo-exec"
-echo "  /jeo-verify"
-echo "  /jeo-cleanup"
+echo "  /omu-plan"
+echo "  /omu-exec"
+echo "  /omu-verify"
+echo "  /omu-cleanup"
 echo ""
 ok "OpenCode setup complete"
 echo ""

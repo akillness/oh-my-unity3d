@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# JEO Skill - Codex CLI Setup
-# Configures: developer_instructions, /prompts:jeo, PLAN_READY notify hook, and removes legacy agentation config
+# OMU Skill - Codex CLI Setup
+# Configures: developer_instructions, /prompts:omu, PLAN_READY notify hook, and removes legacy agentation config
 # Usage: bash setup-codex.sh [--dry-run]
 
 set -euo pipefail
@@ -13,15 +13,15 @@ info() { echo -e "${BLUE}→${NC} $*"; }
 DRY_RUN=false
 [[ "${1:-}" == "--dry-run" ]] && DRY_RUN=true
 
-JEO_SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+OMU_SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CODEX_CONFIG="${HOME}/.codex/config.toml"
 CODEX_PROMPTS_DIR="${HOME}/.codex/prompts"
 HOOK_DIR="${HOME}/.codex/hooks"
-HOOK_FILE="${HOOK_DIR}/jeo-notify.py"
-JEO_PROMPT_FILE="${CODEX_PROMPTS_DIR}/jeo.md"
+HOOK_FILE="${HOOK_DIR}/omu-notify.py"
+OMU_PROMPT_FILE="${CODEX_PROMPTS_DIR}/omu.md"
 
 echo ""
-echo "JEO - Codex CLI Setup"
+echo "OMU - Codex CLI Setup"
 echo "====================="
 
 if ! command -v codex >/dev/null 2>&1; then
@@ -29,28 +29,28 @@ if ! command -v codex >/dev/null 2>&1; then
 fi
 
 if $DRY_RUN; then
-  echo -e "${YELLOW}[DRY-RUN]${NC} Would update $CODEX_CONFIG, $JEO_PROMPT_FILE, and $HOOK_FILE"
+  echo -e "${YELLOW}[DRY-RUN]${NC} Would update $CODEX_CONFIG, $OMU_PROMPT_FILE, and $HOOK_FILE"
 else
   mkdir -p "$(dirname "$CODEX_CONFIG")" "$CODEX_PROMPTS_DIR" "$HOOK_DIR"
-  [[ -f "$CODEX_CONFIG" ]] && cp "$CODEX_CONFIG" "${CODEX_CONFIG}.jeo.bak"
+  [[ -f "$CODEX_CONFIG" ]] && cp "$CODEX_CONFIG" "${CODEX_CONFIG}.omu.bak"
 
-  JEO_INSTRUCTION=$(cat <<JEOEOF
-# JEO Orchestration Workflow
-# Keyword: jeo | Platforms: Codex, Claude, Gemini, OpenCode
+  OMU_INSTRUCTION=$(cat <<OMUEOF
+# OMU Orchestration Workflow
+# Keyword: omu | Platforms: Codex, Claude, Gemini, OpenCode
 #
-# JEO provides integrated AI orchestration:
+# OMU provides integrated AI orchestration:
 #   1. PLAN: ralph+plannotator for visual plan review
 #   2. EXECUTE: team (if available) or bmad workflow
 #   3. VERIFY: agent-browser snapshot for UI verification
 #   4. CLEANUP: auto worktree cleanup after completion
 #
-# Trigger with: jeo "<task description>"
-# Use /prompts:jeo for full workflow activation
+# Trigger with: omu "<task description>"
+# Use /prompts:omu for full workflow activation
 #
 # PLAN phase protocol (Codex):
 #   1. Write plan to plan.md
 #   2. Run mandatory PLAN gate:
-#      bash ${JEO_SKILL_DIR}/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
+#      bash ${OMU_SKILL_DIR}/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
 #   3. Output "PLAN_READY" to trigger the backup notify hook
 #   4. Check result:
 #      - approved=true -> EXECUTE
@@ -62,7 +62,7 @@ else
 #   /workflow-status
 #
 # Tools: agent-browser, playwriter, plannotator
-JEOEOF
+OMUEOF
 )
 
   python3 - <<PYEOF
@@ -70,7 +70,7 @@ import os
 import re
 
 config_path = os.path.expanduser("~/.codex/config.toml")
-jeo_instruction = """${JEO_INSTRUCTION}"""
+omu_instruction = """${OMU_INSTRUCTION}"""
 
 try:
     content = open(config_path).read() if os.path.exists(config_path) else ""
@@ -82,14 +82,14 @@ content = re.sub(r'(?ms)^\[mcp_servers\.agentation\]\n.*?(?=^\[|\Z)', '', conten
 content = re.sub(r'(?ms)^\[\[mcp_servers\]\]\s*\nname\s*=\s*"agentation"\s*\n.*?(?=^\[\[mcp_servers\]\]|\Z)', '', content)
 content = re.sub(r'(?m)^notify\s*=.*$', '', content)
 
-new_assignment = 'developer_instructions = """\n' + jeo_instruction.strip() + '\n"""\n'
+new_assignment = 'developer_instructions = """\n' + omu_instruction.strip() + '\n"""\n'
 first_table = re.search(r'(?m)^\[', content)
 if first_table:
     content = new_assignment + "\n" + content[first_table.start():]
 else:
     content = new_assignment + ("\n" + content if content else "")
 
-notify_line = f'notify = ["python3", "{os.path.expanduser("~/.codex/hooks/jeo-notify.py")}"]\n'
+notify_line = f'notify = ["python3", "{os.path.expanduser("~/.codex/hooks/omu-notify.py")}"]\n'
 first_table = re.search(r'(?m)^\[', content)
 if first_table:
     content = content[:first_table.start()] + notify_line + "\n" + content[first_table.start():]
@@ -121,10 +121,10 @@ with open(config_path, "w") as f:
 print("✓ Codex config updated")
 PYEOF
 
-  cat > "$JEO_PROMPT_FILE" <<PROMPTEOF
-# JEO - Integrated Agent Orchestration Prompt
+  cat > "$OMU_PROMPT_FILE" <<PROMPTEOF
+# OMU - Integrated Agent Orchestration Prompt
 
-You are now operating in JEO mode.
+You are now operating in OMU mode.
 
 ## Workflow
 
@@ -132,7 +132,7 @@ You are now operating in JEO mode.
 1. Write \`plan.md\` with goal, steps, risks, and completion criteria.
 2. Run:
    \`\`\`bash
-   bash ${JEO_SKILL_DIR}/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
+   bash ${OMU_SKILL_DIR}/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
    echo "PLAN_READY"
    \`\`\`
 3. Proceed only if \`approved=true\`.
@@ -149,16 +149,16 @@ You are now operating in JEO mode.
 - Capture screenshots when helpful
 
 ### Step 4: CLEANUP
-- Run \`bash ${JEO_SKILL_DIR}/scripts/worktree-cleanup.sh\`
+- Run \`bash ${OMU_SKILL_DIR}/scripts/worktree-cleanup.sh\`
 - Run \`git worktree prune\`
 
 ## State File
 
-Save progress to \`.omc/state/jeo-state.json\`:
+Save progress to \`.omc/state/omu-state.json\`:
 
 \`\`\`json
 {
-  "mode": "jeo",
+  "mode": "omu",
   "phase": "plan|execute|verify|cleanup|done",
   "task": "current task description",
   "plan_approved": false,
@@ -172,7 +172,7 @@ PROMPTEOF
 
   cat > "$HOOK_FILE" <<'HOOKEOF'
 #!/usr/bin/env python3
-"""JEO Codex notify hook - triggers the plannotator plan gate when PLAN_READY is emitted."""
+"""OMU Codex notify hook - triggers the plannotator plan gate when PLAN_READY is emitted."""
 import hashlib
 import json
 import os
@@ -183,7 +183,7 @@ import sys
 PLAN_SIGNALS = ["PLAN_READY"]
 
 def get_phase(cwd: str) -> str:
-    state_path = os.path.join(cwd, ".omc", "state", "jeo-state.json")
+    state_path = os.path.join(cwd, ".omc", "state", "omu-state.json")
     try:
         with open(state_path) as f:
             return json.load(f).get("phase", "")
@@ -192,15 +192,15 @@ def get_phase(cwd: str) -> str:
 
 def get_feedback_file(cwd: str) -> str:
     key = hashlib.md5(cwd.encode()).hexdigest()[:8]
-    base = f"/tmp/jeo-{key}"
+    base = f"/tmp/omu-{key}"
     os.makedirs(base, exist_ok=True)
     return os.path.join(base, "plannotator_feedback.txt")
 
 def get_loop_script(cwd: str) -> str:
     candidates = [
-        os.path.join(cwd, ".agent-skills", "jeo", "scripts", "plannotator-plan-loop.sh"),
-        os.path.expanduser("~/.codex/skills/jeo/scripts/plannotator-plan-loop.sh"),
-        os.path.expanduser("~/.agent-skills/jeo/scripts/plannotator-plan-loop.sh"),
+        os.path.join(cwd, ".agent-skills", "omu", "scripts", "plannotator-plan-loop.sh"),
+        os.path.expanduser("~/.codex/skills/omu/scripts/plannotator-plan-loop.sh"),
+        os.path.expanduser("~/.agent-skills/omu/scripts/plannotator-plan-loop.sh"),
     ]
     for candidate in candidates:
         if os.path.exists(candidate):
@@ -208,7 +208,7 @@ def get_loop_script(cwd: str) -> str:
     return ""
 
 def write_result(cwd: str, rc: int) -> None:
-    state_path = os.path.join(cwd, ".omc", "state", "jeo-state.json")
+    state_path = os.path.join(cwd, ".omc", "state", "omu-state.json")
     if not os.path.exists(state_path):
         return
     try:
@@ -246,11 +246,11 @@ def main() -> int:
         return 0
     plan_path = os.path.join(cwd, "plan.md")
     if not os.path.exists(plan_path):
-        print("[JEO] plan.md not found")
+        print("[OMU] plan.md not found")
         return 0
     loop_script = get_loop_script(cwd)
     if not loop_script:
-        print("[JEO] plannotator loop script not found")
+        print("[OMU] plannotator loop script not found")
         return 0
     feedback_file = get_feedback_file(cwd)
     result = subprocess.run(
@@ -263,7 +263,7 @@ def main() -> int:
     write_result(cwd, result.returncode)
     if result.stdout:
         print(result.stdout.strip())
-    print(f"[JEO] plan gate result={result.returncode} feedback={feedback_file}")
+    print(f"[OMU] plan gate result={result.returncode} feedback={feedback_file}")
     return 0
 
 if __name__ == "__main__":
@@ -276,8 +276,8 @@ fi
 
 echo ""
 echo "Codex CLI usage after setup:"
-echo "  /prompts:jeo"
-echo "  notify hook: ~/.codex/hooks/jeo-notify.py"
+echo "  /prompts:omu"
+echo "  notify hook: ~/.codex/hooks/omu-notify.py"
 echo "  backup signal: PLAN_READY"
 echo ""
 ok "Codex CLI setup complete"

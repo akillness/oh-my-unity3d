@@ -1,9 +1,9 @@
 N:ralphmode
-D:[ralphmode] Permission profile for Claude Code, Codex CLI, and Gemini CLI to reduce approval popups for ralph/jeo automation. Key idea: don't globally allow everything; first define repo or disposable sandbox boundaries, and keep blocking secrets and destructive commands.
-G:ralph permissions automation claude-code codex-cli gemini-cli sandbox bypass trusted-folders denylist jeo
+D:[ralphmode] Permission profile for Claude Code, Codex CLI, and Gemini CLI to reduce approval popups for ralph/omu automation. Key idea: don't globally allow everything; first define repo or disposable sandbox boundaries, and keep blocking secrets and destructive commands.
+G:ralph permissions automation claude-code codex-cli gemini-cli sandbox bypass trusted-folders denylist omu
 
 U[5]:
-  When approval popups break flow while repeatedly running ralph or jeo
+  When approval popups break flow while repeatedly running ralph or omu
   When you need to align Claude Code, Codex CLI, and Gemini CLI settings for the same repo
   When you must separate repo-scoped automation from true YOLO mode
   When expanding automation while keeping guardrails for .env/secrets/destructive shell commands
@@ -13,7 +13,7 @@ S[5]{n,action,details}:
   1,Define-Boundary,Lock down the project root and denylist (.env secrets rm -rf sudo) first
   2,Choose-Profile,Choose: Claude acceptEdits or bypassPermissions; Codex approval_policy+sandbox_mode; Gemini Trusted Folder
   3,Apply-Local,Apply only to project-local settings when possible; limit global defaults to sandbox-only
-  4,Run-Ralph,Run in order: boundary check -> permission profile -> ralph or jeo -> verify
+  4,Run-Ralph,Run in order: boundary check -> permission profile -> ralph or omu -> verify
   5,Review-Revert,If this was a temporary bypass, revert after work and document the applied profile for the team
 
 R[4]:

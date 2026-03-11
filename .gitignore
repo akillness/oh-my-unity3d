@@ -2,5 +2,3 @@
 .claude/
 .omc/
 *.jeo.bak
-__pycache__/
-*.pyc

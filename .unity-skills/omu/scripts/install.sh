@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# JEO Skill - Master Installation Script
+# OMU Skill - Master Installation Script
 # Installs and configures: ralph, omc, omx, ohmg, bmad, agent-browser, playwriter, plannotator
 # Usage: bash install.sh [--all] [--with-omc] [--with-plannotator] [--with-browser] [--with-bmad] [--with-omx] [--with-ohmg] [--dry-run]
 
@@ -35,7 +35,7 @@ for arg in "$@"; do
     --with-ohmg) INSTALL_OHMG=true ;;
     --dry-run) DRY_RUN=true ;;
     -h|--help)
-      echo "JEO Master Installer"
+      echo "OMU Master Installer"
       echo "Usage: bash install.sh [options]"
       echo "Options:"
       echo "  --all              Install all supported components"
@@ -70,7 +70,7 @@ run() {
 
 echo ""
 echo "╔══════════════════════════════════════════╗"
-echo "║   JEO Skill - Integrated Orchestration  ║"
+echo "║   OMU Skill - Integrated Orchestration  ║"
 echo "║   Version 2.0.0                         ║"
 echo "╚══════════════════════════════════════════╝"
 echo ""
@@ -192,13 +192,13 @@ fi
 
 echo ""
 echo "╔══════════════════════════════════════════╗"
-echo "║   JEO Installation Complete             ║"
+echo "║   OMU Installation Complete             ║"
 echo "╚══════════════════════════════════════════╝"
 echo ""
-ok "JEO release package installed"
+ok "OMU release package installed"
 echo ""
 echo "Next steps:"
 echo "  1. bash scripts/check-status.sh"
 echo "  2. Restart your AI tools"
-echo "  3. Use keyword 'jeo' to activate the workflow"
+echo "  3. Use keyword 'omu' to activate the workflow"
 echo ""

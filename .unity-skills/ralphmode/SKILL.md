@@ -14,7 +14,7 @@ allowed-tools: Read Write Bash Grep Glob
 
 # Ralphmode
 
-Ralphmode is a cross-platform permission profile for long-running `ralph` or `jeo` workflows.
+Ralphmode is a cross-platform permission profile for long-running `ralph` or `omu` workflows.
 It reduces approval friction, but it is not "allow everything everywhere."
 The core rule is simple: widen automation only inside a bounded project or disposable sandbox, and keep secrets plus destructive commands explicitly blocked.
 
@@ -63,7 +63,7 @@ If you must use a user-global default, pair it with a stricter denylist and a sa
 After permissions are configured:
 
 1. Confirm the task and acceptance criteria.
-2. Run `ralph` or the `jeo` plan-execute-verify loop.
+2. Run `ralph` or the `omu` plan-execute-verify loop.
 3. Verify outputs before claiming completion.
 4. If the automation profile was temporary, revert it after the run.
 

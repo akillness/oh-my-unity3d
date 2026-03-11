@@ -24,7 +24,7 @@ metadata:
 ## When to use this skill
 
 - Unity3D 프로젝트에서 AI 에이전트로 씬·스크립트·에셋 작업을 자동화할 때
-- jeo, bmad-gds 워크플로우에서 Unity Editor를 직접 제어할 때
+- omu, bmad-gds 워크플로우에서 Unity Editor를 직접 제어할 때
 - C# 스크립트 생성·검증·적용을 AI에게 위임할 때
 - Unity Test Runner 자동 실행 및 콘솔 로그 분석이 필요할 때
 
@@ -170,8 +170,8 @@ Claude Code 재시작 후:
 # 2. 연결 확인
 curl http://localhost:8080/health
 
-# 3. jeo 워크플로우에서 사용
-jeo "씬 프로토타이핑: 플랫포머 게임"
+# 3. omu 워크플로우에서 사용
+omu "씬 프로토타이핑: 플랫포머 게임"
 # → unity-mcp 도구가 자동으로 호출됨
 ```
 
@@ -179,7 +179,7 @@ jeo "씬 프로토타이핑: 플랫포머 게임"
 
 ## 관련 스킬
 
-- **jeo**: 전체 오케스트레이션 (PLAN → EXECUTE → VERIFY → CLEANUP)
+- **omu**: 전체 오케스트레이션 (PLAN → EXECUTE → VERIFY → CLEANUP)
 - **bmad-gds**: 게임 개발 워크플로우 (기획 → 구현 → 리뷰)
 - **design-system**: UI 디자인 토큰 및 Unity3D Design Guide
 - **log-analysis**: read_console 출력 분석

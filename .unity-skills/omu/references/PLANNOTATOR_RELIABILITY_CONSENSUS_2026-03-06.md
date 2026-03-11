@@ -1,7 +1,7 @@
 # plannotator 신뢰성 이슈 합의서 (2026-03-06)
 
 ## 문제 정의
-- 이슈: `jeo` PLAN 단계에서 `plannotator`가 시작되지 않아 승인 게이트가 막힘.
+- 이슈: `omu` PLAN 단계에서 `plannotator`가 시작되지 않아 승인 게이트가 막힘.
 - 관측 에러:
   - `Failed to start server. Is port 0 in use?`
   - `code: "EADDRINUSE"`
@@ -80,7 +80,7 @@
 - 비TTY에서는 `exit 32`로 빠르게 사용자 확인 유도.
 
 4. 문서/운영 규칙 업데이트
-- JEO 문서에 `exit 32` 분기와 운영 가이드 추가.
+- OMU 문서에 `exit 32` 분기와 운영 가이드 추가.
 - 플랫폼 설정 스크립트(setup-codex/setup-gemini 등)에서도 안내 문구 통일.
 
 ---
@@ -88,14 +88,14 @@
 ## 적용 내용
 
 ### 코드
-- 수정: `.agent-skills/jeo/scripts/plannotator-plan-loop.sh`
+- 수정: `.agent-skills/omu/scripts/plannotator-plan-loop.sh`
   - localhost listen probe 추가
   - bind 실패 패턴 감지 (`EADDRINUSE/EPERM/...`)
   - TTY 수동 gate 추가 (`approve/feedback/stop`)
   - `exit 32` 표준화
 
 ### 문서
-- 수정: `.agent-skills/jeo/SKILL.md`
+- 수정: `.agent-skills/omu/SKILL.md`
   - PLAN 결과 분기에 `exit 32` 추가
   - 인프라 차단 시 운영 절차 명시
 

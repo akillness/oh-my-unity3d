@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# JEO Skill - Gemini CLI Setup
+# OMU Skill - Gemini CLI Setup
 # Configures: plannotator-oriented AfterAgent helper, GEMINI.md instructions, and removes legacy agentation config
 # Usage: bash setup-gemini.sh [--dry-run] [--hook-only] [--md-only]
 
@@ -21,15 +21,15 @@ for arg in "$@"; do
   esac
 done
 
-JEO_SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+OMU_SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 GEMINI_SETTINGS="${HOME}/.gemini/settings.json"
 GEMINI_MD="${HOME}/.gemini/GEMINI.md"
 GEMINI_HOOK_DIR="${HOME}/.gemini/hooks"
-PLANNOTATOR_HOOK="${GEMINI_HOOK_DIR}/jeo-plannotator.sh"
-LEGACY_AGENTATION_HOOK="${GEMINI_HOOK_DIR}/jeo-agentation.sh"
+PLANNOTATOR_HOOK="${GEMINI_HOOK_DIR}/omu-plannotator.sh"
+LEGACY_AGENTATION_HOOK="${GEMINI_HOOK_DIR}/omu-agentation.sh"
 
 echo ""
-echo "JEO - Gemini CLI Setup"
+echo "OMU - Gemini CLI Setup"
 echo "======================"
 
 if ! command -v gemini >/dev/null 2>&1; then
@@ -41,21 +41,21 @@ if ! $MD_ONLY; then
     echo -e "${YELLOW}[DRY-RUN]${NC} Would update $GEMINI_SETTINGS and hook files"
   else
     mkdir -p "$(dirname "$GEMINI_SETTINGS")" "$GEMINI_HOOK_DIR"
-    [[ -f "$GEMINI_SETTINGS" ]] && cp "$GEMINI_SETTINGS" "${GEMINI_SETTINGS}.jeo.bak"
+    [[ -f "$GEMINI_SETTINGS" ]] && cp "$GEMINI_SETTINGS" "${GEMINI_SETTINGS}.omu.bak"
 
     cat > "$PLANNOTATOR_HOOK" <<'HOOKEOF'
 #!/usr/bin/env bash
-# JEO AfterAgent backup hook - only active during PLAN
+# OMU AfterAgent backup hook - only active during PLAN
 
-JEO_STATE="${PWD}/.omc/state/jeo-state.json"
-if [[ ! -f "$JEO_STATE" ]]; then
+OMU_STATE="${PWD}/.omc/state/omu-state.json"
+if [[ ! -f "$OMU_STATE" ]]; then
   exit 0
 fi
 
 PHASE=$(python3 -c "
 import json
 try:
-    print(json.load(open('$JEO_STATE')).get('phase', 'unknown'))
+    print(json.load(open('$OMU_STATE')).get('phase', 'unknown'))
 except Exception:
     print('unknown')
 " 2>/dev/null || echo "unknown")
@@ -69,9 +69,9 @@ PLAN_FILE="$(pwd)/plan.md"
 
 LOOP_SCRIPT=""
 for candidate in \
-  "$(pwd)/.agent-skills/jeo/scripts/plannotator-plan-loop.sh" \
-  "$HOME/.codex/skills/jeo/scripts/plannotator-plan-loop.sh" \
-  "$HOME/.agent-skills/jeo/scripts/plannotator-plan-loop.sh"
+  "$(pwd)/.agent-skills/omu/scripts/plannotator-plan-loop.sh" \
+  "$HOME/.codex/skills/omu/scripts/plannotator-plan-loop.sh" \
+  "$HOME/.agent-skills/omu/scripts/plannotator-plan-loop.sh"
 do
   if [[ -f "$candidate" ]]; then
     LOOP_SCRIPT="$candidate"
@@ -98,7 +98,7 @@ except (FileNotFoundError, json.JSONDecodeError):
 
 hooks = settings.setdefault("hooks", {})
 after_agent = hooks.setdefault("AfterAgent", [])
-hook_path = os.path.expanduser("~/.gemini/hooks/jeo-plannotator.sh")
+hook_path = os.path.expanduser("~/.gemini/hooks/omu-plannotator.sh")
 
 cleaned = []
 for entry in after_agent:
@@ -106,7 +106,7 @@ for entry in after_agent:
     kept = []
     for hook in hooks_list:
         command = hook.get("command", "")
-        if "jeo-agentation" in command or "agentation" in command:
+        if "omu-agentation" in command or "agentation" in command:
             continue
         kept.append(hook)
     if kept:
@@ -115,7 +115,7 @@ for entry in after_agent:
 after_agent = cleaned
 
 exists = any(
-    any("jeo-plannotator" in hook.get("command", "") for hook in entry.get("hooks", []))
+    any("omu-plannotator" in hook.get("command", "") for hook in entry.get("hooks", []))
     for entry in after_agent
 )
 if not exists:
@@ -126,7 +126,7 @@ if not exists:
             "type": "command",
             "command": f"bash {hook_path}",
             "timeout": 1800,
-            "description": "Run the JEO plannotator gate when plan.md exists"
+            "description": "Run the OMU plannotator gate when plan.md exists"
         }]
     })
 
@@ -144,17 +144,17 @@ PYEOF
 fi
 
 if ! $HOOK_ONLY; then
-  JEO_SECTION=$(cat <<JEOEOF
+  OMU_SECTION=$(cat <<OMUEOF
 
-## JEO Orchestration Workflow
+## OMU Orchestration Workflow
 
-Keyword: \`jeo\`
+Keyword: \`omu\`
 
 ### PLAN
 1. Write \`plan.md\`
 2. Run:
    \`\`\`bash
-   bash ${JEO_SKILL_DIR}/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
+   bash ${OMU_SKILL_DIR}/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
    \`\`\`
 3. Proceed only when \`approved=true\`
 
@@ -167,20 +167,20 @@ Keyword: \`jeo\`
 - Run \`agent-browser snapshot http://localhost:3000\` for browser-facing tasks
 
 ### CLEANUP
-- Run \`bash ${JEO_SKILL_DIR}/scripts/worktree-cleanup.sh\`
-JEOEOF
+- Run \`bash ${OMU_SKILL_DIR}/scripts/worktree-cleanup.sh\`
+OMUEOF
 )
 
   if $DRY_RUN; then
-    echo -e "${YELLOW}[DRY-RUN]${NC} Would append JEO section to $GEMINI_MD"
+    echo -e "${YELLOW}[DRY-RUN]${NC} Would append OMU section to $GEMINI_MD"
   else
     mkdir -p "$(dirname "$GEMINI_MD")"
-    [[ -f "$GEMINI_MD" ]] && cp "$GEMINI_MD" "${GEMINI_MD}.jeo.bak"
-    if [[ -f "$GEMINI_MD" ]] && grep -q "## JEO Orchestration Workflow" "$GEMINI_MD"; then
-      ok "JEO section already present in GEMINI.md"
+    [[ -f "$GEMINI_MD" ]] && cp "$GEMINI_MD" "${GEMINI_MD}.omu.bak"
+    if [[ -f "$GEMINI_MD" ]] && grep -q "## OMU Orchestration Workflow" "$GEMINI_MD"; then
+      ok "OMU section already present in GEMINI.md"
     else
-      printf "%s\n" "$JEO_SECTION" >> "$GEMINI_MD"
-      ok "JEO instructions added to GEMINI.md"
+      printf "%s\n" "$OMU_SECTION" >> "$GEMINI_MD"
+      ok "OMU instructions added to GEMINI.md"
     fi
   fi
 fi
@@ -189,7 +189,7 @@ echo ""
 echo "Gemini CLI usage after setup:"
 echo "  gemini --approval-mode plan"
 echo "  /workflow-init"
-echo "  bash ${JEO_SKILL_DIR}/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3"
+echo "  bash ${OMU_SKILL_DIR}/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3"
 echo ""
 ok "Gemini CLI setup complete"
 echo ""
