@@ -2,6 +2,8 @@
 
 > **For AI Agents**: Read this file in full, then execute all steps without asking for further confirmation. Default installation is **full** — only skip steps if the user explicitly requests "minimal" or "core only."
 
+> ⚠️ **CRITICAL — Preserve Existing Skills**: This installation MUST NOT delete or remove any skills that were not installed by this guide. Only add new skills or overwrite/update skills from this repository. Never run `skills remove`, `skills clear`, `skills reset`, or any destructive command. If a skill already exists, update it in place.
+
 ---
 
 ## Execution Principles
@@ -11,6 +13,7 @@
 | **Systems Engineer** | Lock defaults explicitly — full install unless overridden |
 | **New User** | Eliminate ambiguity — run the complete installation by default |
 | **Guide Author** | Skip full install only when user says "core only" or "minimal install" |
+| **Preservation Rule** | Never delete existing skills — only add new or overwrite skills from this repo |
 
 ---
 
@@ -30,6 +33,18 @@ command -v codex    &>/dev/null && echo "✅ Codex CLI"     || echo "⬜ Codex C
 command -v gemini   &>/dev/null && echo "✅ Gemini CLI"    || echo "⬜ Gemini CLI (not found)"
 command -v opencode &>/dev/null && echo "✅ OpenCode"      || echo "⬜ OpenCode (not found)"
 command -v unity    &>/dev/null && echo "✅ Unity Editor"  || echo "⬜ Unity Editor (not found)"
+
+# Snapshot existing skills BEFORE installation (for preservation check)
+echo ""
+echo "=== Existing Skills (will be preserved) ==="
+if [ -d "$SKILLS_ROOT" ]; then
+  ls "$SKILLS_ROOT" 2>/dev/null | sort > /tmp/skills_before.txt
+  cat /tmp/skills_before.txt
+  echo "($(wc -l < /tmp/skills_before.txt) skills found — none will be removed)"
+else
+  echo "(skills directory not yet created)"
+  touch /tmp/skills_before.txt
+fi
 ```
 
 ---
@@ -43,7 +58,8 @@ Install the orchestration core that all platforms share:
 npm install -g skills
 
 # --yes   : skip all interactive prompts
-# --global: install to all detected platforms, overwrite existing versions
+# --global: install to all detected platforms
+# Note: only skills from this repo are added/updated; pre-existing unrelated skills are untouched
 
 # Core orchestration
 npx skills add "$REPO_URL" --skill omu --yes --global
@@ -172,6 +188,21 @@ for skill in omu unity-mcp bmad-gds ralph plannotator omc; do
     || echo "❌ $skill — re-run: npx skills add ... --skill $skill"
 done
 
+# Verify no existing skills were removed (compare with pre-install snapshot)
+if [ -f /tmp/skills_before.txt ] && [ -s /tmp/skills_before.txt ]; then
+  echo ""
+  echo "=== Preservation Check ==="
+  ls "$SKILLS_ROOT" 2>/dev/null | sort > /tmp/skills_after.txt
+  MISSING=$(comm -23 /tmp/skills_before.txt /tmp/skills_after.txt)
+  if [ -z "$MISSING" ]; then
+    echo "✅ All pre-existing skills preserved — nothing was removed"
+  else
+    echo "⚠️  The following skills were present before but are missing now:"
+    echo "$MISSING"
+    echo "Restore them manually: npx skills add <source> --skill <name> --yes --global"
+  fi
+  rm -f /tmp/skills_before.txt /tmp/skills_after.txt
+fi
 ```
 
 After everything is set up and working, ask the user:
