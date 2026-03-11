@@ -4,7 +4,7 @@
 
 <div align="center">
 
-[![Version](https://img.shields.io/badge/version-2.3.0-blue?style=flat-square)](https://github.com/akillness/oh-unity3d/releases)
+[![Version](https://img.shields.io/badge/version-2.3.0-blue?style=flat-square)](https://github.com/akillness/oh-my-unity3d/releases)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Unity](https://img.shields.io/badge/Unity-2021.3%2B-black?style=flat-square&logo=unity)](https://unity.com)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-supported-orange?style=flat-square)](https://claude.ai)
@@ -12,6 +12,7 @@
 [![Gemini CLI](https://img.shields.io/badge/Gemini%20CLI-supported-blue?style=flat-square)](https://gemini.google.com)
 [![OpenCode](https://img.shields.io/badge/OpenCode-supported-purple?style=flat-square)](https://opencode.ai)
 [![Skills](https://img.shields.io/badge/skills-44-yellow?style=flat-square)](#-skills-index)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
 **AI-driven Unity3D game development orchestration — Plan → Execute → Verify → Cleanup**
 
@@ -23,7 +24,7 @@
 
 ## 📦 Overview
 
-`oh-my-unity3d` is a release-ready distribution for the **JEO** orchestration skill package, extended for Unity3D game development with **unity-mcp** integration.
+`oh-my-unity3d` is a release-ready distribution for the **OMU** orchestration skill package, extended for Unity3D game development with **unity-mcp** integration.
 
 ```
 Plan ──► Execute ──► Verify ──► Cleanup
@@ -35,7 +36,7 @@ Plan ──► Execute ──► Verify ──► Cleanup
 
 | Layer | Component | Role |
 |-------|-----------|------|
-| **Orchestration** | `jeo` | Plan → Execute → Verify → Cleanup pipeline |
+| **Orchestration** | `omu` | Plan → Execute → Verify → Cleanup pipeline |
 | **Game Dev** | `bmad-gds` | Brainstorm → GDD → Architecture → Sprint → Dev → Review |
 | **Unity Editor** | `unity-mcp` | 37 MCP tools for direct Unity Editor control |
 | **Planning Gate** | `ralph` + `plannotator` | Mandatory plan review before execution |
@@ -57,7 +58,7 @@ Plan ──► Execute ──► Verify ──► Cleanup
 | # | Change | Details |
 |---|--------|---------|
 | 🆕 | **unity-mcp skill** | New skill — configures and calls all 37 Unity Editor MCP tools |
-| 🆕 | **Unity3D verify loop** | JEO VERIFY now runs `run_tests → read_console → editor_state` auto-fix loop |
+| 🆕 | **Unity3D verify loop** | OMU VERIFY now runs `run_tests → read_console → editor_state` auto-fix loop |
 | 🆕 | **5 Unity3D workflows** | Scene prototyping, C# dev, asset pipeline, UI/visual, perf optimization |
 | 🆕 | **SKILLS-INDEX.md** | Full 44-skill directory with categories and quick-select guide |
 | 🆕 | **WORKFLOWS.md** | End-to-end Unity3D workflow documentation |
@@ -81,7 +82,7 @@ Send this to your LLM agent to begin the full installation:
 
 ```bash
 # Read the full installation guide and proceed automatically
-curl -s https://raw.githubusercontent.com/akillness/oh-unity3d/main/setup-all-skills-prompt.md
+curl -s https://raw.githubusercontent.com/akillness/oh-my-unity3d/main/setup-all-skills-prompt.md
 ```
 
 More skill installs → [GETTING-STARTED.md](GETTING-STARTED.md) · Platform-specific guides → [GETTING-STARTED.md#platform](GETTING-STARTED.md)
@@ -94,20 +95,20 @@ More skill installs → [GETTING-STARTED.md](GETTING-STARTED.md) · Platform-spe
 
 ```bash
 # Clone
-git clone https://github.com/akillness/oh-unity3d.git
-cd oh-unity3d
+git clone https://github.com/akillness/oh-my-unity3d.git
+cd oh-my-unity3d
 
 # Install all skills
-bash .unity-skills/jeo/scripts/install.sh --all
+bash .unity-skills/omu/scripts/install.sh --all
 ```
 
 ### 2. Set Up Your AI Platform
 
 ```bash
-bash .unity-skills/jeo/scripts/setup-claude.sh    # Claude Code
-bash .unity-skills/jeo/scripts/setup-codex.sh     # Codex CLI
-bash .unity-skills/jeo/scripts/setup-gemini.sh    # Gemini CLI
-bash .unity-skills/jeo/scripts/setup-opencode.sh  # OpenCode
+bash .unity-skills/omu/scripts/setup-claude.sh    # Claude Code
+bash .unity-skills/omu/scripts/setup-codex.sh     # Codex CLI
+bash .unity-skills/omu/scripts/setup-gemini.sh    # Gemini CLI
+bash .unity-skills/omu/scripts/setup-opencode.sh  # OpenCode
 ```
 
 ### 3. Connect Unity Editor (unity-mcp)
@@ -126,14 +127,14 @@ curl http://localhost:8080/health  # Verify connection
 ### 4. Run Your First Workflow
 
 ```bash
-jeo "씬 프로토타이핑: 내 첫 번째 게임"
+omu "씬 프로토타이핑: 내 첫 번째 게임"
 ```
 
 ---
 
 ## 🎯 Unity3D Workflows
 
-All workflows are orchestrated by `jeo` with an automatic Unity3D verification loop in the VERIFY phase.
+All workflows are orchestrated by `omu` with an automatic Unity3D verification loop in the VERIFY phase.
 
 ### Verification Loop (auto-runs in every VERIFY phase)
 
@@ -219,7 +220,7 @@ All workflows are orchestrated by `jeo` with an automatic Unity3D verification l
 
 | Skill | Description | Keyword |
 |-------|-------------|---------|
-| **jeo** | Plan → Execute → Verify → Cleanup pipeline | `jeo` |
+| **omu** | Plan → Execute → Verify → Cleanup pipeline | `omu` |
 | **ralph** | Spec-first self-completing dev loop | `ralph` |
 | **plannotator** | Visual plan review gate | `plannotator` |
 
@@ -230,7 +231,7 @@ All workflows are orchestrated by `jeo` with an automatic Unity3D verification l
 | **omc** | Claude Code | `omc` |
 | **ohmg** | Gemini CLI | `ohmg` |
 | **omx** (was oh-my-codex) 🔄 | Codex CLI | `omx` |
-| **jeo** setup-opencode.sh | OpenCode | — |
+| **omu** setup-opencode.sh | OpenCode | — |
 
 ### 💻 Development
 
@@ -259,21 +260,21 @@ All workflows are orchestrated by `jeo` with an automatic Unity3D verification l
 | **Claude Code** | `omc` | `ralph` + `plannotator` hook | `omc` team mode | `agent-browser` + unity-mcp |
 | **Codex CLI** | `omx` | `plan.md` + `plannotator` loop | `bmad` fallback | `agent-browser` + unity-mcp |
 | **Gemini CLI** | `ohmg` | `plan.md` + AfterAgent hook | `bmad` or `ohmg` | `agent-browser` + unity-mcp |
-| **OpenCode** | `jeo` setup-opencode.sh | slash-command workflow | `omx` or `bmad` | `agent-browser` + unity-mcp |
+| **OpenCode** | `omu` setup-opencode.sh | slash-command workflow | `omx` or `bmad` | `agent-browser` + unity-mcp |
 
 ---
 
 ## 📁 Repository Layout
 
 ```
-oh-unity3d/
+oh-my-unity3d/
 ├── README.md                    ← You are here
 ├── SKILLS-INDEX.md              ← Full 44-skill directory
 ├── GETTING-STARTED.md           ← Installation & first workflow
 ├── WORKFLOWS.md                 ← 5 Unity3D workflow guides
 ├── CLAUDE.md                    ← AI agent project context
 └── .unity-skills/
-    ├── jeo/                     ← JEO orchestration (core)
+    ├── omu/                     ← OMU orchestration (core)
     │   ├── SKILL.md
     │   ├── SKILL.toon
     │   ├── references/FLOW.md
@@ -301,8 +302,8 @@ oh-unity3d/
 | [SKILLS-INDEX.md](SKILLS-INDEX.md) | 44-skill directory with categories, keywords, and quick-select guide |
 | [GETTING-STARTED.md](GETTING-STARTED.md) | Installation, platform setup, first workflow walkthrough |
 | [WORKFLOWS.md](WORKFLOWS.md) | 5 Unity3D workflows with step tables and quick-start examples |
-| [CLAUDE.md](CLAUDE.md) | AI agent project context — unity-mcp tools, JEO verify loop |
-| [.unity-skills/jeo/SKILL.md](.unity-skills/jeo/SKILL.md) | Full JEO orchestration reference |
+| [CLAUDE.md](CLAUDE.md) | AI agent project context — unity-mcp tools, OMU verify loop |
+| [.unity-skills/omu/SKILL.md](.unity-skills/omu/SKILL.md) | Full OMU orchestration reference |
 | [.unity-skills/unity-mcp/SKILL.md](.unity-skills/unity-mcp/SKILL.md) | unity-mcp tool reference (37 tools, role mappings) |
 
 ---
@@ -324,7 +325,7 @@ oh-unity3d/
 ### `v2.1.0` — Unity3D Integration Release
 
 - **Added** `unity-mcp` skill — Unity Editor MCP bridge with 37 tools, role-based mappings, and platform auto-setup script
-- **Added** Unity3D verification loop in JEO VERIFY phase (`run_tests → read_console → editor_state`, up to 3 retries)
+- **Added** Unity3D verification loop in OMU VERIFY phase (`run_tests → read_console → editor_state`, up to 3 retries)
 - **Added** 5 Unity3D workflow templates in `WORKFLOWS.md`
 - **Added** `SKILLS-INDEX.md` — 44-skill directory
 - **Added** `GETTING-STARTED.md` — onboarding guide with unity-mcp integration
@@ -333,7 +334,7 @@ oh-unity3d/
 - **Changed** `oh-my-codex` keyword renamed to `omx`
 - **Changed** OpenCode added as 4th supported platform across all documentation
 
-### `v2.0.0` — JEO Clean Release
+### `v2.0.0` — OMU Clean Release
 
 - Removed `agentation` integration and related keywords (`annotate`, `agentui`)
 - Reduced the skill to the supported release surface
@@ -349,5 +350,5 @@ MIT — see [LICENSE](LICENSE) for details.
 ---
 
 <div align="center">
-Built with <a href="https://github.com/akillness/oh-unity3d">JEO</a> · Powered by <a href="https://github.com/CoplayDev/unity-mcp">unity-mcp</a>
+Built with <a href="https://github.com/akillness/oh-my-unity3d">OMU</a> · Powered by <a href="https://github.com/CoplayDev/unity-mcp">unity-mcp</a>
 </div>
