@@ -58,21 +58,22 @@ Install the orchestration core that all platforms share:
 npm install -g skills
 
 # Use the globally installed `skills` command (not npx) for all installs
+# -g      : install skill to global location (default — always use this flag)
 # --yes   : skip all interactive prompts
 # --global: register skill with all detected AI platforms
 # Note: only skills from this repo are added/updated; pre-existing unrelated skills are untouched
 
 # Core orchestration
-skills add "$REPO_URL" --skill omu --yes --global
-skills add "$REPO_URL" --skill ralph --yes --global
-skills add "$REPO_URL" --skill plannotator --yes --global
+skills add -g "$REPO_URL" --skill omu --yes --global
+skills add -g "$REPO_URL" --skill ralph --yes --global
+skills add -g "$REPO_URL" --skill plannotator --yes --global
 
 # Unity3D integration (required for Unity projects)
-skills add "$REPO_URL" --skill unity-mcp --yes --global
+skills add -g "$REPO_URL" --skill unity-mcp --yes --global
 
 # Game development workflow
-skills add "$REPO_URL" --skill bmad-gds --yes --global
-skills add "$REPO_URL" --skill bmad-idea --yes --global
+skills add -g "$REPO_URL" --skill bmad-gds --yes --global
+skills add -g "$REPO_URL" --skill bmad-idea --yes --global
 ```
 
 ---
@@ -85,56 +86,56 @@ Install all 45 available skills:
 
 ```bash
 # Platform setup skills
-skills add "$REPO_URL" --skill omc          --yes --global  # Claude Code
-skills add "$REPO_URL" --skill ohmg         --yes --global  # Gemini CLI
-skills add "$REPO_URL" --skill oh-my-codex  --yes --global  # Codex CLI (keyword: omx)
-skills add "$REPO_URL" --skill ralphmode    --yes --global
+skills add -g "$REPO_URL" --skill omc          --yes --global  # Claude Code
+skills add -g "$REPO_URL" --skill ohmg         --yes --global  # Gemini CLI
+skills add -g "$REPO_URL" --skill oh-my-codex  --yes --global  # Codex CLI (keyword: omx)
+skills add -g "$REPO_URL" --skill ralphmode    --yes --global
 
 # Development
-skills add "$REPO_URL" --skill code-review           --yes --global
-skills add "$REPO_URL" --skill code-refactoring      --yes --global
-skills add "$REPO_URL" --skill backend-testing       --yes --global
-skills add "$REPO_URL" --skill testing-strategies    --yes --global
-skills add "$REPO_URL" --skill codebase-search       --yes --global
-skills add "$REPO_URL" --skill git-workflow          --yes --global
-skills add "$REPO_URL" --skill git-submodule         --yes --global
-skills add "$REPO_URL" --skill changelog-maintenance --yes --global
-skills add "$REPO_URL" --skill api-design            --yes --global
-skills add "$REPO_URL" --skill api-documentation     --yes --global
-skills add "$REPO_URL" --skill security-best-practices  --yes --global
-skills add "$REPO_URL" --skill performance-optimization --yes --global
-skills add "$REPO_URL" --skill pattern-detection     --yes --global
-skills add "$REPO_URL" --skill environment-setup     --yes --global
-skills add "$REPO_URL" --skill workflow-automation   --yes --global
-skills add "$REPO_URL" --skill file-organization     --yes --global
+skills add -g "$REPO_URL" --skill code-review           --yes --global
+skills add -g "$REPO_URL" --skill code-refactoring      --yes --global
+skills add -g "$REPO_URL" --skill backend-testing       --yes --global
+skills add -g "$REPO_URL" --skill testing-strategies    --yes --global
+skills add -g "$REPO_URL" --skill codebase-search       --yes --global
+skills add -g "$REPO_URL" --skill git-workflow          --yes --global
+skills add -g "$REPO_URL" --skill git-submodule         --yes --global
+skills add -g "$REPO_URL" --skill changelog-maintenance --yes --global
+skills add -g "$REPO_URL" --skill api-design            --yes --global
+skills add -g "$REPO_URL" --skill api-documentation     --yes --global
+skills add -g "$REPO_URL" --skill security-best-practices  --yes --global
+skills add -g "$REPO_URL" --skill performance-optimization --yes --global
+skills add -g "$REPO_URL" --skill pattern-detection     --yes --global
+skills add -g "$REPO_URL" --skill environment-setup     --yes --global
+skills add -g "$REPO_URL" --skill workflow-automation   --yes --global
+skills add -g "$REPO_URL" --skill file-organization     --yes --global
 
 # Design & UI
-skills add "$REPO_URL" --skill design-system         --yes --global
-skills add "$REPO_URL" --skill ui-component-patterns --yes --global
-skills add "$REPO_URL" --skill web-accessibility     --yes --global
-skills add "$REPO_URL" --skill web-design-guidelines --yes --global
-skills add "$REPO_URL" --skill responsive-design     --yes --global
+skills add -g "$REPO_URL" --skill design-system         --yes --global
+skills add -g "$REPO_URL" --skill ui-component-patterns --yes --global
+skills add -g "$REPO_URL" --skill web-accessibility     --yes --global
+skills add -g "$REPO_URL" --skill web-design-guidelines --yes --global
+skills add -g "$REPO_URL" --skill responsive-design     --yes --global
 
 # Infrastructure & Data
-skills add "$REPO_URL" --skill database-schema-design --yes --global
-skills add "$REPO_URL" --skill log-analysis           --yes --global
-skills add "$REPO_URL" --skill data-analysis          --yes --global
-skills add "$REPO_URL" --skill llm-monitoring-dashboard --yes --global
-skills add "$REPO_URL" --skill task-planning          --yes --global
-skills add "$REPO_URL" --skill task-estimation        --yes --global
+skills add -g "$REPO_URL" --skill database-schema-design --yes --global
+skills add -g "$REPO_URL" --skill log-analysis           --yes --global
+skills add -g "$REPO_URL" --skill data-analysis          --yes --global
+skills add -g "$REPO_URL" --skill llm-monitoring-dashboard --yes --global
+skills add -g "$REPO_URL" --skill task-planning          --yes --global
+skills add -g "$REPO_URL" --skill task-estimation        --yes --global
 
 # Creative & Content
-skills add "$REPO_URL" --skill image-generation           --yes --global
-skills add "$REPO_URL" --skill video-production           --yes --global
-skills add "$REPO_URL" --skill marketing-skills-collection --yes --global
-skills add "$REPO_URL" --skill pptx-presentation-builder  --yes --global
-skills add "$REPO_URL" --skill remotion-video-production  --yes --global
-skills add "$REPO_URL" --skill opencontext                --yes --global
-skills add "$REPO_URL" --skill prompt-repetition          --yes --global
-skills add "$REPO_URL" --skill vibe-kanban                --yes --global
+skills add -g "$REPO_URL" --skill image-generation           --yes --global
+skills add -g "$REPO_URL" --skill video-production           --yes --global
+skills add -g "$REPO_URL" --skill marketing-skills-collection --yes --global
+skills add -g "$REPO_URL" --skill pptx-presentation-builder  --yes --global
+skills add -g "$REPO_URL" --skill remotion-video-production  --yes --global
+skills add -g "$REPO_URL" --skill opencontext                --yes --global
+skills add -g "$REPO_URL" --skill prompt-repetition          --yes --global
+skills add -g "$REPO_URL" --skill vibe-kanban                --yes --global
 
 # AI/ML Research
-skills add "$REPO_URL" --skill autoresearch               --yes --global
+skills add -g "$REPO_URL" --skill autoresearch               --yes --global
 ```
 
 ---
@@ -186,7 +187,7 @@ bash "$SKILLS_ROOT/omu/scripts/check-status.sh"
 for skill in omu unity-mcp bmad-gds ralph plannotator omc; do
   [ -f "$SKILLS_ROOT/$skill/SKILL.md" ] \
     && echo "✅ $skill" \
-    || echo "❌ $skill — re-run: skills add ... --skill $skill"
+    || echo "❌ $skill — re-run: skills add -g ... --skill $skill"
 done
 
 # Verify no existing skills were removed (compare with pre-install snapshot)
@@ -200,7 +201,7 @@ if [ -f /tmp/skills_before.txt ] && [ -s /tmp/skills_before.txt ]; then
   else
     echo "⚠️  The following skills were present before but are missing now:"
     echo "$MISSING"
-    echo "Restore them manually: skills add <source> --skill <name> --yes --global"
+    echo "Restore them manually: skills add -g <source> --skill <name> --yes --global"
   fi
   rm -f /tmp/skills_before.txt /tmp/skills_after.txt
 fi
