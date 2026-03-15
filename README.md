@@ -4,7 +4,7 @@
 
 <div align="center">
 
-[![Version](https://img.shields.io/badge/version-2.3.0-blue?style=flat-square)](https://github.com/akillness/oh-my-unity3d/releases)
+[![Version](https://img.shields.io/badge/version-2.5.0-blue?style=flat-square)](https://github.com/akillness/oh-my-unity3d/releases)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Unity](https://img.shields.io/badge/Unity-2021.3%2B-black?style=flat-square&logo=unity)](https://unity.com)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-supported-orange?style=flat-square)](https://claude.ai)
@@ -44,7 +44,7 @@ Plan ──► Execute ──► Verify ──► Cleanup
 
 ---
 
-## ✨ What's New in v2.3.0
+## ✨ What's New in v2.5.0
 
 | # | Change | Details |
 |---|--------|---------|
@@ -316,6 +316,14 @@ oh-my-unity3d/
 ---
 
 ## 📋 Changelog
+
+### `v2.5.0` — Stability & Installation Improvements
+
+- **Fixed** Plannotator double-launch, ralphmode transition, and approval page errors
+- **Fixed** Add `-g` flag to all `skills add` commands for global installation by default
+- **Fixed** Use globally installed skills CLI instead of `npx` in setup prompts
+- **Fixed** Preserve existing skills during installation in `setup-all-skills-prompt.md`
+- **Changed** Reorganized jeo→omu scripts with updated docs and skill definitions
 
 ### `v2.4.0` — Autonomous ML Research
 
