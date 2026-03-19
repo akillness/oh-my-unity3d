@@ -1,6 +1,7 @@
 ---
 name: design-system
 description: Produce production-grade UI designs using clear design tokens, layout rules, motion guidance, and accessibility checks for consistent, scalable frontend development.
+allowed-tools: Read Write Edit Glob Grep
 metadata:
   tags: frontend, design, ui, ux, typography, animation, design-tokens, accessibility
   platforms: Claude, ChatGPT, Gemini, Codex
