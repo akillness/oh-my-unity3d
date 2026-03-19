@@ -1,0 +1,36 @@
+{
+  "skill_name": "unity-sentis",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Import an ONNX NPC behavior model into Unity 6 and run inference every frame to control NPC movement.",
+      "expected_output": "C# MonoBehaviour with ModelLoader.Load(), Worker creation with GPUCompute backend, input tensor setup, worker.Schedule(), and output reading with PeekOutput().",
+      "assertions": [
+        "ModelLoader.Load() is called with the ModelAsset",
+        "Worker is created with BackendType.GPUCompute or CPU",
+        "worker.Dispose() is called in OnDestroy",
+        "Tensor<float> is created with correct TensorShape"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My Unity Sentis NPC inference is taking too long (15ms per frame). How do I profile and optimize it?",
+      "expected_output": "Instructions to use Unity Profiler to check Sentis.Worker.Execute, recommendation to run inference every N frames, batching multiple agents, and platform-specific backend selection.",
+      "assertions": [
+        "Unity Profiler is mentioned for performance measurement",
+        "inferenceInterval pattern (every N frames) is shown",
+        "BackendType selection for different platforms is explained"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "How do I export my PyTorch NPC model to ONNX and load it in Unity Sentis?",
+      "expected_output": "PyTorch torch.onnx.export() call with opset_version=17, then Unity Package Manager import of com.unity.sentis, drag ONNX into Assets/, ModelLoader.Load().",
+      "assertions": [
+        "torch.onnx.export or equivalent export step is shown",
+        "opset_version=17 is specified",
+        "com.unity.sentis package installation is mentioned"
+      ]
+    }
+  ]
+}
