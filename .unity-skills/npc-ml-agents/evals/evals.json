@@ -1,0 +1,39 @@
+{
+  "skill_name": "npc-ml-agents",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a Unity ML-Agents NPC that learns to navigate to a target using reinforcement learning. It should collect position observations and use continuous actions.",
+      "expected_output": "NPCAgent C# class extending Agent with CollectObservations (position + target direction), OnActionReceived (force application), reward shaping (distance-based + goal), and OnEpisodeBegin (random reset).",
+      "assertions": [
+        "Class extends Agent",
+        "CollectObservations uses VectorSensor",
+        "OnActionReceived applies physics forces",
+        "AddReward is called with positive value on goal reach",
+        "EndEpisode is called on success and failure"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Write a PPO training config for my NPCBrain agent with 9 observations, 2 continuous actions, targeting 500k training steps.",
+      "expected_output": "YAML config with behaviors.NPCBrain, trainer_type: ppo, matching network input size, max_steps: 500000, and reward_signals.extrinsic.",
+      "assertions": [
+        "trainer_type is ppo or sac",
+        "max_steps is 500000",
+        "reward_signals.extrinsic is present",
+        "network_settings.normalize is true"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I've trained my NPC model with ML-Agents. How do I deploy it in Unity without running Python at runtime?",
+      "expected_output": "Export to ONNX (mlagents-learn results in .onnx), import to Unity Assets, use Unity Sentis Worker with ModelLoader.Load(), Tensor input matching observation shape.",
+      "assertions": [
+        "ONNX model file is referenced",
+        "Unity Sentis (com.unity.sentis) package is mentioned",
+        "ModelLoader.Load() is used",
+        "Worker is created and Disposed"
+      ]
+    }
+  ]
+}

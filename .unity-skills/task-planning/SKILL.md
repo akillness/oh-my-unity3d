@@ -1,6 +1,7 @@
 ---
 name: task-planning
 description: Plan and organize software development tasks effectively. Use when breaking down features, creating user stories, or planning sprints. Handles task breakdown, user stories, acceptance criteria, and backlog management.
+allowed-tools: Read Write Grep Glob
 metadata:
   tags: task-planning, user-stories, backlog, sprint-planning, agile
   platforms: Claude, ChatGPT, Gemini

@@ -3,8 +3,8 @@ name: marketing-skills-collection
 description: Generate marketing deliverables across CRO, copywriting, SEO, analytics, and growth using 23 specialized sub-skills with clear objectives, constraints, and validation.
 allowed-tools: Write Read WebSearch WebFetch Task
 metadata:
-  tags: marketing, cro, copywriting, seo, analytics, growth, automation
-  platforms: Claude, ChatGPT, Gemini, Codex
+  tags: [marketing, cro, copywriting, seo, analytics, growth, automation]
+  platforms: [Claude, ChatGPT, Gemini, Codex]
 ---
 
 # Marketing Skills Collection
