@@ -1,6 +1,7 @@
 ---
 name: git-submodule
 description: Manage Git submodules for including external repositories within a main repository. Use when working with external libraries, shared modules, or managing dependencies as separate Git repositories.
+allowed-tools: Read Write Bash Grep Glob
 metadata:
   tags: git, submodule, dependencies, version-control, modular
   platforms: Claude, ChatGPT, Gemini

@@ -1,6 +1,7 @@
 ---
 name: prompt-repetition
 description: "A prompt repetition technique for improving LLM accuracy. Achieves significant performance gains in 67% (47/70) of 70 benchmarks. Automatically applied on lightweight models (haiku, flash, mini)."
+allowed-tools: Read Write Grep Glob
 metadata:
   tags: prompt-engineering, accuracy, optimization, lightweight-model, attention
   platforms: Claude, Gemini, ChatGPT, Codex

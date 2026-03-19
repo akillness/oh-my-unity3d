@@ -1,6 +1,7 @@
 ---
 name: api-documentation
 description: Create comprehensive API documentation for developers. Use when documenting REST APIs, GraphQL schemas, or SDK methods. Handles OpenAPI/Swagger, interactive docs, examples, and API reference guides.
+allowed-tools: Read Write Glob Grep WebFetch
 metadata:
   tags: API-documentation, OpenAPI, Swagger, REST, GraphQL, developer-docs
   platforms: Claude, ChatGPT, Gemini
