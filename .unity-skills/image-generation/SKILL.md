@@ -1,6 +1,7 @@
 ---
 name: image-generation
 description: Generate high-quality images via MCP (Gemini models or compatible services) using structured prompts, ratios, and validation for marketing, UI, or presentations.
+allowed-tools: Read Write Bash WebFetch
 metadata:
   tags: image-generation, gemini, mcp, design, creative, ai-art
   platforms: Claude, ChatGPT, Gemini, Codex
