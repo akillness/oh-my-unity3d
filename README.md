@@ -11,7 +11,7 @@
 [![Codex CLI](https://img.shields.io/badge/Codex%20CLI-supported-green?style=flat-square)](https://openai.com)
 [![Gemini CLI](https://img.shields.io/badge/Gemini%20CLI-supported-blue?style=flat-square)](https://gemini.google.com)
 [![OpenCode](https://img.shields.io/badge/OpenCode-supported-purple?style=flat-square)](https://opencode.ai)
-[![Skills](https://img.shields.io/badge/skills-45-yellow?style=flat-square)](#-skills-index)
+[![Skills](https://img.shields.io/badge/skills-47-yellow?style=flat-square)](#-skills-index)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
 **AI-driven Unity3D game development orchestration — Plan → Execute → Verify → Cleanup**
@@ -206,7 +206,7 @@ All workflows are orchestrated by `omu` with an automatic Unity3D verification l
 
 ## 📚 Skills Index
 
-45 skills organized by category:
+47 skills organized by category:
 
 ### 🎮 Game Development (Unity3D)
 
@@ -254,6 +254,8 @@ All workflows are orchestrated by `omu` with an automatic Unity3D verification l
 | Skill | Description | Keyword |
 |-------|-------------|---------|
 | **autoresearch** 🆕 | Autonomous ML experimentation loop by Karpathy — AI agent runs 5-min GPU experiments, git-ratchets improvements overnight | `autoresearch` |
+| **unity-sentis** 🆕 | Run ONNX ML models directly inside Unity at runtime (Unity 6.3+) — NPC behavior, animation prediction, on-device AI inference | `unity-sentis` |
+| **npc-ml-agents** 🆕 | Train adaptive NPC agents via Unity ML-Agents (PPO/SAC/imitation learning) — export ONNX models for Sentis deployment | `npc-ml-agents` |
 
 > Full index with quick-select guide → [SKILLS-INDEX.md](SKILLS-INDEX.md)
 
