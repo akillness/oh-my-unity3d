@@ -15,6 +15,7 @@ compatibility: >
   GPU backend requires a GPU with Compute Shader support. CPU backend available on all platforms.
 metadata:
   tags: unity, sentis, onnx, ml-inference, npc, on-device-ai, runtime-ai, unity6
+  keyword: unity-sentis
   version: "1.0"
   source: akillness/oh-my-unity3d
 ---
@@ -32,7 +33,7 @@ Unity Sentis is the official Unity ML runtime (Unity 6.3+). Import ONNX models d
 - Profiling ML inference cost with Unity Profiler
 - Deploying AI to mobile/console with CPU backend
 
-## Setup
+## Quick Start
 
 ### Install Unity Sentis package
 

@@ -21,6 +21,15 @@ OMU is the release-oriented orchestration skill package shipped in this reposito
 
 `agentation`, `annotate`, and `agentui` are intentionally removed in `v2.0.0`. UI review is handled with `agent-browser` snapshots and normal edit loops only.
 
+## Quick Start
+
+```bash
+bash scripts/install.sh --all
+bash scripts/check-status.sh
+```
+
+Then activate OMU with a task statement such as `omu "ship the inventory prototype"` and follow the gated PLAN -> EXECUTE -> VERIFY -> CLEANUP flow.
+
 ## When to use this skill
 
 - When the user wants a Unity3D-oriented orchestration flow spanning planning, execution, verification, and cleanup

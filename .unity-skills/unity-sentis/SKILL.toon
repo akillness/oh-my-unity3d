@@ -1,0 +1,28 @@
+N:unity-sentis
+D:Run ONNX models inside Unity at runtime with Unity Sentis / Unity AI Inference. Use when importing models, selecting GPU or CPU backends, warming up inference, profiling frame cost, and deploying NPC or gameplay models on-device.
+G:unity sentis onnx inference-engine runtime-ai npc unity6 on-device-ai gpucompute cpu backend
+
+U[5]:
+  Import ONNX models into Unity and execute them in play mode
+  Choose safe GPUCompute or CPU fallback behavior per target platform
+  Warm up and schedule inference without frame spikes
+  Deploy ML-Agents outputs through Unity runtime inference
+  Profile inference cost before shipping to desktop, mobile, or WebGL
+
+S[5]{n,action}:
+  1,Install (add com.unity.sentis or Unity AI Inference package)
+  2,Import (drag ONNX into Assets and verify ModelAsset import)
+  3,Create-Worker (load ModelAsset and select backend)
+  4,Run (schedule tensors, read outputs, apply gameplay actions)
+  5,Profile (check Profiler and add interval or batching if needed)
+
+R[4]:
+  Prefer GPUCompute only when compute shaders are available
+  Always keep a CPU fallback for unsupported devices
+  Dispose Worker instances to avoid GPU memory leaks
+  Validate inference cadence on the target platform before shipping
+
+E[3]{desc,in,out}:
+  "NPC runtime inference","unity-sentis for enemy behavior","ONNX model imported and Worker executes per interval"
+  "Adaptive difficulty","player stats -> Sentis model","difficulty multiplier predicted at runtime"
+  "Mobile-safe deployment","backend fallback review","CPU backend selected and verified on-device"
