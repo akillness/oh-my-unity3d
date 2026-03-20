@@ -3,8 +3,8 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Create a Unity ML-Agents NPC that learns to navigate to a target using reinforcement learning. It should collect position observations and use continuous actions.",
-      "expected_output": "NPCAgent C# class extending Agent with CollectObservations (position + target direction), OnActionReceived (force application), reward shaping (distance-based + goal), and OnEpisodeBegin (random reset).",
+      "prompt": "Create a Unity ML-Agents NPC that learns to navigate to a target using reinforcement learning.",
+      "expected_output": "Agent subclass with observations, action handling, reward shaping, and episode reset logic.",
       "assertions": [
         "Class extends Agent",
         "CollectObservations uses VectorSensor",
@@ -27,12 +27,32 @@
     {
       "id": 3,
       "prompt": "I've trained my NPC model with ML-Agents. How do I deploy it in Unity without running Python at runtime?",
-      "expected_output": "Export to ONNX (mlagents-learn results in .onnx), import to Unity Assets, use Unity Sentis Worker with ModelLoader.Load(), Tensor input matching observation shape.",
+      "expected_output": "Use the exported ONNX artifact, import it into Unity, and hand it to the runtime inference layer through Sentis.",
       "assertions": [
         "ONNX model file is referenced",
         "Unity Sentis (com.unity.sentis) package is mentioned",
         "ModelLoader.Load() is used",
         "Worker is created and Disposed"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "My training was interrupted. How do I continue instead of starting over?",
+      "expected_output": "Answer using the same run-id with the --resume flag and a warning not to change observation/action contracts mid-run.",
+      "assertions": [
+        "mlagents-learn is shown with --resume",
+        "run-id is preserved",
+        "Contract stability warning is included"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Should I use self-play or curriculum learning for my Unity NPCs?",
+      "expected_output": "Explains self-play for adaptive opponents and curriculum learning for staged difficulty, with YAML snippets or equivalent examples.",
+      "assertions": [
+        "self-play is explained",
+        "curriculum learning is explained",
+        "Configuration example is included"
       ]
     }
   ]
