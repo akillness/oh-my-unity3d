@@ -4,12 +4,13 @@
 
 ```bash
 # 전체 스킬 설치
-npx skills add https://github.com/supercent-io/skills-template --all
+npx skills add https://github.com/akillness/oh-my-unity3d --all
 
 # 또는 개별 스킬 설치
-npx skills add https://github.com/supercent-io/skills-template --skill omu
-npx skills add https://github.com/supercent-io/skills-template --skill unity-mcp
-npx skills add https://github.com/supercent-io/skills-template --skill bmad-gds
+npx skills add https://github.com/akillness/oh-my-unity3d --skill omu
+npx skills add https://github.com/akillness/oh-my-unity3d --skill unity-mcp
+npx skills add https://github.com/akillness/oh-my-unity3d --skill bmad-gds
+npx skills add https://github.com/akillness/oh-my-unity3d --skill autoresearch
 ```
 
 ## 2. AI 플랫폼 초기 설정
@@ -68,5 +69,6 @@ omu "성능 최적화: 프레임 드랍 문제"
 - "전체 워크플로우를 자동화하고 싶다" → `omu`
 - "새로운 아이디어가 필요하다" → `bmad-idea`
 - "코드를 리뷰받고 싶다" → `code-review`
+- "GPU 실험을 자동으로 반복하고 싶다" → `autoresearch`
 
 자세한 스킬 목록은 [SKILLS-INDEX.md](SKILLS-INDEX.md)를 참고하세요.
