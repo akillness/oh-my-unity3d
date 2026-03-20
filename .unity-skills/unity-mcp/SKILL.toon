@@ -1,23 +1,24 @@
 N:unity-mcp
-D:Unity Editor와 AI 에이전트를 연결하는 MCP 브리지. 씬 제어, C# 스크립트 생성·검증, 에셋 파이프라인, 테스트·디버깅 자동화.
-G:unity unity3d mcp game-development editor-automation ai-agent claude-code codex gemini opencode
+D:Unity Editor와 AI 에이전트를 연결하는 MCP 브리지. HTTP/stdio 연결, 씬·스크립트·패키지·테스트 자동화, unity_docs/unity_reflect 기반 API 검증을 지원.
+G:unity unity3d mcp game-development editor-automation ai-agent claude-code codex gemini opencode unity_docs unity_reflect
 U[5]:
   Unity3D 프로젝트에서 AI로 씬·스크립트·에셋 작업을 자동화할 때
   omu/bmad-gds 워크플로우에서 Unity Editor를 직접 제어할 때
-  C# 스크립트 생성·Roslyn 검증·적용을 AI에게 위임할 때
-  Unity Test Runner 자동 실행 및 콘솔 로그 분석이 필요할 때
-  에셋 파이프라인(텍스처·머티리얼·프리팹) 배치 자동화할 때
+  C# 스크립트 생성 전 unity_docs/unity_reflect로 API를 검증할 때
+  Roslyn 검증·콘솔 로그·테스트 러너를 하나의 검증 루프로 묶을 때
+  다중 Unity 인스턴스 또는 HTTP/stdio 전환이 필요한 MCP 설정 작업일 때
 S[4]{n,action}:
-  1,Setup (scripts/setup.sh로 플랫폼별 MCP 자동 구성)
-  2,Connect (Unity Editor MCP 창 → Start → localhost:8080)
-  3,Execute (omu/bmad-gds 워크플로우에서 unity-mcp 도구 호출)
-  4,Verify (run_tests + read_console로 검증 루프 실행)
+  1,Setup (scripts/setup.sh로 HTTP 또는 stdio 구성)
+  2,Connect (Unity Editor MCP 창 → Start → localhost:8080 또는 stdio)
+  3,Execute (set_active_instance 후 도구 호출)
+  4,Verify (unity_docs/unity_reflect → validate_script → read_console → run_tests)
 R[4]:
   Unity 2021.3 LTS 이상 필요
-  Python 3.10+, uv 패키지 매니저 필요
+  HTTP 기본 흐름은 별도 Python/uv 불필요
+  stdio 구성은 uvx 필요
   Unity Editor가 실행 중이어야 함
-  MCP 서버가 localhost:8080에서 실행 중이어야 함
+  MCP 서버가 localhost:8080 또는 stdio로 연결 가능해야 함
 E[3]{desc,in,out}:
-  "씬에 플레이어 오브젝트 생성","omu 씬 프로토타이핑: 플랫포머","unity-mcp: manage_gameobject → manage_material → run_tests 검증 완료"
-  "C# PlayerController 스크립트 생성 및 검증","bmad-gds-dev-story → unity-mcp: create_script","validate_script Roslyn 검증 통과 → script_apply_edits 적용 완료"
-  "텍스처 배치 임포트 최적화","unity-mcp: batch_execute manage_texture","10~100x 속도로 전체 텍스처 설정 완료 → run_tests 검증"
+  "씬에 플레이어 오브젝트 생성","omu 씬 프로토타이핑: 플랫포머","set_active_instance → manage_gameobject → manage_material → run_tests"
+  "C# PlayerController 스크립트 생성 및 검증","unity_docs + unity_reflect 후 create_script","validate_script 통과 → read_console 무오류"
+  "텍스처 배치 임포트 최적화","batch_execute manage_texture","대량 임포트 설정 완료 → console/test 검증"
