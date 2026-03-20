@@ -16,6 +16,7 @@ compatibility: >
   GPU recommended for training (CUDA 11.8+). ONNX export requires opset 17.
 metadata:
   tags: unity, ml-agents, reinforcement-learning, npc, onnx, ppo, sac, imitation-learning, sentis
+  keyword: npc-ml-agents
   version: "1.0"
   source: akillness/oh-my-unity3d
 ---
@@ -33,7 +34,7 @@ Unity ML-Agents Toolkit enables training NPC agents using reinforcement learning
 - Exporting trained `.onnx` model for runtime use with unity-sentis
 - Replacing hand-crafted state machines with learned behavior
 
-## Setup
+## Quick Start
 
 ### Python environment
 

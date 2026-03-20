@@ -1,6 +1,6 @@
 # oh-my-unity3d Skills Index
 
-44개 스킬 라이브러리 — OMU 오케스트레이션 생태계
+47개 스킬 라이브러리 — OMU 오케스트레이션 생태계
 
 ## 플랫폼 초기 설정
 
@@ -87,7 +87,7 @@
 | prompt-repetition | 프롬프트 반복 기법 (정확도 향상) |
 | vibe-kanban | AI 에이전트 Kanban 보드 |
 | ralphmode | Claude Code/Codex/Gemini 자동화 설정 |
-| oh-my-codex (omx) | Codex CLI 멀티 에이전트 설정 |
+| omx (legacy: oh-my-codex) | Codex CLI 멀티 에이전트 설정 |
 
 ---
 

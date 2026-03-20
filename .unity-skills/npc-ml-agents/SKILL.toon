@@ -1,0 +1,28 @@
+N:npc-ml-agents
+D:Train adaptive NPC behaviors with Unity ML-Agents and export ONNX models for runtime deployment. Use when defining observations and rewards, configuring PPO or SAC, running self-play or curriculum learning, and handing trained brains to unity-sentis.
+G:unity ml-agents reinforcement-learning npc ppo sac onnx self-play curriculum sentis
+
+U[5]:
+  Train NPC behaviors instead of hand-authoring finite state machines
+  Design observations, actions, rewards, and episode boundaries
+  Run PPO or SAC training with TensorBoard monitoring
+  Export ONNX checkpoints for Unity runtime deployment
+  Connect trained models to unity-sentis for on-device inference
+
+S[5]{n,action}:
+  1,Install (pip install mlagents and add Unity ML-Agents package)
+  2,Author-Agent (implement Agent, CollectObservations, OnActionReceived)
+  3,Configure (set Behavior Parameters and trainer yaml)
+  4,Train (run mlagents-learn and monitor results)
+  5,Deploy (export ONNX and wire it into unity-sentis)
+
+R[4]:
+  Observation size must match Behavior Parameters exactly
+  Reward shaping should reinforce the real objective, not shortcuts
+  Export and test ONNX artifacts before deleting training checkpoints
+  Keep runtime inference separate from the Python training stack
+
+E[3]{desc,in,out}:
+  "Navigation NPC","train an NPC to reach a target","PPO run produces ONNX checkpoint"
+  "Competitive self-play","two-team combat arena","self-play ratings and checkpoints improve over time"
+  "Runtime handoff","deploy trained policy","unity-sentis loads ONNX without Python runtime"

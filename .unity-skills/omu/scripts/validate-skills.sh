@@ -5,6 +5,11 @@ SKILLS_DIR="$(cd "$(dirname "$0")/../../.." && pwd)/.unity-skills"
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RESET='\033[0m'
+STRICT=false
+
+if [ "${1:-}" = "--strict" ]; then
+  STRICT=true
+fi
 
 ok_count=0
 warn_count=0
@@ -32,8 +37,8 @@ for skill_md in "$SKILLS_DIR"/*/SKILL.md; do
     warnings+=("missing SKILL.toon")
   fi
 
-  # Check for Quick Start section
-  if grep -qiE "^#+\s*(quick.?start|getting.?started)" "$skill_md" 2>/dev/null; then
+  # Check for onboarding section
+  if grep -qiE "^#+\s*(quick.?start|getting.?started|setup)" "$skill_md" 2>/dev/null; then
     checks="$checks quick-start ✓"
   else
     warnings+=("missing quick-start section")
@@ -53,4 +58,7 @@ for skill_md in "$SKILLS_DIR"/*/SKILL.md; do
 done
 
 echo "=== Summary: $ok_count OK, $warn_count warnings ==="
+if [ "$STRICT" = true ] && [ "$warn_count" -gt 0 ]; then
+  exit 1
+fi
 exit 0

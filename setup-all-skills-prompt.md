@@ -82,13 +82,13 @@ skills add -g "$REPO_URL" --skill bmad-idea --yes --global
 
 > **Do not skip this step unless the user explicitly requests "minimal install" or "core only".**
 
-Install all 45 available skills:
+Install all 47 available skills:
 
 ```bash
 # Platform setup skills
 skills add -g "$REPO_URL" --skill omc          --yes --global  # Claude Code
 skills add -g "$REPO_URL" --skill ohmg         --yes --global  # Gemini CLI
-skills add -g "$REPO_URL" --skill oh-my-codex  --yes --global  # Codex CLI (keyword: omx)
+skills add -g "$REPO_URL" --skill omx          --yes --global  # Codex CLI
 skills add -g "$REPO_URL" --skill ralphmode    --yes --global
 
 # Development

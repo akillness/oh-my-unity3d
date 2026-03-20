@@ -21,9 +21,24 @@ OMU is the release-oriented orchestration skill package shipped in this reposito
 
 `agentation`, `annotate`, and `agentui` are intentionally removed in `v2.0.0`. UI review is handled with `agent-browser` snapshots and normal edit loops only.
 
----
+## Quick Start
 
-## 0. Execution Contract
+```bash
+bash scripts/install.sh --all
+bash scripts/check-status.sh
+```
+
+Then activate OMU with a task statement such as `omu "ship the inventory prototype"` and follow the gated PLAN -> EXECUTE -> VERIFY -> CLEANUP flow.
+
+## When to use this skill
+
+- When the user wants a Unity3D-oriented orchestration flow spanning planning, execution, verification, and cleanup
+- When the task should combine `ralph`, `plannotator`, `team` or `bmad`, browser verification, and optional Unity MCP verification
+- When the user invokes `omu` or asks for a release-oriented, cross-platform game-development workflow
+
+## Instructions
+
+### Execution contract
 
 Run the phases in order. Do not skip PLAN. Do not enter EXECUTE without an approved plan.
 
@@ -213,7 +228,9 @@ Cleanup rule:
 
 ---
 
-## 5. Unity3D 워크플로우 예제
+## Examples
+
+### Unity3D 워크플로우 예제
 
 ### Workflow 1: 게임 기획 → 씬 프로토타이핑
 
@@ -375,4 +392,3 @@ Example:
 - removed `annotate` and `agentui` workflow branches
 - simplified verification around `agent-browser`
 - aligned setup scripts and docs to the reduced release surface
-
