@@ -136,6 +136,7 @@ skills add -g "$REPO_URL" --skill vibe-kanban                --yes --global
 
 # AI/ML Research
 skills add -g "$REPO_URL" --skill autoresearch               --yes --global
+skills add -g "$REPO_URL" --skill skill-autoresearch         --yes --global
 ```
 
 ---

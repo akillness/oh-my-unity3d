@@ -84,6 +84,7 @@
 | 스킬 | 설명 |
 |------|------|
 | autoresearch | Karpathy 자율 ML 실험 루프 — 5분 GPU 실험 반복, 개선만 git ratchet |
+| skill-autoresearch | 기존 SKILL.md 를 eval 기반으로 반복 개선하는 스킬 최적화 루프 |
 | opencontext | AI 에이전트 영구 메모리·컨텍스트 |
 | prompt-repetition | 프롬프트 반복 기법 (정확도 향상) |
 | vibe-kanban | AI 에이전트 Kanban 보드 |
@@ -105,4 +106,5 @@
 | 코드 품질 리뷰 | `code-review` |
 | 성능 문제 해결 | `performance-optimization` + `log-analysis` |
 | GPU 실험 자동화 | `autoresearch` |
+| 스킬 품질 반복 개선 | `skill-autoresearch` |
 | 디자인 시스템 구축 | `design-system` |

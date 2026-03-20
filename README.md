@@ -254,6 +254,7 @@ All workflows are orchestrated by `omu` with an automatic Unity3D verification l
 | Skill | Description | Keyword |
 |-------|-------------|---------|
 | **autoresearch** 🆕 | Autonomous ML experimentation loop by Karpathy — AI agent runs 5-min GPU experiments, git-ratchets improvements overnight | `autoresearch` |
+| **skill-autoresearch** 🆕 | Eval-driven loop for optimizing an existing SKILL.md with binary checks, mutation logging, and baseline comparison | `skill-autoresearch` |
 
 > Full index with quick-select guide → [SKILLS-INDEX.md](SKILLS-INDEX.md)
 
@@ -297,6 +298,7 @@ oh-my-unity3d/
     ├── ralph/                   ← Spec-first dev loop
     ├── plannotator/             ← Plan review gate
     ├── autoresearch/            ← Autonomous ML experimentation (Karpathy) 🆕
+    ├── skill-autoresearch/      ← Eval-driven skill optimization loop 🆕
     └── [35 domain skills]/
 ```
 
