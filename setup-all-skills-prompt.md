@@ -82,7 +82,7 @@ skills add -g "$REPO_URL" --skill bmad-idea --yes --global
 
 > **Do not skip this step unless the user explicitly requests "minimal install" or "core only".**
 
-Install all 45 available skills:
+Install all 47 available skills:
 
 ```bash
 # Platform setup skills
@@ -136,6 +136,8 @@ skills add -g "$REPO_URL" --skill vibe-kanban                --yes --global
 
 # AI/ML Research
 skills add -g "$REPO_URL" --skill autoresearch               --yes --global
+skills add -g "$REPO_URL" --skill npc-ml-agents             --yes --global
+skills add -g "$REPO_URL" --skill unity-sentis               --yes --global
 ```
 
 ---
