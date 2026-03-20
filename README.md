@@ -11,7 +11,7 @@
 [![Codex CLI](https://img.shields.io/badge/Codex%20CLI-supported-green?style=flat-square)](https://openai.com)
 [![Gemini CLI](https://img.shields.io/badge/Gemini%20CLI-supported-blue?style=flat-square)](https://gemini.google.com)
 [![OpenCode](https://img.shields.io/badge/OpenCode-supported-purple?style=flat-square)](https://opencode.ai)
-[![Skills](https://img.shields.io/badge/skills-45-yellow?style=flat-square)](#-skills-index)
+[![Skills](https://img.shields.io/badge/skills-46-yellow?style=flat-square)](#-skills-index)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
 **AI-driven Unity3D game development orchestration — Plan → Execute → Verify → Cleanup**
@@ -254,6 +254,7 @@ All workflows are orchestrated by `omu` with an automatic Unity3D verification l
 | Skill | Description | Keyword |
 |-------|-------------|---------|
 | **autoresearch** 🆕 | Autonomous ML experimentation loop by Karpathy — AI agent runs 5-min GPU experiments, git-ratchets improvements overnight | `autoresearch` |
+| **skill-autoresearch** 🆕 | Eval-driven loop for optimizing an existing SKILL.md with binary checks, mutation logging, and baseline comparison | `skill-autoresearch` |
 
 > Full index with quick-select guide → [SKILLS-INDEX.md](SKILLS-INDEX.md)
 
@@ -275,7 +276,7 @@ All workflows are orchestrated by `omu` with an automatic Unity3D verification l
 ```
 oh-my-unity3d/
 ├── README.md                    ← You are here
-├── SKILLS-INDEX.md              ← Full 44-skill directory
+├── SKILLS-INDEX.md              ← Full 46-skill directory
 ├── GETTING-STARTED.md           ← Installation & first workflow
 ├── WORKFLOWS.md                 ← 5 Unity3D workflow guides
 ├── CLAUDE.md                    ← AI agent project context
@@ -297,7 +298,8 @@ oh-my-unity3d/
     ├── ralph/                   ← Spec-first dev loop
     ├── plannotator/             ← Plan review gate
     ├── autoresearch/            ← Autonomous ML experimentation (Karpathy) 🆕
-    └── [35 domain skills]/
+    ├── skill-autoresearch/      ← Eval-driven skill optimization loop 🆕
+    └── [36 domain skills]/
 ```
 
 ---
