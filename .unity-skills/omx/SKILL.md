@@ -21,9 +21,11 @@ metadata:
 - Executing staged pipelines (plan → prd → exec → verify → fix)
 - Leveraging role-based agent prompts for specialized tasks
 
----
+## Instructions
 
-## Quick Start
+Use the setup and workflow guidance below when installing or operating OMX inside a Unity3D-oriented Codex CLI environment.
+
+## Examples
 
 **Scenario: Platform setup for a Unity3D project**
 

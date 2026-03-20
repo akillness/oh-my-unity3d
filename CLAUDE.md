@@ -2,7 +2,7 @@
 
 ## 프로젝트 개요
 
-44개 스킬의 Unity3D 게임 개발 오케스트레이션 라이브러리.
+47개 스킬의 Unity3D 게임 개발 오케스트레이션 라이브러리.
 OMU 워크플로우(Plan → Execute → Verify → Cleanup)를 중심으로 bmad-gds, unity-mcp와 통합.
 
 ## 핵심 스킬 계층
@@ -61,7 +61,7 @@ OMU VERIFY 단계에서 unity-mcp 연결 시 자동 실행:
 ├── bmad-idea/    # 창의 인텔리전스 (옵셔널)
 ├── omc/          # Claude Code 설정
 ├── ohmg/         # Gemini CLI 설정
-├── oh-my-codex/  # Codex CLI 설정 (keyword: omx)
+├── omx/          # Codex CLI 설정 (keyword: omx)
 ├── ralph/        # 명세 기반 개발
 ├── plannotator/  # 계획 리뷰 게이트
 └── [38개 도메인 스킬]

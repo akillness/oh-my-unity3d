@@ -11,7 +11,7 @@
 [![Codex CLI](https://img.shields.io/badge/Codex%20CLI-supported-green?style=flat-square)](https://openai.com)
 [![Gemini CLI](https://img.shields.io/badge/Gemini%20CLI-supported-blue?style=flat-square)](https://gemini.google.com)
 [![OpenCode](https://img.shields.io/badge/OpenCode-supported-purple?style=flat-square)](https://opencode.ai)
-[![Skills](https://img.shields.io/badge/skills-45-yellow?style=flat-square)](#-skills-index)
+[![Skills](https://img.shields.io/badge/skills-47-yellow?style=flat-square)](#-skills-index)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
 **AI-driven Unity3D game development orchestration — Plan → Execute → Verify → Cleanup**
@@ -60,7 +60,7 @@ Plan ──► Execute ──► Verify ──► Cleanup
 | 🆕 | **unity-mcp skill** | New skill — configures and calls all 37 Unity Editor MCP tools |
 | 🆕 | **Unity3D verify loop** | OMU VERIFY now runs `run_tests → read_console → editor_state` auto-fix loop |
 | 🆕 | **5 Unity3D workflows** | Scene prototyping, C# dev, asset pipeline, UI/visual, perf optimization |
-| 🆕 | **SKILLS-INDEX.md** | Full 44-skill directory with categories and quick-select guide |
+| 🆕 | **SKILLS-INDEX.md** | Full 47-skill directory with categories and quick-select guide |
 | 🆕 | **WORKFLOWS.md** | End-to-end Unity3D workflow documentation |
 | 🔄 | **oh-my-codex → omx** | Codex CLI setup skill renamed to `omx` |
 | 🔄 | **OpenCode support** | All platform tables updated with 4th platform |
@@ -206,7 +206,7 @@ All workflows are orchestrated by `omu` with an automatic Unity3D verification l
 
 ## 📚 Skills Index
 
-45 skills organized by category:
+47 skills organized by category:
 
 ### 🎮 Game Development (Unity3D)
 
@@ -275,7 +275,7 @@ All workflows are orchestrated by `omu` with an automatic Unity3D verification l
 ```
 oh-my-unity3d/
 ├── README.md                    ← You are here
-├── SKILLS-INDEX.md              ← Full 44-skill directory
+├── SKILLS-INDEX.md              ← Full 47-skill directory
 ├── GETTING-STARTED.md           ← Installation & first workflow
 ├── WORKFLOWS.md                 ← 5 Unity3D workflow guides
 ├── CLAUDE.md                    ← AI agent project context
@@ -293,7 +293,7 @@ oh-my-unity3d/
     ├── bmad-idea/               ← Creative intelligence
     ├── omc/                     ← Claude Code setup
     ├── ohmg/                    ← Gemini CLI setup
-    ├── oh-my-codex/             ← Codex CLI setup (keyword: omx)
+    ├── omx/                     ← Codex CLI setup (keyword: omx)
     ├── ralph/                   ← Spec-first dev loop
     ├── plannotator/             ← Plan review gate
     ├── autoresearch/            ← Autonomous ML experimentation (Karpathy) 🆕
@@ -306,7 +306,7 @@ oh-my-unity3d/
 
 | Document | Description |
 |----------|-------------|
-| [SKILLS-INDEX.md](SKILLS-INDEX.md) | 44-skill directory with categories, keywords, and quick-select guide |
+| [SKILLS-INDEX.md](SKILLS-INDEX.md) | 47-skill directory with categories, keywords, and quick-select guide |
 | [GETTING-STARTED.md](GETTING-STARTED.md) | Installation, platform setup, first workflow walkthrough |
 | [WORKFLOWS.md](WORKFLOWS.md) | 5 Unity3D workflows with step tables and quick-start examples |
 | [CLAUDE.md](CLAUDE.md) | AI agent project context — unity-mcp tools, OMU verify loop |
@@ -346,7 +346,7 @@ oh-my-unity3d/
 - **Added** `unity-mcp` skill — Unity Editor MCP bridge with 37 tools, role-based mappings, and platform auto-setup script
 - **Added** Unity3D verification loop in OMU VERIFY phase (`run_tests → read_console → editor_state`, up to 3 retries)
 - **Added** 5 Unity3D workflow templates in `WORKFLOWS.md`
-- **Added** `SKILLS-INDEX.md` — 44-skill directory
+- **Added** `SKILLS-INDEX.md` — 47-skill directory
 - **Added** `GETTING-STARTED.md` — onboarding guide with unity-mcp integration
 - **Added** `CLAUDE.md` — AI agent project context
 - **Added** Unity3D Design Guide to `design-system` skill

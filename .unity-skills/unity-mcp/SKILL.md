@@ -30,7 +30,7 @@ metadata:
 
 ---
 
-## 설치 및 초기 설정
+## Instructions
 
 ### Step 1 — Unity Package 설치
 
@@ -162,7 +162,9 @@ Claude Code 재시작 후:
 
 ---
 
-## 빠른 시작 (Quick Start)
+## Examples
+
+### Quick Start
 
 ```bash
 # 1. Unity Editor에서 unity-mcp 서버 시작 (Unity MCP 창에서 Start 버튼)
