@@ -1,6 +1,7 @@
 ---
 name: llm-monitoring-dashboard
 description: Auto-generates an LLM usage monitoring page in a PM admin dashboard. Tokuin CLI-based token/cost/latency tracking + user ranking system + inactive user tracking + data-driven PM insights + Cmd+K global search + per-user drilldown navigation. Supports OpenAI/Anthropic/Gemini/OpenRouter.
+allowed-tools: Read Write Bash Grep Glob
 metadata:
   tags: LLM, monitoring, dashboard, tokuin, pm-insights, ranking, user-tracking, cost-tracking, Next.js, React, admin
   platforms: Claude, ChatGPT, Gemini, Codex
