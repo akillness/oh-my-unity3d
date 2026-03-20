@@ -66,6 +66,24 @@ autopilot: implement a singleton GameManager for Unity3D
 
 ---
 
+## Instructions
+
+1. Install the Claude Code plugin and run `/omc:omc-setup`.
+2. Enable the Team surface before assigning multi-file Unity work.
+3. Choose `team`, `autopilot`, or `ralph` based on whether the task is parallel, end-to-end, or persistence-heavy.
+
+## Examples
+
+```text
+/omc:team 3:executor "fix Unity compile errors across gameplay scripts"
+```
+
+```text
+autopilot: scaffold a Unity save system with verification notes
+```
+
+---
+
 ## 2. Orchestration Modes
 
 | Mode | What it is | Use For |
