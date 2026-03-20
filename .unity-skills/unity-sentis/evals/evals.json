@@ -3,8 +3,8 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Import an ONNX NPC behavior model into Unity 6 and run inference every frame to control NPC movement.",
-      "expected_output": "C# MonoBehaviour with ModelLoader.Load(), Worker creation with GPUCompute backend, input tensor setup, worker.Schedule(), and output reading with PeekOutput().",
+      "prompt": "Import an ONNX NPC behavior model into Unity and run inference from a MonoBehaviour.",
+      "expected_output": "C# MonoBehaviour with ModelLoader.Load(), Worker creation, tensor setup, worker.Schedule(), and output reading via PeekOutput()/DownloadToArray().",
       "assertions": [
         "ModelLoader.Load() is called with the ModelAsset",
         "Worker is created with BackendType.GPUCompute or CPU",
@@ -14,8 +14,8 @@
     },
     {
       "id": 2,
-      "prompt": "My Unity Sentis NPC inference is taking too long (15ms per frame). How do I profile and optimize it?",
-      "expected_output": "Instructions to use Unity Profiler to check Sentis.Worker.Execute, recommendation to run inference every N frames, batching multiple agents, and platform-specific backend selection.",
+      "prompt": "My Unity Sentis inference is spiking the frame time. How do I profile and optimize it?",
+      "expected_output": "Guidance to profile execution, reduce inference cadence, batch compatible agents, and validate backend choice by platform.",
       "assertions": [
         "Unity Profiler is mentioned for performance measurement",
         "inferenceInterval pattern (every N frames) is shown",
@@ -25,11 +25,31 @@
     {
       "id": 3,
       "prompt": "How do I export my PyTorch NPC model to ONNX and load it in Unity Sentis?",
-      "expected_output": "PyTorch torch.onnx.export() call with opset_version=17, then Unity Package Manager import of com.unity.sentis, drag ONNX into Assets/, ModelLoader.Load().",
+      "expected_output": "PyTorch export with opset_version=17, Unity package installation, ONNX import into Assets, and ModelLoader.Load().",
       "assertions": [
         "torch.onnx.export or equivalent export step is shown",
         "opset_version=17 is specified",
         "com.unity.sentis package installation is mentioned"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "My first Sentis inference call is slow in the Unity Editor. Is that expected?",
+      "expected_output": "Explanation that the first scheduled run can be slower due to shader/code compilation and allocation, plus a warmup recommendation.",
+      "assertions": [
+        "First-run warmup behavior is explained",
+        "worker.Schedule is mentioned",
+        "A startup warmup or test run is recommended"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Should I keep using Sentis naming or move my docs to Unity AI Inference wording?",
+      "expected_output": "Answer that current Sentis docs note the rename to Inference Engine and advise updating references while preserving existing API reality for 2.1.x projects.",
+      "assertions": [
+        "Rename to Inference Engine is mentioned",
+        "Existing Sentis API compatibility is acknowledged",
+        "Documentation update guidance is included"
       ]
     }
   ]
