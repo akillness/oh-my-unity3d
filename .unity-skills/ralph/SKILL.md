@@ -31,6 +31,34 @@ metadata:
 
 ---
 
+## Quick Start
+
+```text
+ooo interview "design a Unity quest system with testable save-state behavior"
+ooo seed
+ooo ralph "implement the accepted Unity quest system and verify playmode tests"
+```
+
+---
+
+## Instructions
+
+1. Use `ooo interview` first when the Unity task is vague or spans gameplay, tooling, and verification.
+2. Freeze the clarified contract with `ooo seed` before long-running execution.
+3. Run `ooo ralph` only after acceptance criteria and verification targets are explicit.
+
+## Examples
+
+```text
+ooo interview "add a Unity inventory system without breaking save compatibility"
+```
+
+```text
+ooo ralph "fix all failing editmode tests in the combat package"
+```
+
+---
+
 ## Core Architecture: The Loop
 
 ```

@@ -27,6 +27,12 @@ The core rule is simple: widen automation only inside a bounded project or dispo
 
 ## Instructions
 
+## Quick Start
+
+1. Apply the repo-scoped preset for the current CLI first.
+2. Run a bounded `ralph` or `omu` task inside the Unity project root.
+3. Revert any temporary high-autonomy profile after verification succeeds.
+
 ### Step 1: Define the automation boundary first
 
 Before changing any permission mode:
