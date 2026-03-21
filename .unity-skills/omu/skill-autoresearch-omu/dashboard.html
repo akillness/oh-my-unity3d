@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMU Skill Autoresearch Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; padding: 2rem; }
+  h1 { color: #58a6ff; margin-bottom: 0.5rem; }
+  .subtitle { color: #8b949e; margin-bottom: 2rem; }
+  .summary { display: flex; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1.2rem 1.5rem; min-width: 160px; }
+  .card-label { font-size: 0.85rem; color: #8b949e; margin-bottom: 0.3rem; }
+  .card-value { font-size: 1.8rem; font-weight: 700; }
+  .card-value.green { color: #3fb950; }
+  .card-value.blue { color: #58a6ff; }
+  .card-value.red { color: #f85149; }
+  .chart-container { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; }
+  .chart-title { font-size: 1rem; color: #58a6ff; margin-bottom: 1rem; }
+  .bar-row { display: flex; align-items: center; margin-bottom: 0.6rem; }
+  .bar-label { width: 110px; font-size: 0.85rem; color: #8b949e; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 28px; background: #21262d; border-radius: 4px; overflow: hidden; position: relative; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; display: flex; align-items: center; padding-left: 8px; font-size: 0.8rem; font-weight: 600; }
+  .bar-fill.green { background: #238636; }
+  .bar-fill.yellow { background: #9e6a03; }
+  .bar-fill.red { background: #da3633; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+  th { text-align: left; padding: 0.7rem 1rem; background: #161b22; color: #58a6ff; border-bottom: 2px solid #30363d; font-size: 0.85rem; }
+  td { padding: 0.6rem 1rem; border-bottom: 1px solid #21262d; font-size: 0.9rem; }
+  tr:hover td { background: #161b22; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+  .badge-pass { background: #238636; color: #fff; }
+  .badge-fail { background: #da3633; color: #fff; }
+  .badge-keep { background: #1f6feb; color: #fff; }
+  .badge-baseline { background: #30363d; color: #c9d1d9; }
+  .eval-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .eval-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 1rem; }
+  .eval-name { font-weight: 600; color: #58a6ff; margin-bottom: 0.5rem; font-size: 0.9rem; }
+  .eval-status { display: flex; gap: 4px; }
+  .dot { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; }
+  .dot.pass { background: #238636; }
+  .dot.fail { background: #da3633; }
+  .dot.current { border: 2px solid #58a6ff; }
+</style>
+</head>
+<body>
+
+<h1>OMU Skill Autoresearch</h1>
+<p class="subtitle">Mutation loop results for omu SKILL.md | 6 binary evals | 5 experiments</p>
+
+<div class="summary">
+  <div class="card">
+    <div class="card-label">Baseline Score</div>
+    <div class="card-value red">1/6</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Final Score</div>
+    <div class="card-value green">6/6</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Improvement</div>
+    <div class="card-value blue">+5</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Mutations Kept</div>
+    <div class="card-value green">5/5</div>
+  </div>
+  <div class="card">
+    <div class="card-label">Pass Rate</div>
+    <div class="card-value green">100%</div>
+  </div>
+</div>
+
+<div class="chart-container">
+  <div class="chart-title">Score Progression</div>
+  <div class="bar-row">
+    <div class="bar-label">Exp 0 (base)</div>
+    <div class="bar-track"><div class="bar-fill red" style="width:16.7%">1/6</div></div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">Exp 1</div>
+    <div class="bar-track"><div class="bar-fill yellow" style="width:33.3%">2/6</div></div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">Exp 2</div>
+    <div class="bar-track"><div class="bar-fill yellow" style="width:50%">3/6</div></div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">Exp 3</div>
+    <div class="bar-track"><div class="bar-fill yellow" style="width:66.7%">4/6</div></div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">Exp 4</div>
+    <div class="bar-track"><div class="bar-fill green" style="width:83.3%">5/6</div></div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">Exp 5</div>
+    <div class="bar-track"><div class="bar-fill green" style="width:100%">6/6</div></div>
+  </div>
+</div>
+
+<div class="chart-container">
+  <div class="chart-title">Eval Pass/Fail per Experiment</div>
+  <div class="eval-grid">
+    <div class="eval-card">
+      <div class="eval-name">PLAN-GATE-EXIT-CODE</div>
+      <div class="eval-status">
+        <div class="dot fail">0</div>
+        <div class="dot pass current">1</div>
+        <div class="dot pass">2</div>
+        <div class="dot pass">3</div>
+        <div class="dot pass">4</div>
+        <div class="dot pass">5</div>
+      </div>
+    </div>
+    <div class="eval-card">
+      <div class="eval-name">PLATFORM-FORK</div>
+      <div class="eval-status">
+        <div class="dot pass">0</div>
+        <div class="dot pass">1</div>
+        <div class="dot pass">2</div>
+        <div class="dot pass">3</div>
+        <div class="dot pass">4</div>
+        <div class="dot pass">5</div>
+      </div>
+    </div>
+    <div class="eval-card">
+      <div class="eval-name">STATE-PERSIST</div>
+      <div class="eval-status">
+        <div class="dot fail">0</div>
+        <div class="dot fail">1</div>
+        <div class="dot pass current">2</div>
+        <div class="dot pass">3</div>
+        <div class="dot pass">4</div>
+        <div class="dot pass">5</div>
+      </div>
+    </div>
+    <div class="eval-card">
+      <div class="eval-name">RECOVERY</div>
+      <div class="eval-status">
+        <div class="dot fail">0</div>
+        <div class="dot fail">1</div>
+        <div class="dot fail">2</div>
+        <div class="dot pass current">3</div>
+        <div class="dot pass">4</div>
+        <div class="dot pass">5</div>
+      </div>
+    </div>
+    <div class="eval-card">
+      <div class="eval-name">UNITY-DETECT</div>
+      <div class="eval-status">
+        <div class="dot fail">0</div>
+        <div class="dot fail">1</div>
+        <div class="dot fail">2</div>
+        <div class="dot fail">3</div>
+        <div class="dot pass current">4</div>
+        <div class="dot pass">5</div>
+      </div>
+    </div>
+    <div class="eval-card">
+      <div class="eval-name">CLEANUP-GUARD</div>
+      <div class="eval-status">
+        <div class="dot fail">0</div>
+        <div class="dot fail">1</div>
+        <div class="dot fail">2</div>
+        <div class="dot fail">3</div>
+        <div class="dot fail">4</div>
+        <div class="dot pass current">5</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="chart-container">
+  <div class="chart-title">Experiment Details</div>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Status</th>
+        <th>Score</th>
+        <th>Pass Rate</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>0</td>
+        <td><span class="badge badge-baseline">baseline</span></td>
+        <td>1/6</td>
+        <td>17%</td>
+        <td>Original SKILL.md</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td><span class="badge badge-keep">keep</span></td>
+        <td>2/6</td>
+        <td>33%</td>
+        <td>Add explicit exit code handling (0, 10, 32) to PLAN gate</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><span class="badge badge-keep">keep</span></td>
+        <td>3/6</td>
+        <td>50%</td>
+        <td>Add state snippets for execute-to-verify and verify-to-cleanup</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><span class="badge badge-keep">keep</span></td>
+        <td>4/6</td>
+        <td>67%</td>
+        <td>Add per-phase resume guidance (plan, execute, verify, cleanup)</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><span class="badge badge-keep">keep</span></td>
+        <td>5/6</td>
+        <td>83%</td>
+        <td>Add concrete curl command for unity-mcp health check</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><span class="badge badge-keep">keep</span></td>
+        <td>6/6</td>
+        <td>100%</td>
+        <td>Add git diff guard command before worktree cleanup</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>
