@@ -130,14 +130,16 @@ You are now operating in OMU mode.
 
 ### Step 1: PLAN
 1. Write \`plan.md\` with goal, steps, risks, and completion criteria.
-2. Run:
+2. Run the plan gate (do NOT echo PLAN_READY after — the hook fires automatically when needed):
    \`\`\`bash
    bash ${OMU_SKILL_DIR}/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
-   echo "PLAN_READY"
    \`\`\`
-3. Proceed only if \`approved=true\`.
-4. If the plan is rejected, revise \`plan.md\` and repeat.
-5. If the loop exits with \`32\`, output the plan in the conversation and wait for manual approval.
+3. Check exit code:
+   - exit 0  → \`approved=true\` → proceed to EXECUTE
+   - exit 10 → \`approved=false\` (feedback) → revise \`plan.md\` and re-run
+   - exit 32 → non-interactive / UI unavailable → the plan has been printed above; wait for the user to reply "approve", "feedback: <note>", or "stop" before proceeding. Do NOT re-run the loop.
+4. If the plan is rejected (exit 10), revise \`plan.md\` and repeat from step 2.
+5. Never proceed to EXECUTE without confirmed approval (exit 0 or explicit user "approve").
 
 ### Step 2: EXECUTE
 - Use \`/workflow-init\`
@@ -244,6 +246,21 @@ def main() -> int:
         return 0
     if not any(re.search(rf'(?m)^{re.escape(sig)}\s*$', message) for sig in PLAN_SIGNALS):
         return 0
+    # Guard: direct plannotator invocation already in progress — skip to avoid double-launch
+    if os.path.exists("/tmp/omu-plannotator-direct.lock"):
+        print("[OMU] plannotator already running (direct lock active). Skipping hook.")
+        return 0
+    # Guard: plan gate already has a result — skip re-invocation
+    state_path = os.path.join(cwd, ".omc", "state", "omu-state.json")
+    try:
+        with open(state_path) as f:
+            state_data = json.load(f)
+        gate_status = state_data.get("plan_gate_status", "pending")
+        if gate_status not in ("pending", ""):
+            print(f"[OMU] plan gate already resolved ({gate_status}). Skipping hook.")
+            return 0
+    except Exception:
+        pass
     plan_path = os.path.join(cwd, "plan.md")
     if not os.path.exists(plan_path):
         print("[OMU] plan.md not found")

@@ -123,6 +123,18 @@ probe_local_listen() {
   return 0
 }
 
+# Non-interactive environment (Codex sandbox, CI, piped stdin): skip plannotator UI immediately.
+# Avoids retry loop burning 3 attempts with no user input possible.
+if [[ ! -t 0 || ! -t 1 ]]; then
+  echo "[OMU][PLAN] Non-interactive environment detected. Skipping plannotator UI." >&2
+  echo "[OMU][PLAN] Plan contents:" >&2
+  cat "$PLAN_FILE" >&2
+  echo "" >&2
+  echo "[OMU][PLAN] ACTION REQUIRED: Reply 'approve', 'feedback: <your note>', or 'stop' to proceed." >&2
+  write_state_gate_status "manual_approval_required"
+  exit 32
+fi
+
 # Some sandboxes disallow localhost bind(). In that environment plannotator hook mode cannot run.
 if [[ "${OMU_SKIP_LISTEN_PROBE:-0}" != "1" ]]; then
   if ! probe_local_listen; then
