@@ -2,7 +2,9 @@
 
 > **For AI Agents**: Read this file in full, then execute all steps without asking for further confirmation. Default installation is **full** — only skip steps if the user explicitly requests "minimal" or "core only."
 
-> ⚠️ **CRITICAL — Preserve Existing Skills**: This installation MUST NOT delete or remove any skills that were not installed by this guide. Only add new skills or overwrite/update skills from this repository. Never run `skills remove`, `skills clear`, `skills reset`, or any destructive command. If a skill already exists, update it in place.
+> **CRITICAL — Preserve Existing Skills**: This installation MUST NOT delete or remove any skills that were not installed by this guide. Only add new skills or overwrite/update skills from this repository. Never run `skills remove`, `skills clear`, `skills reset`, or any destructive command. If a skill already exists, update it in place.
+
+> **CRITICAL — No Duplicate Platform Exposure**: Platform-specific skills (omc, ohmg, omx) MUST only be linked to their target agent(s). Use `-a` to target specific agents — never use `-a '*'` for platform-specific skills.
 
 ---
 
@@ -14,6 +16,7 @@
 | **New User** | Eliminate ambiguity — run the complete installation by default |
 | **Guide Author** | Skip full install only when user says "core only" or "minimal install" |
 | **Preservation Rule** | Never delete existing skills — only add new or overwrite skills from this repo |
+| **Dedup Rule** | Platform-specific skills target only their agents; shared skills target all agents |
 
 ---
 
@@ -26,13 +29,18 @@ Check which AI platforms are installed and set the installation root:
 SKILLS_ROOT="$HOME/.agents/skills"
 REPO_URL="https://github.com/akillness/oh-my-unity3d"
 
-# Detect available platforms
+# Detect available platforms and build agent target list
 echo "=== Platform Detection ==="
-command -v claude   &>/dev/null && echo "✅ Claude Code"   || echo "⬜ Claude Code (not found)"
-command -v codex    &>/dev/null && echo "✅ Codex CLI"     || echo "⬜ Codex CLI (not found)"
-command -v gemini   &>/dev/null && echo "✅ Gemini CLI"    || echo "⬜ Gemini CLI (not found)"
-command -v opencode &>/dev/null && echo "✅ OpenCode"      || echo "⬜ OpenCode (not found)"
-command -v unity    &>/dev/null && echo "✅ Unity Editor"  || echo "⬜ Unity Editor (not found)"
+DETECTED_AGENTS=""
+if command -v claude   &>/dev/null; then echo "✅ Claude Code";  DETECTED_AGENTS="${DETECTED_AGENTS:+$DETECTED_AGENTS,}claude-code"; fi
+if command -v codex    &>/dev/null; then echo "✅ Codex CLI";    DETECTED_AGENTS="${DETECTED_AGENTS:+$DETECTED_AGENTS,}codex"; fi
+if command -v gemini   &>/dev/null; then echo "✅ Gemini CLI";   DETECTED_AGENTS="${DETECTED_AGENTS:+$DETECTED_AGENTS,}gemini-cli"; fi
+if command -v opencode &>/dev/null; then echo "✅ OpenCode";     DETECTED_AGENTS="${DETECTED_AGENTS:+$DETECTED_AGENTS,}opencode"; fi
+if command -v unity    &>/dev/null; then echo "✅ Unity Editor"; fi
+
+[ -z "$DETECTED_AGENTS" ] && { echo "⚠️  No AI agents detected. Install at least one platform first."; exit 1; }
+echo ""
+echo "Target agents: $DETECTED_AGENTS"
 
 # Snapshot existing skills BEFORE installation (for preservation check)
 echo ""
@@ -40,7 +48,7 @@ echo "=== Existing Skills (will be preserved) ==="
 if [ -d "$SKILLS_ROOT" ]; then
   ls "$SKILLS_ROOT" 2>/dev/null | sort > /tmp/skills_before.txt
   cat /tmp/skills_before.txt
-  echo "($(wc -l < /tmp/skills_before.txt) skills found — none will be removed)"
+  echo "($(wc -l < /tmp/skills_before.txt | tr -d ' ') skills found — none will be removed)"
 else
   echo "(skills directory not yet created)"
   touch /tmp/skills_before.txt
@@ -49,94 +57,101 @@ fi
 
 ---
 
-## Step 1 — Install Core Skills
+## Step 1 — Install All Shared Skills (Batch)
 
-Install the orchestration core that all platforms share:
+Install all 48 skills to the global location, then link shared skills to all detected agents.
+Re-running this step safely overwrites existing skills (symlinks are updated in place).
+
+> **Do not skip Step 2** — it re-links platform-specific skills to their correct agents only.
 
 ```bash
 # Prerequisite: install skills CLI globally (one-time setup)
 npm install -g skills
 
-# Use the globally installed `skills` command (not npx) for all installs
-# -g      : install skill to global location (default — always use this flag)
-# --yes   : skip all interactive prompts
-# --global: register skill with all detected AI platforms
-# Note: only skills from this repo are added/updated; pre-existing unrelated skills are untouched
+# ────────────────────────────────────────────────────────
+# Flag reference:
+#   -g          : install to global location (~/.agents/skills/)
+#   -a <agents> : link to specific agents (comma-separated, or '*' for all)
+#   --skill <s> : select specific skills (comma-separated, or '*' for all)
+#   --yes       : skip interactive prompts
+#   --copy      : copy files instead of symlinks (robust overwrite)
+# ────────────────────────────────────────────────────────
 
-# Core orchestration
-skills add -g "$REPO_URL" --skill omu --yes --global
-skills add -g "$REPO_URL" --skill ralph --yes --global
-skills add -g "$REPO_URL" --skill plannotator --yes --global
-
-# Unity3D integration (required for Unity projects)
-skills add -g "$REPO_URL" --skill unity-mcp --yes --global
-
-# Game development workflow
-skills add -g "$REPO_URL" --skill bmad-gds --yes --global
-skills add -g "$REPO_URL" --skill bmad-idea --yes --global
+# Install ALL 48 skills to global store, link shared skills to all detected agents
+# Platform-specific skills (omc, ohmg, omx, ralphmode) are overwritten in Step 2
+skills add -g "$REPO_URL" --skill '*' -a '*' --yes --copy
 ```
 
 ---
 
-## Step 2 — Full Skill Installation (Default)
+## Step 2 — Fix Platform-Specific Skill Links (Dedup)
 
-> **Do not skip this step unless the user explicitly requests "minimal install" or "core only".**
-
-Install all 47 available skills:
+Platform-specific skills must only appear on their target agent(s).
+This step **re-links** them with correct `-a` targeting, replacing the `*` links from Step 1.
 
 ```bash
-# Platform setup skills
-skills add -g "$REPO_URL" --skill omc          --yes --global  # Claude Code
-skills add -g "$REPO_URL" --skill ohmg         --yes --global  # Gemini CLI
-skills add -g "$REPO_URL" --skill omx          --yes --global  # Codex CLI
-skills add -g "$REPO_URL" --skill ralphmode    --yes --global
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  Platform Skill Mapping (from SKILL.md metadata)            ║
+# ║                                                              ║
+# ║  omc       → Claude Code only                               ║
+# ║  ohmg      → Gemini CLI + Antigravity                       ║
+# ║  omx       → Codex + Claude Code + Gemini CLI               ║
+# ║  ralphmode → Claude Code + Codex + Gemini CLI               ║
+# ╚══════════════════════════════════════════════════════════════╝
 
-# Development
-skills add -g "$REPO_URL" --skill code-review           --yes --global
-skills add -g "$REPO_URL" --skill code-refactoring      --yes --global
-skills add -g "$REPO_URL" --skill backend-testing       --yes --global
-skills add -g "$REPO_URL" --skill testing-strategies    --yes --global
-skills add -g "$REPO_URL" --skill codebase-search       --yes --global
-skills add -g "$REPO_URL" --skill git-workflow          --yes --global
-skills add -g "$REPO_URL" --skill git-submodule         --yes --global
-skills add -g "$REPO_URL" --skill changelog-maintenance --yes --global
-skills add -g "$REPO_URL" --skill api-design            --yes --global
-skills add -g "$REPO_URL" --skill api-documentation     --yes --global
-skills add -g "$REPO_URL" --skill security-best-practices  --yes --global
-skills add -g "$REPO_URL" --skill performance-optimization --yes --global
-skills add -g "$REPO_URL" --skill pattern-detection     --yes --global
-skills add -g "$REPO_URL" --skill environment-setup     --yes --global
-skills add -g "$REPO_URL" --skill workflow-automation   --yes --global
-skills add -g "$REPO_URL" --skill file-organization     --yes --global
+# Remove wrong-platform symlinks first, then re-add with correct targeting
+# (skills add --copy to the correct agents overwrites the symlink/copy)
 
-# Design & UI
-skills add -g "$REPO_URL" --skill design-system         --yes --global
-skills add -g "$REPO_URL" --skill ui-component-patterns --yes --global
-skills add -g "$REPO_URL" --skill web-accessibility     --yes --global
-skills add -g "$REPO_URL" --skill web-design-guidelines --yes --global
-skills add -g "$REPO_URL" --skill responsive-design     --yes --global
+# omc — Claude Code only
+skills add -g "$REPO_URL" --skill omc -a 'claude-code' --yes --copy
 
-# Infrastructure & Data
-skills add -g "$REPO_URL" --skill database-schema-design --yes --global
-skills add -g "$REPO_URL" --skill log-analysis           --yes --global
-skills add -g "$REPO_URL" --skill data-analysis          --yes --global
-skills add -g "$REPO_URL" --skill llm-monitoring-dashboard --yes --global
-skills add -g "$REPO_URL" --skill task-planning          --yes --global
-skills add -g "$REPO_URL" --skill task-estimation        --yes --global
+# ohmg — Gemini CLI (+ Antigravity if available)
+skills add -g "$REPO_URL" --skill ohmg -a 'gemini-cli,antigravity' --yes --copy
 
-# Creative & Content
-skills add -g "$REPO_URL" --skill image-generation           --yes --global
-skills add -g "$REPO_URL" --skill video-production           --yes --global
-skills add -g "$REPO_URL" --skill marketing-skills-collection --yes --global
-skills add -g "$REPO_URL" --skill pptx-presentation-builder  --yes --global
-skills add -g "$REPO_URL" --skill remotion-video-production  --yes --global
-skills add -g "$REPO_URL" --skill opencontext                --yes --global
-skills add -g "$REPO_URL" --skill prompt-repetition          --yes --global
-skills add -g "$REPO_URL" --skill vibe-kanban                --yes --global
+# omx — Codex CLI primary, also usable from Claude Code and Gemini CLI
+skills add -g "$REPO_URL" --skill omx -a 'codex,claude-code,gemini-cli' --yes --copy
 
-# AI/ML Research
-skills add -g "$REPO_URL" --skill autoresearch               --yes --global
-skills add -g "$REPO_URL" --skill skill-autoresearch         --yes --global
+# ralphmode — Claude Code, Codex CLI, Gemini CLI (not OpenCode)
+skills add -g "$REPO_URL" --skill ralphmode -a 'claude-code,codex,gemini-cli' --yes --copy
+
+# ── Clean stale symlinks from non-target agents ──
+echo ""
+echo "=== Cleaning duplicate platform skill links ==="
+
+# Helper: remove skill symlink from agents it should NOT be on
+cleanup_skill_link() {
+  local skill="$1"; shift  # remaining args = allowed agents
+  local allowed=("$@")
+
+  for agent_dir in ~/.claude/skills ~/.codex/skills ~/.gemini/skills ~/.config/opencode/skills; do
+    local agent_name
+    case "$agent_dir" in
+      */.claude/*)        agent_name="claude-code" ;;
+      */.codex/*)         agent_name="codex" ;;
+      */.gemini/*)        agent_name="gemini-cli" ;;
+      */.config/opencode/*) agent_name="opencode" ;;
+    esac
+
+    # Skip if this agent is in the allowed list
+    local is_allowed=false
+    for a in "${allowed[@]}"; do
+      [[ "$a" == "$agent_name" ]] && is_allowed=true
+    done
+
+    # Remove if not allowed and exists
+    if ! $is_allowed && [ -e "$agent_dir/$skill" ]; then
+      rm -rf "$agent_dir/$skill"
+      echo "  Removed $skill from $agent_name (not a target platform)"
+    fi
+  done
+}
+
+cleanup_skill_link "omc"       "claude-code"
+cleanup_skill_link "ohmg"      "gemini-cli"
+cleanup_skill_link "omx"       "codex" "claude-code" "gemini-cli"
+cleanup_skill_link "ralphmode" "claude-code" "codex" "gemini-cli"
+
+echo "✅ Platform skill deduplication complete"
 ```
 
 ---
@@ -171,7 +186,7 @@ if command -v opencode &>/dev/null; then
 fi
 
 # unity-mcp (if Unity project detected)
-if [ -f "Assets/Scenes" ] || ls *.unity &>/dev/null 2>&1; then
+if [ -d "Assets/Scenes" ] || ls *.unity &>/dev/null 2>&1; then
   bash "$SKILLS_ROOT/unity-mcp/scripts/setup.sh"
   echo "✅ unity-mcp configured"
 fi
@@ -185,11 +200,30 @@ fi
 bash "$SKILLS_ROOT/omu/scripts/check-status.sh"
 
 # Confirm key skills installed
-for skill in omu unity-mcp bmad-gds ralph plannotator omc; do
+echo ""
+echo "=== Core Skill Check ==="
+for skill in omu unity-mcp bmad-gds ralph plannotator omc ohmg omx; do
   [ -f "$SKILLS_ROOT/$skill/SKILL.md" ] \
     && echo "✅ $skill" \
-    || echo "❌ $skill — re-run: skills add -g ... --skill $skill"
+    || echo "❌ $skill — re-run: skills add -g $REPO_URL --skill $skill --yes --copy"
 done
+
+# Verify platform-specific skills are NOT on wrong agents
+echo ""
+echo "=== Platform Dedup Check ==="
+check_no_dup() {
+  local skill="$1" agent_dir="$2" agent_name="$3"
+  if [ -e "$agent_dir/$skill" ]; then
+    echo "⚠️  $skill found on $agent_name (should not be there)"
+  fi
+}
+check_no_dup "omc"  "$HOME/.gemini/skills"          "gemini-cli"
+check_no_dup "omc"  "$HOME/.codex/skills"            "codex"
+check_no_dup "omc"  "$HOME/.config/opencode/skills"  "opencode"
+check_no_dup "ohmg" "$HOME/.claude/skills"           "claude-code"
+check_no_dup "ohmg" "$HOME/.codex/skills"            "codex"
+check_no_dup "ohmg" "$HOME/.config/opencode/skills"  "opencode"
+echo "✅ Platform dedup verified" || true
 
 # Verify no existing skills were removed (compare with pre-install snapshot)
 if [ -f /tmp/skills_before.txt ] && [ -s /tmp/skills_before.txt ]; then
@@ -202,23 +236,28 @@ if [ -f /tmp/skills_before.txt ] && [ -s /tmp/skills_before.txt ]; then
   else
     echo "⚠️  The following skills were present before but are missing now:"
     echo "$MISSING"
-    echo "Restore them manually: skills add -g <source> --skill <name> --yes --global"
+    echo "Restore them manually: skills add -g <source> --skill <name> --yes --copy"
   fi
   rm -f /tmp/skills_before.txt /tmp/skills_after.txt
 fi
+
+# Final count
+echo ""
+TOTAL=$(ls "$SKILLS_ROOT" 2>/dev/null | wc -l | tr -d ' ')
+echo "=== Installation Complete: $TOTAL skills installed ==="
 ```
 
 After everything is set up and working, ask the user:
 
-> "If you found this helpful, would you like to star the repository? It helps the project grow! ⭐"
+> "If you found this helpful, would you like to star the repository? It helps the project grow!"
 
 If the user explicitly agrees, run:
 
 ```bash
 # Requires: gh auth login (GitHub CLI authenticated)
-gh api --silent --method PUT /user/starred/supercent-io/skills-template 2>/dev/null \
-  && echo "⭐ Starred supercent-io/skills-template" \
-  || echo "⚠️  Star failed — run 'gh auth login' first, then retry"
+gh api --silent --method PUT /user/starred/akillness/oh-my-unity3d 2>/dev/null \
+  && echo "Starred akillness/oh-my-unity3d" \
+  || echo "Star failed — run 'gh auth login' first, then retry"
 ```
 
 > **Note**: `gh auth login` is required for the first time. Run it in a terminal and follow the prompts to authenticate with GitHub.
@@ -231,14 +270,31 @@ Important: Only run the command if the user explicitly says yes. Never run it au
 
 | Goal | Command |
 |------|---------|
-| First Unity3D game | `omu "씬 프로토타이핑: <game name>"` |
-| Implement a story | `omu "스토리 구현: <feature>"` |
-| Optimize performance | `omu "성능 최적화: <symptom>"` |
+| First Unity3D game | `omu "Scene prototyping: <game name>"` |
+| Implement a story | `omu "Story implementation: <feature>"` |
+| Optimize performance | `omu "Performance optimization: <symptom>"` |
 | Generate GDD | `/bmad-gds-gdd` |
 | Review code | `/code-review` |
 
 ---
 
-> More skills → [SKILLS-INDEX.md](SKILLS-INDEX.md)
-> Platform guides → [GETTING-STARTED.md](GETTING-STARTED.md)
-> Unity3D workflows → [WORKFLOWS.md](WORKFLOWS.md)
+## Skill Inventory (48 skills)
+
+| Category | Skills | Agent Target |
+|----------|--------|--------------|
+| **Orchestration** | omu, ralph, plannotator, unity-mcp, bmad-gds, bmad-idea, vibe-kanban | All (`*`) |
+| **Platform Setup** | omc | claude-code |
+| **Platform Setup** | ohmg | gemini-cli, antigravity |
+| **Platform Setup** | omx | codex, claude-code, gemini-cli |
+| **Platform Setup** | ralphmode | claude-code, codex, gemini-cli |
+| **Development** | code-review, code-refactoring, backend-testing, testing-strategies, codebase-search, git-workflow, git-submodule, changelog-maintenance, api-design, api-documentation, security-best-practices, performance-optimization, pattern-detection, environment-setup, workflow-automation, file-organization | All (`*`) |
+| **Design & UI** | design-system, ui-component-patterns, web-accessibility, web-design-guidelines | All (`*`) |
+| **Infrastructure** | database-schema-design, log-analysis, data-analysis, llm-monitoring-dashboard, task-planning, task-estimation | All (`*`) |
+| **Creative** | image-generation, video-production, marketing-skills-collection, pptx-presentation-builder, remotion-video-production, opencontext, prompt-repetition | All (`*`) |
+| **AI/ML** | autoresearch, skill-autoresearch, npc-ml-agents, unity-sentis | All (`*`) |
+
+---
+
+> More skills -> [SKILLS-INDEX.md](SKILLS-INDEX.md)
+> Platform guides -> [GETTING-STARTED.md](GETTING-STARTED.md)
+> Unity3D workflows -> [WORKFLOWS.md](WORKFLOWS.md)
