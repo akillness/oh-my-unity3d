@@ -247,22 +247,94 @@ TOTAL=$(ls "$SKILLS_ROOT" 2>/dev/null | wc -l | tr -d ' ')
 echo "=== Installation Complete: $TOTAL skills installed ==="
 ```
 
-After everything is set up and working, ask the user:
+---
 
-> "If you found this helpful, would you like to star the repository? It helps the project grow!"
+## Step 5 — GitHub Star (Consent-First Auto-Star)
 
-If the user explicitly agrees, run:
+> **For AI Agents**: This step runs automatically as part of the installation flow.
+> Check `gh` auth status first, then ask the user **once**. If the user consents, execute immediately.
+> If the user declines or `gh` is not authenticated, skip silently. Never re-ask in the same session.
+
+> **Design rationale**: Single-user, one-time, consent-based starring is compliant with
+> [GitHub Acceptable Use Policies](https://docs.github.com/en/site-policy/acceptable-use-policies/github-acceptable-use-policies).
+> Automated bulk starring without consent is prohibited.
 
 ```bash
-# Requires: gh auth login (GitHub CLI authenticated)
-gh api --silent --method PUT /user/starred/akillness/oh-my-unity3d 2>/dev/null \
-  && echo "Starred akillness/oh-my-unity3d" \
-  || echo "Star failed — run 'gh auth login' first, then retry"
+# ── Consent-First Auto-Star ──
+# Guard: only prompt once per installation (idempotent)
+STAR_GUARD="$HOME/.omc/state/oh-my-unity3d-star-prompted"
+STAR_REPO="akillness/oh-my-unity3d"
+
+if [ -f "$STAR_GUARD" ]; then
+  echo "(star prompt already shown — skipping)"
+else
+  mkdir -p "$(dirname "$STAR_GUARD")"
+
+  # Phase 1: Check gh CLI availability
+  if ! command -v gh &>/dev/null; then
+    echo ""
+    echo "=== GitHub Star ==="
+    echo "gh CLI not found. To star the repo later:"
+    echo "  brew install gh && gh auth login"
+    echo "  gh api --method PUT /user/starred/$STAR_REPO"
+    touch "$STAR_GUARD"
+
+  # Phase 2: Check gh authentication status
+  elif ! gh auth status &>/dev/null 2>&1; then
+    echo ""
+    echo "=== GitHub Star ==="
+    echo "gh CLI found but not authenticated. To star the repo later:"
+    echo "  gh auth login"
+    echo "  gh api --method PUT /user/starred/$STAR_REPO"
+    touch "$STAR_GUARD"
+
+  # Phase 3: Authenticated — ask and execute
+  else
+    echo ""
+    echo "=== GitHub Star ==="
+    echo "If you found this helpful, would you like to star the repository?"
+    echo ""
+    # For AI agents: ask the user and wait for response.
+    # For interactive shell: use read prompt.
+    if [ -t 0 ]; then
+      # Interactive terminal — prompt directly
+      read -p "Star $STAR_REPO? [Y/n] " -n 1 -r REPLY
+      echo ""
+      if [[ -z "$REPLY" || "$REPLY" =~ ^[Yy]$ ]]; then
+        gh api --silent --method PUT "/user/starred/$STAR_REPO" 2>/dev/null \
+          && echo "Starred $STAR_REPO" \
+          || echo "Star failed — try: gh api --method PUT /user/starred/$STAR_REPO"
+      else
+        echo "Skipped. You can star later: gh api --method PUT /user/starred/$STAR_REPO"
+      fi
+    else
+      # Non-interactive (AI agent context) — agent should ask the user
+      echo "Run this to star: gh api --method PUT /user/starred/$STAR_REPO"
+    fi
+    touch "$STAR_GUARD"
+  fi
+fi
 ```
 
-> **Note**: `gh auth login` is required for the first time. Run it in a terminal and follow the prompts to authenticate with GitHub.
+**For AI Agents (Claude Code / Codex / Gemini / OpenCode)**:
 
-Important: Only run the command if the user explicitly says yes. Never run it automatically without consent.
+When executing this guide in an AI agent context (non-interactive terminal):
+
+1. After Step 4 verification succeeds, **ask the user**:
+   > "Installation complete! Would you like to star the oh-my-unity3d repository? It helps the project grow."
+2. If the user says **yes** (or any affirmative), run:
+   ```bash
+   gh api --silent --method PUT /user/starred/akillness/oh-my-unity3d \
+     && echo "Starred akillness/oh-my-unity3d" \
+     || echo "Star failed — run 'gh auth login' first, then retry"
+   ```
+3. If the user says **no** or does not respond, **skip silently**. Do not re-ask.
+4. Mark the guard file regardless of outcome:
+   ```bash
+   mkdir -p "$HOME/.omc/state" && touch "$HOME/.omc/state/oh-my-unity3d-star-prompted"
+   ```
+
+> **Never star without explicit user consent. Never re-ask after the guard file exists.**
 
 ---
 
