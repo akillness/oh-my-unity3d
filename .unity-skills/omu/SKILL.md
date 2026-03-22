@@ -179,9 +179,10 @@ Rules:
 Exit code handling:
 - exit 0 → approved=true → proceed to EXECUTE
 - exit 10 → approved=false (feedback) → update plan.md and re-run the loop
-- exit 32 → non-interactive / UI unavailable → print plan.md contents, then output:
-  "⚠️ PLAN GATE: Waiting for user approval. Reply 'approve', 'feedback: <note>', or 'stop'."
-  Do NOT proceed until the user explicitly replies "approve".
+- exit 32 → plannotator unavailable (non-interactive env, port conflict, or install failure) →
+  HALT: do NOT proceed to EXECUTE. Output:
+  "⚠️ PLAN GATE: plannotator가 필요합니다. bash scripts/ensure-plannotator.sh 실행 후 재시도하세요."
+  TUI 폴백은 비활성화되어 있습니다. plannotator 없이 plan을 승인할 수 없습니다.
 
 When approved, update the state file:
 

@@ -40,23 +40,6 @@ else
   mkdir -p "$(dirname "$FEEDBACK_FILE")"
 fi
 
-write_manual_feedback_json() {
-  local approved="$1"
-  local note="${2:-}"
-  python3 - "$FEEDBACK_FILE" "$approved" "$note" <<'PYEOF'
-import json, sys
-path, approved_raw, note = sys.argv[1], sys.argv[2], sys.argv[3]
-approved = approved_raw.lower() == "true"
-payload = {
-    "approved": approved,
-    "source": "omu-manual-fallback",
-    "note": note,
-}
-with open(path, "w", encoding="utf-8") as f:
-    json.dump(payload, f, ensure_ascii=False, indent=2)
-PYEOF
-}
-
 write_state_gate_status() {
   local status="$1"
   OMU_GATE_STATUS="$status" python3 -c "
@@ -83,38 +66,6 @@ if os.path.exists(f):
 " 2>/dev/null || true
 }
 
-manual_fallback_gate() {
-  if [[ ! -t 0 || ! -t 1 ]]; then
-    return 32
-  fi
-
-  echo "[OMU][PLAN] plannotator UI를 열 수 없는 환경입니다. 수동 PLAN gate로 전환합니다." >&2
-  echo "[OMU][PLAN] 선택: [a]pprove / [f]eedback / [s]top" >&2
-  read -r -p "선택하세요 [a/f/s]: " choice
-
-  case "${choice,,}" in
-    a|approve)
-      write_manual_feedback_json "true" "manual-approve (fallback gate)"
-      echo "[OMU][PLAN] manual approved=true" >&2
-      return 0
-      ;;
-    f|feedback)
-      read -r -p "피드백 내용을 입력하세요: " fb
-      write_manual_feedback_json "false" "${fb:-manual-feedback (fallback gate)}"
-      echo "[OMU][PLAN] manual approved=false (feedback)" >&2
-      return 10
-      ;;
-    s|stop|n|no)
-      echo "[OMU][PLAN] user requested PLAN stop." >&2
-      return 30
-      ;;
-    *)
-      echo "[OMU][PLAN] invalid choice. stopping PLAN." >&2
-      return 31
-      ;;
-  esac
-}
-
 probe_local_listen() {
   if command -v node >/dev/null 2>&1; then
     node -e "const http=require('http');const s=http.createServer(()=>{});s.on('error',()=>process.exit(1));s.listen({host:'127.0.0.1',port:0},()=>s.close(()=>process.exit(0)));" >/dev/null 2>&1
@@ -123,30 +74,22 @@ probe_local_listen() {
   return 0
 }
 
-# Non-interactive environment (Codex sandbox, CI, piped stdin): skip plannotator UI immediately.
-# Avoids retry loop burning 3 attempts with no user input possible.
+# Non-interactive environment (Codex sandbox, CI, piped stdin): plannotator is required.
+# TUI fallback is disabled — plannotator must be available.
 if [[ ! -t 0 || ! -t 1 ]]; then
-  echo "[OMU][PLAN] Non-interactive environment detected. Skipping plannotator UI." >&2
-  echo "[OMU][PLAN] Plan contents:" >&2
-  cat "$PLAN_FILE" >&2
-  echo "" >&2
-  echo "[OMU][PLAN] ACTION REQUIRED: Reply 'approve', 'feedback: <your note>', or 'stop' to proceed." >&2
-  write_state_gate_status "manual_approval_required"
+  echo "[OMU][PLAN] plannotator UI가 필요합니다. 비대화형 환경에서는 plannotator 없이 PLAN을 승인할 수 없습니다." >&2
+  echo "[OMU][PLAN] plannotator를 설치하려면: bash scripts/ensure-plannotator.sh" >&2
+  write_state_gate_status "plannotator_required"
   exit 32
 fi
 
 # Some sandboxes disallow localhost bind(). In that environment plannotator hook mode cannot run.
 if [[ "${OMU_SKIP_LISTEN_PROBE:-0}" != "1" ]]; then
   if ! probe_local_listen; then
-    echo "[OMU][PLAN] localhost bind probe failed (listen not permitted)." >&2
-    set +e
-    manual_fallback_gate
-    probe_rc=$?
-    set -e
-    if [[ "$probe_rc" -eq 32 ]]; then
-      write_state_gate_status "infrastructure_blocked"
-    fi
-    exit "$probe_rc"
+    echo "[OMU][PLAN] localhost bind 실패 — plannotator를 실행할 수 없습니다." >&2
+    echo "[OMU][PLAN] plannotator는 PLAN 단계에서 필수입니다. TUI 폴백은 비활성화되어 있습니다." >&2
+    write_state_gate_status "infrastructure_blocked"
+    exit 32
   fi
 fi
 
@@ -258,28 +201,18 @@ PYEOF
   fi
 
   if grep -Eiq "$PORT_ERROR_REGEX" "$FEEDBACK_FILE"; then
-    echo "[OMU][PLAN] plannotator server bind failure detected (EADDRINUSE/EPERM)." >&2
-    set +e
-    manual_fallback_gate
-    fallback_rc=$?
-    set -e
-    if [[ "$fallback_rc" -eq 32 ]]; then
-      write_state_gate_status "infrastructure_blocked"
-    fi
-    exit "$fallback_rc"
+    echo "[OMU][PLAN] plannotator 서버 바인딩 실패 (EADDRINUSE/EPERM)." >&2
+    echo "[OMU][PLAN] 포트 충돌 해결 후 재시도하세요: pkill plannotator; sleep 1" >&2
+    write_state_gate_status "infrastructure_blocked"
+    exit 32
   fi
 
   echo "[OMU][PLAN] session ended unexpectedly (attempt ${attempt}/${MAX_RESTARTS}). restarting..." >&2
   ((attempt++))
 done
 
-echo "[OMU][PLAN] plannotator session ended ${MAX_RESTARTS} times." >&2
-set +e
-manual_fallback_gate
-fallback_rc=$?
-set -e
-if [[ "$fallback_rc" -eq 32 ]]; then
-  echo "[OMU][PLAN] confirmation required. stop and ask user whether to continue PLAN." >&2
-  write_state_gate_status "infrastructure_blocked"
-fi
-exit "$fallback_rc"
+echo "[OMU][PLAN] plannotator 세션이 ${MAX_RESTARTS}회 종료되었습니다." >&2
+echo "[OMU][PLAN] plannotator가 정상 동작하지 않습니다. TUI 폴백은 비활성화되어 있습니다." >&2
+echo "[OMU][PLAN] 재설치: bash scripts/ensure-plannotator.sh" >&2
+write_state_gate_status "infrastructure_blocked"
+exit 32
