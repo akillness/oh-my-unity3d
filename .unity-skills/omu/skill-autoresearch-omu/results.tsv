@@ -1,7 +1,0 @@
-experiment	score	max_score	pass_rate	status	description
-0	1	6	0.17	baseline	Original SKILL.md
-1	2	6	0.33	keep	EVAL 1: Add explicit exit code handling (0, 10, 32) to PLAN gate section
-2	3	6	0.50	keep	EVAL 3: Add state snippets for execute→verify and verify→cleanup transitions
-3	4	6	0.67	keep	EVAL 4: Add per-phase resume guidance (plan, execute, verify, cleanup)
-4	5	6	0.83	keep	EVAL 5: Add concrete curl command for unity-mcp health check
-5	6	6	1.00	keep	EVAL 6: Add git diff guard command before worktree cleanup

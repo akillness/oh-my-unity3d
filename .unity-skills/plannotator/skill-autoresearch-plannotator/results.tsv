@@ -1,9 +1,0 @@
-eval_id	description	baseline	after_m1	after_m2	after_m3	after_m4	after_m5	final
-EVAL1	Pattern numbering sequential	FAIL	PASS	PASS	PASS	PASS	PASS	PASS
-EVAL2	Core patterns within first 200 lines	PASS	PASS	PASS	PASS	PASS	PASS	PASS
-EVAL3	Obsidian section under 80 lines	FAIL	FAIL	FAIL	PASS	PASS	PASS	PASS
-EVAL4	Troubleshooting collocated with patterns	FAIL	FAIL	FAIL	FAIL	PASS	PASS	PASS
-EVAL5	Do-not-use section present	FAIL	FAIL	PASS	PASS	PASS	PASS	PASS
-EVAL6	Skill under 450 lines	FAIL	FAIL	FAIL	FAIL	FAIL	PASS	PASS
-score	Pass count	1/6	2/6	3/6	4/6	5/6	6/6	6/6
-score_pct	Pass percentage	17%	33%	50%	67%	83%	100%	100%
