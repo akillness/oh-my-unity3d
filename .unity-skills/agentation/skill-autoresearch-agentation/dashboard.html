@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>skill-autoresearch — agentation</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; padding: 2rem; }
+  h1 { font-size: 1.5rem; font-weight: 700; color: #f8fafc; margin-bottom: 0.25rem; }
+  .subtitle { color: #64748b; font-size: 0.875rem; margin-bottom: 2rem; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+  .card { background: #1e2330; border: 1px solid #2d3748; border-radius: 0.75rem; padding: 1.5rem; }
+  .card h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 1rem; }
+  .score-display { display: flex; align-items: baseline; gap: 0.5rem; }
+  .score-big { font-size: 3.5rem; font-weight: 800; line-height: 1; }
+  .score-big.green { color: #22c55e; }
+  .score-big.red { color: #ef4444; }
+  .score-label { font-size: 0.875rem; color: #64748b; }
+  .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #2d3748; }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-label { font-size: 0.875rem; color: #94a3b8; }
+  .stat-value { font-size: 0.875rem; font-weight: 600; color: #f8fafc; }
+  .stat-value.green { color: #22c55e; }
+  .stat-value.red { color: #ef4444; }
+
+  /* Eval grid */
+  .eval-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .eval-card { background: #1e2330; border: 1px solid #2d3748; border-radius: 0.75rem; padding: 1.25rem; }
+  .eval-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
+  .eval-id { font-size: 0.7rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; }
+  .badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px; }
+  .badge.pass { background: #14532d; color: #22c55e; }
+  .badge.fail { background: #450a0a; color: #ef4444; }
+  .eval-name { font-size: 0.875rem; font-weight: 600; color: #e2e8f0; margin-bottom: 0.5rem; }
+  .eval-note { font-size: 0.75rem; color: #64748b; line-height: 1.5; }
+  .before-after { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+  .ba-chip { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 4px; }
+  .ba-before { background: #450a0a; color: #fca5a5; }
+  .ba-after { background: #14532d; color: #86efac; }
+
+  /* Experiments timeline */
+  .timeline { background: #1e2330; border: 1px solid #2d3748; border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 2rem; }
+  .timeline h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 1.25rem; }
+  .exp-table { width: 100%; border-collapse: collapse; }
+  .exp-table th { text-align: left; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #64748b; padding: 0.5rem 0.75rem; border-bottom: 1px solid #2d3748; }
+  .exp-table td { font-size: 0.8rem; padding: 0.65rem 0.75rem; border-bottom: 1px solid #1a2030; vertical-align: top; }
+  .exp-table tr:last-child td { border-bottom: none; }
+  .exp-table tr:hover td { background: #252d3d; }
+  .score-cell { font-weight: 700; }
+  .score-cell.s2 { color: #ef4444; }
+  .score-cell.s3 { color: #f97316; }
+  .score-cell.s4 { color: #eab308; }
+  .score-cell.s5 { color: #84cc16; }
+  .score-cell.s6 { color: #22c55e; }
+  .mutation-text { color: #94a3b8; max-width: 320px; }
+  .eval-cells { display: flex; gap: 2px; }
+  .ec { width: 16px; height: 16px; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; }
+  .ec.p { background: #14532d; color: #22c55e; }
+  .ec.f { background: #450a0a; color: #ef4444; }
+
+  /* Progress bar chart */
+  .chart-section { background: #1e2330; border: 1px solid #2d3748; border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 2rem; }
+  .chart-section h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 1.25rem; }
+  .bar-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
+  .bar-label { width: 80px; font-size: 0.75rem; color: #94a3b8; text-align: right; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 20px; background: #0f1117; border-radius: 4px; overflow: hidden; position: relative; }
+  .bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: 0.7rem; font-weight: 700; transition: width 0.5s ease; }
+  .bar-score { width: 40px; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
+
+  /* Diff summary */
+  .diff-section { background: #1e2330; border: 1px solid #2d3748; border-radius: 0.75rem; padding: 1.5rem; }
+  .diff-section h2 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 1rem; }
+  .diff-item { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid #2d3748; }
+  .diff-item:last-child { border-bottom: none; }
+  .diff-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  .diff-content { flex: 1; }
+  .diff-title { font-size: 0.8rem; font-weight: 600; color: #e2e8f0; margin-bottom: 0.25rem; }
+  .diff-desc { font-size: 0.75rem; color: #64748b; line-height: 1.5; }
+
+  .footer { text-align: center; color: #334155; font-size: 0.75rem; margin-top: 2rem; }
+</style>
+</head>
+<body>
+
+<h1>skill-autoresearch — agentation</h1>
+<p class="subtitle">Run date: 2026-03-22 &nbsp;|&nbsp; Source: /Users/jangyoung/.agents/skills/agentation/SKILL.md</p>
+
+<!-- Score summary -->
+<div class="grid">
+  <div class="card">
+    <h2>Baseline Score</h2>
+    <div class="score-display">
+      <div class="score-big red">2</div>
+      <div class="score-label">/ 6 evals passing</div>
+    </div>
+    <div style="margin-top:1rem;">
+      <div class="stat-row"><span class="stat-label">Lines</span><span class="stat-value red">789</span></div>
+      <div class="stat-row"><span class="stat-label">Duplicates</span><span class="stat-value red">1 block</span></div>
+      <div class="stat-row"><span class="stat-label">Section numbering</span><span class="stat-value red">gaps (6 missing, 12 total)</span></div>
+      <div class="stat-row"><span class="stat-label">Platform clarity</span><span class="stat-value red">4+ options, no recommendation</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Final Score</h2>
+    <div class="score-display">
+      <div class="score-big green">6</div>
+      <div class="score-label">/ 6 evals passing</div>
+    </div>
+    <div style="margin-top:1rem;">
+      <div class="stat-row"><span class="stat-label">Lines</span><span class="stat-value green">599 (-24%)</span></div>
+      <div class="stat-row"><span class="stat-label">Duplicates</span><span class="stat-value green">0</span></div>
+      <div class="stat-row"><span class="stat-label">Section numbering</span><span class="stat-value green">sequential 1-11</span></div>
+      <div class="stat-row"><span class="stat-label">Platform clarity</span><span class="stat-value green">1 recommended per platform</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Eval cards -->
+<div class="eval-grid">
+  <div class="eval-card">
+    <div class="eval-header">
+      <span class="eval-id">EVAL 1</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="eval-name">Quick-start findability</div>
+    <div class="eval-note">Install commands within first 100 lines. Already passing at baseline — preserved.</div>
+    <div class="before-after">
+      <span class="ba-chip ba-before">Baseline PASS</span>
+      <span class="ba-chip ba-after">Final PASS</span>
+    </div>
+  </div>
+  <div class="eval-card">
+    <div class="eval-header">
+      <span class="eval-id">EVAL 2</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="eval-name">No duplicate content</div>
+    <div class="eval-note">Removed second "Interactive wizard" block that was copy-pasted at lines 238-240 (identical to 217-219).</div>
+    <div class="before-after">
+      <span class="ba-chip ba-before">Baseline FAIL</span>
+      <span class="ba-chip ba-after">Final PASS</span>
+    </div>
+  </div>
+  <div class="eval-card">
+    <div class="eval-header">
+      <span class="eval-id">EVAL 3</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="eval-name">Consistent section numbering</div>
+    <div class="eval-note">Baseline skipped section 6, jumped 1-5 then 7-12. Restructured to sequential 1-11 with no gaps.</div>
+    <div class="before-after">
+      <span class="ba-chip ba-before">Baseline FAIL</span>
+      <span class="ba-chip ba-after">Final PASS</span>
+    </div>
+  </div>
+  <div class="eval-card">
+    <div class="eval-header">
+      <span class="eval-id">EVAL 4</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="eval-name">Platform setup clarity</div>
+    <div class="eval-note">Added "(Recommended)" label to one option per platform. Merged redundant Universal section into §2.2.</div>
+    <div class="before-after">
+      <span class="ba-chip ba-before">Baseline FAIL</span>
+      <span class="ba-chip ba-after">Final PASS</span>
+    </div>
+  </div>
+  <div class="eval-card">
+    <div class="eval-header">
+      <span class="eval-id">EVAL 5</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="eval-name">Watch-loop completeness</div>
+    <div class="eval-note">Pattern 2 has all 4 steps: watch → ack → fix → resolve. Preserved intact.</div>
+    <div class="before-after">
+      <span class="ba-chip ba-before">Baseline PASS</span>
+      <span class="ba-chip ba-after">Final PASS</span>
+    </div>
+  </div>
+  <div class="eval-card">
+    <div class="eval-header">
+      <span class="eval-id">EVAL 6</span>
+      <span class="badge pass">PASS</span>
+    </div>
+    <div class="eval-name">Skill length &lt; 600 lines</div>
+    <div class="eval-note">Removed 70-line inline script (→ file reference), condensed jeo section from ~100 to ~40 lines. 789 → 599 lines.</div>
+    <div class="before-after">
+      <span class="ba-chip ba-before">Baseline FAIL (789)</span>
+      <span class="ba-chip ba-after">Final PASS (599)</span>
+    </div>
+  </div>
+</div>
+
+<!-- Progress chart -->
+<div class="chart-section">
+  <h2>Score Progression by Mutation</h2>
+  <div class="bar-row">
+    <div class="bar-label">Baseline</div>
+    <div class="bar-track">
+      <div class="bar-fill" style="width:33.3%;background:#ef4444;">2/6</div>
+    </div>
+    <div class="bar-score" style="color:#ef4444;">2/6</div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">Mut 1</div>
+    <div class="bar-track">
+      <div class="bar-fill" style="width:50%;background:#f97316;">3/6</div>
+    </div>
+    <div class="bar-score" style="color:#f97316;">3/6</div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">Mut 2</div>
+    <div class="bar-track">
+      <div class="bar-fill" style="width:66.6%;background:#eab308;">4/6</div>
+    </div>
+    <div class="bar-score" style="color:#eab308;">4/6</div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">Mut 3</div>
+    <div class="bar-track">
+      <div class="bar-fill" style="width:83.3%;background:#84cc16;">5/6</div>
+    </div>
+    <div class="bar-score" style="color:#84cc16;">5/6</div>
+  </div>
+  <div class="bar-row">
+    <div class="bar-label">Mut 4</div>
+    <div class="bar-track">
+      <div class="bar-fill" style="width:100%;background:#22c55e;">6/6</div>
+    </div>
+    <div class="bar-score" style="color:#22c55e;">6/6</div>
+  </div>
+</div>
+
+<!-- Experiments table -->
+<div class="timeline">
+  <h2>Experiment Log</h2>
+  <table class="exp-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Mutation</th>
+        <th>Score</th>
+        <th>Lines</th>
+        <th>E1</th>
+        <th>E2</th>
+        <th>E3</th>
+        <th>E4</th>
+        <th>E5</th>
+        <th>E6</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="color:#64748b;font-size:0.75rem;">baseline</td>
+        <td class="mutation-text">(none — original file)</td>
+        <td class="score-cell s2">2/6</td>
+        <td style="color:#64748b;">789</td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec f">F</span></td>
+        <td><span class="ec f">F</span></td>
+        <td><span class="ec f">F</span></td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec f">F</span></td>
+      </tr>
+      <tr>
+        <td style="color:#64748b;font-size:0.75rem;">mut1</td>
+        <td class="mutation-text">Remove duplicate "Interactive wizard" block (lines 238-240)</td>
+        <td class="score-cell s3">3/6</td>
+        <td style="color:#64748b;">787</td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec f">F</span></td>
+        <td><span class="ec f">F</span></td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec f">F</span></td>
+      </tr>
+      <tr>
+        <td style="color:#64748b;font-size:0.75rem;">mut2</td>
+        <td class="mutation-text">Renumber sections sequentially 1-11 (collapse gaps, merge env+matrix)</td>
+        <td class="score-cell s4">4/6</td>
+        <td style="color:#64748b;">787</td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec f">F</span></td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec f">F</span></td>
+      </tr>
+      <tr>
+        <td style="color:#64748b;font-size:0.75rem;">mut3</td>
+        <td class="mutation-text">Mark one "(Recommended)" path per platform; remove duplicate Universal section</td>
+        <td class="score-cell s5">5/6</td>
+        <td style="color:#64748b;">787</td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec f">F</span></td>
+      </tr>
+      <tr>
+        <td style="color:#64748b;font-size:0.75rem;">mut4</td>
+        <td class="mutation-text">Remove 70-line inline script + condense jeo section from ~100 to ~40 lines</td>
+        <td class="score-cell s6">6/6</td>
+        <td style="color:#22c55e;">599</td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec p">P</span></td>
+        <td><span class="ec p">P</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Diff summary -->
+<div class="diff-section">
+  <h2>What Changed</h2>
+  <div class="diff-item">
+    <div class="diff-icon">-</div>
+    <div class="diff-content">
+      <div class="diff-title">Removed: duplicate "Interactive wizard" block</div>
+      <div class="diff-desc">Lines 238-240 in baseline were an exact copy of lines 217-219. Second occurrence deleted.</div>
+    </div>
+  </div>
+  <div class="diff-item">
+    <div class="diff-icon">~</div>
+    <div class="diff-content">
+      <div class="diff-title">Restructured: section numbering 1-11 (was 1-5, then 7-12)</div>
+      <div class="diff-desc">Section 6 was missing. "Workflow Patterns" was an unnumbered sub-section. Renumbered sequentially. Env vars + platform matrix merged into §9 "Configuration".</div>
+    </div>
+  </div>
+  <div class="diff-item">
+    <div class="diff-icon">+</div>
+    <div class="diff-content">
+      <div class="diff-title">Added: (Recommended) label per platform</div>
+      <div class="diff-desc">Claude Code → skill; Codex → TOML config; Gemini → CLI registration; OpenCode → JSON config. Removes ambiguity when agent reads setup section.</div>
+    </div>
+  </div>
+  <div class="diff-item">
+    <div class="diff-icon">-</div>
+    <div class="diff-content">
+      <div class="diff-title">Removed: 70-line inline setup-agentation-mcp.sh script</div>
+      <div class="diff-desc">Script is referenced in the Scripts table and lives as a file. Inline copy added bulk without value — agents should execute the file, not read an inline copy.</div>
+    </div>
+  </div>
+  <div class="diff-item">
+    <div class="diff-icon">-</div>
+    <div class="diff-content">
+      <div class="diff-title">Removed: standalone "Universal (npx add-mcp)" section</div>
+      <div class="diff-desc">Already covered as the primary recommended method in §2.2. Redundant standalone section removed.</div>
+    </div>
+  </div>
+  <div class="diff-item">
+    <div class="diff-icon">~</div>
+    <div class="diff-content">
+      <div class="diff-title">Condensed: jeo integration from ~100 lines to ~40 lines</div>
+      <div class="diff-desc">Removed verbose "How it works" ASCII diagram (duplicate of jeo SKILL.md), "Using with jeo" steps (redundant), "Loop Verification Test" subsection. Kept: trigger keywords table, phase guard table, VERIFY_UI flow, install command, reference link.</div>
+    </div>
+  </div>
+  <div class="diff-item">
+    <div class="diff-icon">~</div>
+    <div class="diff-content">
+      <div class="diff-title">Shortened: frontmatter description</div>
+      <div class="diff-desc">2-sentence description condensed to 1 concise line focused on the core value proposition.</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">Generated by skill-autoresearch &nbsp;|&nbsp; oh-my-unity3d &nbsp;|&nbsp; 2026-03-22</div>
+
+</body>
+</html>

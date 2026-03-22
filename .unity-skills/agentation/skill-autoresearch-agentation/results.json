@@ -1,0 +1,108 @@
+{
+  "skill": "agentation",
+  "source": "/Users/jangyoung/.agents/skills/agentation/SKILL.md",
+  "output": "/Users/jangyoung/.superset/projects/oh-my-unity3d/.unity-skills/agentation/SKILL.md",
+  "baseline_lines": 789,
+  "final_lines": 537,
+  "baseline_score": "2/6",
+  "final_score": "6/6",
+  "evals": [
+    {
+      "id": "EVAL1",
+      "name": "Quick-start findability",
+      "question": "Can an agent find the correct install command within the first 100 lines?",
+      "pass_criterion": "Install commands appear before line 100",
+      "fail_criterion": "Agent must scroll past line 100 to find basic install",
+      "baseline": "PASS",
+      "final": "PASS",
+      "notes": "Install is at line 65 in baseline; preserved at ~same position in improved version"
+    },
+    {
+      "id": "EVAL2",
+      "name": "No duplicate content",
+      "question": "Is every instruction block unique (no copy-paste duplicates)?",
+      "pass_criterion": "No repeated code blocks or instruction paragraphs",
+      "fail_criterion": "Any duplicated block exists",
+      "baseline": "FAIL",
+      "final": "PASS",
+      "notes": "Removed duplicate 'Interactive wizard' block (lines 238-240 in baseline were exact copy of 217-219)"
+    },
+    {
+      "id": "EVAL3",
+      "name": "Consistent section numbering",
+      "question": "Are sections/patterns numbered sequentially without gaps or reordering?",
+      "pass_criterion": "Numbers increase monotonically",
+      "fail_criterion": "Any gap, skip, or out-of-order number",
+      "baseline": "FAIL",
+      "final": "PASS",
+      "notes": "Baseline had sections 1-5 then jumped to 7-12 without 6, and workflow patterns were unnumbered subsection of section 6. Restructured to sections 1-11 sequential."
+    },
+    {
+      "id": "EVAL4",
+      "name": "Platform setup clarity",
+      "question": "For each platform, is there exactly one recommended setup path?",
+      "pass_criterion": "Each platform has a clear 'recommended' path marked",
+      "fail_criterion": "Multiple equivalent options without clear recommendation",
+      "baseline": "FAIL",
+      "final": "PASS",
+      "notes": "Added bold (Recommended) label to: Claude Code→skill, Codex→TOML config, Gemini→CLI registration, OpenCode→JSON config. Also merged redundant 'Universal (npx add-mcp)' standalone section into Section 2."
+    },
+    {
+      "id": "EVAL5",
+      "name": "Watch-loop pattern completeness",
+      "question": "Does the watch-loop pattern include all 4 steps (watch→ack→fix→resolve)?",
+      "pass_criterion": "All 4 steps present in sequence",
+      "fail_criterion": "Any step missing or out of order",
+      "baseline": "PASS",
+      "final": "PASS",
+      "notes": "Pattern 2 preserved intact with all 4 steps"
+    },
+    {
+      "id": "EVAL6",
+      "name": "Skill length reasonable",
+      "question": "Is the skill under 600 lines?",
+      "pass_criterion": "Under 600 lines",
+      "fail_criterion": "600+ lines",
+      "baseline": "FAIL",
+      "final": "PASS",
+      "notes": "Reduced from 789 to 537 lines (32% reduction). Removed: inline 70-line setup-agentation-mcp.sh script (moved to file reference), jeo section condensed from ~100 to ~40 lines, removed redundant Universal npx add-mcp standalone section"
+    }
+  ],
+  "experiments": [
+    {
+      "id": "baseline",
+      "mutation": "none",
+      "score": "2/6",
+      "lines": 789,
+      "evals": {"EVAL1": "PASS", "EVAL2": "FAIL", "EVAL3": "FAIL", "EVAL4": "FAIL", "EVAL5": "PASS", "EVAL6": "FAIL"}
+    },
+    {
+      "id": "mut1",
+      "mutation": "Remove duplicate Interactive wizard block",
+      "score": "3/6",
+      "lines": 787,
+      "evals": {"EVAL1": "PASS", "EVAL2": "PASS", "EVAL3": "FAIL", "EVAL4": "FAIL", "EVAL5": "PASS", "EVAL6": "FAIL"}
+    },
+    {
+      "id": "mut2",
+      "mutation": "Fix section numbering to sequential 1-11",
+      "score": "4/6",
+      "lines": 787,
+      "evals": {"EVAL1": "PASS", "EVAL2": "PASS", "EVAL3": "PASS", "EVAL4": "FAIL", "EVAL5": "PASS", "EVAL6": "FAIL"}
+    },
+    {
+      "id": "mut3",
+      "mutation": "Mark Recommended per platform",
+      "score": "5/6",
+      "lines": 787,
+      "evals": {"EVAL1": "PASS", "EVAL2": "PASS", "EVAL3": "PASS", "EVAL4": "PASS", "EVAL5": "PASS", "EVAL6": "FAIL"}
+    },
+    {
+      "id": "mut4",
+      "mutation": "Trim jeo section + remove inline setup script + remove redundant Universal section",
+      "score": "6/6",
+      "lines": 537,
+      "evals": {"EVAL1": "PASS", "EVAL2": "PASS", "EVAL3": "PASS", "EVAL4": "PASS", "EVAL5": "PASS", "EVAL6": "PASS"}
+    }
+  ]
+}

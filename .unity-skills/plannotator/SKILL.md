@@ -3,17 +3,17 @@ name: plannotator
 description: Interactive plan and diff review for AI coding agents. Visual browser UI for annotating agent plans — approve or request changes with structured feedback. Supports code review, image annotation, and auto-save to Obsidian/Bear Notes.
 allowed-tools: Read Bash Write
 metadata:
-  tags: plan, planning, planno, plannotator, plan-review, diff-review, code-review, claude-code, opencode, annotation, visual-review, plan-review, design-review
+  tags: plannotator, planno, plan-review, diff-review, code-review, claude-code, opencode, annotation, visual-review, design-review
   platforms: Claude, OpenCode, Codex, Gemini
-  keyword: plan
-  version: 0.9.2
+  keyword: plannotator
+  version: 0.9.3
   source: backnotprop/plannotator
 ---
 
 
 # plannotator — Interactive Plan & Diff Review
 
-> Keyword: `plan` | Source: https://github.com/backnotprop/plannotator
+> Keyword: `plannotator` | Source: https://github.com/backnotprop/plannotator
 >
 > Annotate and review AI coding agent plans visually, share with your team, send feedback with one click.
 > Works with **Claude Code**, **OpenCode**, **Gemini CLI**, and **Codex CLI**.
@@ -25,6 +25,12 @@ metadata:
 - You need a feedback loop: visually mark up what to change, then send structured feedback back
 - You want to share plan reviews with teammates via a link
 - You want to auto-save approved plans to Obsidian or Bear Notes
+
+## Do not use this skill when
+
+- You need a simple git diff review without visual annotation (use `git diff` or standard code-review)
+- The agent is running in a non-interactive CI/CD pipeline with no browser access
+- You want to review code without opening a browser (use the standard code-review skill instead)
 
 ---
 
@@ -51,29 +57,17 @@ All patterns have a corresponding script in `scripts/`. Run them directly or let
 # Install CLI only (macOS / Linux / WSL)
 bash scripts/install.sh
 
-# Install CLI and get Claude Code plugin commands
-bash scripts/install.sh --with-plugin
-
-# Install CLI + configure Gemini CLI
-bash scripts/install.sh --with-gemini
-
-# Install CLI + configure Codex CLI
-bash scripts/install.sh --with-codex
-
-# Install CLI + register OpenCode plugin
-bash scripts/install.sh --with-opencode
-
-# Install CLI + all AI tool integrations at once
+# Install CLI + configure all AI tool integrations at once
 bash scripts/install.sh --all
+
+# Targeted installs
+bash scripts/install.sh --with-plugin    # Claude Code plugin commands
+bash scripts/install.sh --with-gemini   # Gemini CLI
+bash scripts/install.sh --with-codex    # Codex CLI
+bash scripts/install.sh --with-opencode # OpenCode plugin
 ```
 
-What it does:
-- Detects OS (macOS / Linux / WSL / Windows)
-- Checks for Obsidian and shows install link if missing: https://obsidian.md/download
-- Installs via `https://plannotator.ai/install.sh`
-- Verifies install and PATH
-- Optionally runs integration scripts for each AI tool
-- On Windows: prints PowerShell / CMD commands to run manually
+> **Tip:** On Windows, the script prints PowerShell / CMD commands to run manually.
 
 ---
 
@@ -87,15 +81,10 @@ bash scripts/setup-hook.sh
 bash scripts/setup-hook.sh --dry-run
 ```
 
-What it does:
-- Checks plannotator CLI is installed
-- Merges `ExitPlanMode` hook into `~/.claude/settings.json` safely (backs up first)
-- Skips if hook already configured
-- **Restart Claude Code after running this**
+Merges `ExitPlanMode` hook into `~/.claude/settings.json` (backs up first). Skips if already configured.
+**Restart Claude Code after running this.**
 
 ### Alternative: Claude Code Plugin (no manual hook needed)
-
-Run inside Claude Code:
 
 ```bash
 /plugin marketplace add backnotprop/plannotator
@@ -119,49 +108,29 @@ When your agent finishes planning (Claude Code: `Shift+Tab×2` to enter plan mod
    - `comment` — clarify constraints or acceptance criteria
 3. **Submit** one outcome:
    - **Approve** → agent proceeds with implementation
-   - **Request changes** → your annotations are sent back as structured feedback for replanning
+   - **Request changes** → annotations are sent back as structured feedback for replanning
 
 ---
 
 ## Pattern 4: Code Review (After Coding)
 
 ```bash
-# Review all uncommitted changes
-bash scripts/review.sh
-
-# Review a specific commit
-bash scripts/review.sh HEAD~1
-
-# Review branch diff
-bash scripts/review.sh main...HEAD
+bash scripts/review.sh          # Review all uncommitted changes
+bash scripts/review.sh HEAD~1   # Review a specific commit
+bash scripts/review.sh main...HEAD  # Review branch diff
 ```
 
-What it does:
-- Checks CLI and git repo state
-- Shows diff summary before opening
-- Launches `plannotator review` UI
-- In the UI: select line numbers to annotate, switch unified/split views, attach images
+Launches `plannotator review` UI. Select line numbers to annotate, switch unified/split views, attach images.
 
 ---
 
 ## Pattern 5: Remote / Devcontainer Mode
 
 ```bash
-# Interactive setup (SSH, devcontainer, WSL)
-bash scripts/configure-remote.sh
-
-# View current configuration
-bash scripts/configure-remote.sh --show
-
-# Set port directly
-bash scripts/configure-remote.sh --port 9999
+bash scripts/configure-remote.sh          # Interactive setup (SSH, devcontainer, WSL)
+bash scripts/configure-remote.sh --show   # View current configuration
+bash scripts/configure-remote.sh --port 9999  # Set port directly
 ```
-
-What it does:
-- Detects shell profile (`.zshrc`, `.bashrc`, `.profile`)
-- Writes `PLANNOTATOR_REMOTE=1` and `PLANNOTATOR_PORT` to shell profile
-- Shows SSH and VS Code port-forwarding instructions
-- Optionally sets custom browser or share URL
 
 Manual environment variables:
 
@@ -185,188 +154,63 @@ export PLANNOTATOR_PORT=9999   # Fixed port for forwarding
 bash scripts/check-status.sh
 ```
 
-Checks all of:
-- CLI installed and version
-- Claude Code hook in `~/.claude/settings.json` (or plugin detected)
-- Gemini CLI hook in `~/.gemini/settings.json`
-- Codex CLI `~/.codex/config.toml` developer_instructions
-- OpenCode plugin in `opencode.json` + slash commands
-- Obsidian installation
-- Environment variables configured
-- Git repo available for diff review
+Checks: CLI version, Claude Code hook, Gemini CLI hook, Codex CLI config, OpenCode plugin, Obsidian installation, env vars, git repo.
 
 ---
 
 ## Pattern 7: Gemini CLI Integration
 
 ```bash
-# Configure Gemini CLI (hook + GEMINI.md instructions)
-bash scripts/setup-gemini-hook.sh
-
-# Preview what would change (no writes)
-bash scripts/setup-gemini-hook.sh --dry-run
-
-# Only update settings.json hook (skip GEMINI.md)
-bash scripts/setup-gemini-hook.sh --hook-only
-
-# Only update GEMINI.md (skip settings.json)
-bash scripts/setup-gemini-hook.sh --md-only
+bash scripts/setup-gemini-hook.sh           # Configure hook + GEMINI.md
+bash scripts/setup-gemini-hook.sh --dry-run # Preview changes
+bash scripts/setup-gemini-hook.sh --hook-only  # Only settings.json
+bash scripts/setup-gemini-hook.sh --md-only    # Only GEMINI.md
 ```
 
-What it does:
-- Checks plannotator CLI is installed
-- Merges `ExitPlanMode` hook into `~/.gemini/settings.json` (same format as Claude Code)
-- Appends plannotator usage instructions to `~/.gemini/GEMINI.md`
-- Backs up existing files before modifying
-
-Usage in Gemini CLI after setup:
+After setup:
 
 ```bash
-# Enter planning mode (hook fires when you exit)
-gemini --approval-mode plan
-
-# Manual plan review (validated format)
-python3 -c "
-import json
-plan = open('plan.md').read()
-print(json.dumps({'tool_input': {'plan': plan, 'permission_mode': 'acceptEdits'}}))
-" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
-
-# Code review after implementation
-plannotator review
+gemini --approval-mode plan   # Hook fires on exit
+plannotator review            # Code review after implementation
 ```
 
 > **Note:** Gemini CLI supports `gemini hooks migrate --from-claude` to auto-migrate existing Claude Code hooks.
+>
+> **Tip:** Use the python3 JSON format for manual plan review — heredoc/echo can fail with `Failed to parse hook event from stdin`:
+> ```bash
+> python3 -c "
+> import json; plan = open('plan.md').read()
+> print(json.dumps({'tool_input': {'plan': plan, 'permission_mode': 'acceptEdits'}}))" \
+>   | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
+> ```
 
 ---
 
 ## Pattern 8: Codex CLI Integration
 
 ```bash
-# Configure Codex CLI (developer_instructions + prompt file)
-bash scripts/setup-codex-hook.sh
-
-# Preview what would change (no writes)
-bash scripts/setup-codex-hook.sh --dry-run
+bash scripts/setup-codex-hook.sh           # Configure developer_instructions + prompt
+bash scripts/setup-codex-hook.sh --dry-run # Preview changes
 ```
 
-What it does:
-- Adds plannotator instruction to `developer_instructions` in `~/.codex/config.toml`
-- Creates `~/.codex/prompts/plannotator.md` (invoke with `/prompts:plannotator`)
-- Backs up existing config before modifying
-
-Usage in Codex CLI after setup:
+After setup:
 
 ```bash
-# Use the plannotator agent prompt
-/prompts:plannotator
-
-# Manual plan review (validated format)
-python3 -c "
-import json
-plan = open('plan.md').read()
-print(json.dumps({'tool_input': {'plan': plan, 'permission_mode': 'acceptEdits'}}))
-" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
-
-# Code review after implementation
-plannotator review HEAD~1
+/prompts:plannotator       # Use plannotator agent prompt
+plannotator review HEAD~1  # Code review after implementation
 ```
 
-> Note: `plannotator plan -` with heredoc/echo can fail with `Failed to parse hook event from stdin`. Use the python3 JSON format above.
+> **Tip:** Same python3 JSON format as Gemini applies here for manual plan review.
 
 ---
 
-## Pattern 10: Manual Save via Export → Notes Tab
-
-Save the current plan to Obsidian or Bear Notes at any time — without approving or denying.
-
-### How to access
-
-1. Click **Export** button in the plannotator UI toolbar
-2. Click the **Notes** tab (not Share or Annotations)
-3. You see:
-   - **Obsidian** row with configured vault path and **Save** button
-   - **Bear** row with **Save** button
-   - **Save All** button to save both at once
-4. A green dot next to each row means that integration is configured
-5. Clicking **Save** shows **Saved** when complete
-
-### When to use
-
-- Save work-in-progress plans without committing to Approve/Deny
-- Quick archive after reviewing without final decision
-- Save annotated plans for team reference
-
-### Requirements
-
-- plannotator must be running in **hook mode** (normal Claude Code ExitPlanMode hook invocation = hook mode)
-- Obsidian/Bear must be configured in Settings (⚙️) → Saving tab
-- Settings are stored in **cookies** (not localStorage) and persist across restarts
-
-> **Note:** The Notes tab uses `POST /api/save-notes` which writes directly to the vault filesystem (Obsidian) or calls `bear://x-callback-url/create` (Bear). This endpoint is only available in hook mode.
-
----
-
-## Recommended Workflow
-
-### Quick Start (all AI tools)
+## Pattern 9: OpenCode Setup
 
 ```bash
-# 1. Install CLI + configure all AI tool integrations at once
-bash scripts/install.sh --all
-
-# 2. Verify everything
-bash scripts/check-status.sh
-
-# 3. Restart your AI tools (Claude Code, Gemini CLI, OpenCode, Codex)
+bash scripts/setup-opencode-plugin.sh   # Automated (recommended)
 ```
 
-### Claude Code (manual)
-
-```
-1. bash scripts/install.sh --with-plugin
-   └─ Installs CLI + shows plugin install commands
-
-2. bash scripts/setup-hook.sh          ← skip if using plugin
-   └─ Configures automatic plan review trigger
-
-3. bash scripts/check-status.sh
-   └─ Confirm everything is ready
-
-4. [Code with agent in plan mode → Shift+Tab×2]
-   └─ plannotator opens automatically
-
-5. bash scripts/review.sh              ← after agent finishes coding
-   └─ Opens visual diff review
-```
-
-### Gemini CLI (manual)
-
-```
-1. bash scripts/install.sh
-2. bash scripts/setup-gemini-hook.sh
-3. gemini --approval-mode plan          ← work in plan mode
-   └─ plannotator fires on exit
-```
-
-### Codex CLI (manual)
-
-```
-1. bash scripts/install.sh
-2. bash scripts/setup-codex-hook.sh
-3. /prompts:plannotator                 ← inside Codex session
-```
-
----
-
-## OpenCode Setup
-
-```bash
-# Automated (recommended)
-bash scripts/setup-opencode-plugin.sh
-
-# Or add manually to opencode.json:
-```
+Or add manually to `opencode.json`:
 
 ```json
 {
@@ -375,7 +219,7 @@ bash scripts/setup-opencode-plugin.sh
 }
 ```
 
-After setup, restart OpenCode. Available slash commands:
+Restart OpenCode. Available slash commands:
 - `/plannotator-review` — open code review UI for current git diff
 - `/plannotator-annotate <file.md>` — annotate a markdown file
 
@@ -383,65 +227,28 @@ The `submit_plan` tool is automatically available to the agent for plan submissi
 
 ---
 
-## Pattern 9: Obsidian Integration Setup
+## Pattern 10: Notes Integration (Obsidian / Bear / Manual Save)
 
-Auto-save approved plans to your Obsidian vault with YAML frontmatter and tags.
+Auto-save approved plans to your notes app with YAML frontmatter and tags.
 
-### Prerequisites
+### Setup
 
-1. **Install Obsidian**: https://obsidian.md/download
-2. **Create a Vault**: Open Obsidian → Create new vault → Choose location
-   - Example: `~/Documents/Obsidian/MyVault`
-3. **Verify Vault Exists**: Obsidian creates `obsidian.json` config after first vault creation
+1. Trigger a plan review (any method), then click **⚙️ Settings → Saving** tab
+2. Toggle ON **Obsidian Integration** or **Bear Notes**
+3. For Obsidian: select vault from dropdown (auto-detected) or enter custom path; set folder name (default: `plannotator`)
+4. Settings are stored in **cookies** (persist across restarts — requires system browser, not headless)
 
-```bash
-# Check Obsidian installation (macOS)
-ls /Applications/Obsidian.app
+> **Tip (vault not detected):** Open Obsidian and create a vault first — plannotator reads `~/Library/Application Support/obsidian/obsidian.json` (macOS) / `~/.config/obsidian/obsidian.json` (Linux).
 
-# Check Obsidian config exists (vault detection depends on this)
-# macOS
-cat ~/Library/Application\ Support/obsidian/obsidian.json
-# Linux
-cat ~/.config/obsidian/obsidian.json
-# Windows
-cat %APPDATA%/obsidian/obsidian.json
-```
-
-### Step-by-Step Setup
-
-```bash
-# Step 1: Verify Obsidian is installed and has at least one vault
-bash scripts/check-status.sh
-
-# Step 2: Trigger a plan review (any method)
-# Claude Code: Shift+Tab×2 → plan mode → exit plan mode
-# Gemini CLI: gemini --approval-mode plan
-# OpenCode: Agent creates a plan
-
-# Step 3: In the plannotator UI:
-#   1. Click ⚙️ (Settings gear icon)
-#   2. Go to "Saving" tab
-#   3. Toggle ON "Obsidian Integration"
-#   4. Select your vault from dropdown (auto-detected)
-#      - Or enter custom path if vault not detected
-#   5. Set folder name (default: "plannotator")
-
-# Step 4: Approve a plan to test the integration
-#   - Click "Approve" in the plannotator UI
-#   - Check your vault for the saved file
-```
-
-### Obsidian Configuration Options
+### Obsidian Configuration
 
 | Setting | Description | Default |
 |---------|-------------|---------|
 | **Vault** | Path to Obsidian vault | Auto-detected |
 | **Folder** | Subfolder in vault for plans | `plannotator` |
-| **Custom Path** | Manual path if auto-detect fails | - |
+| **Custom Path** | Manual path if auto-detect fails | — |
 
 ### Saved File Format
-
-Files are saved with human-readable names and YAML frontmatter:
 
 ```
 Filename: {Title} - {Month} {Day}, {Year} {Hour}-{Minute}{am/pm}.md
@@ -454,51 +261,14 @@ created: 2026-02-22T22:45:30.000Z
 source: plannotator
 tags: [plannotator, project-name, typescript, ...]
 ---
-
-[[Plannotator Plans]]
-
 # Original plan content...
 ```
 
-**Tag extraction:**
-- `plannotator` — always included
-- Project name — from git repo or directory
-- Title words — first 3 meaningful words from H1 heading
-- Languages — from code blocks (```typescript → typescript)
-
-### Folder Organization
-
-Organize plans within the vault using subfolders:
-
-```
-vault/plannotator/
-├── approved/          ← approved plans
-├── denied/            ← rejected plans
-└── 2026-02/           ← monthly archive
-```
-
-Create subfolders manually (Obsidian detects them automatically):
-
-```bash
-mkdir -p ~/path/to/vault/plannotator/approved
-mkdir -p ~/path/to/vault/plannotator/denied
-mkdir -p ~/path/to/vault/plannotator/2026-02
-```
-
-Or write directly to any subfolder:
-
-```bash
-cp ~/.plannotator/plans/<name>-approved.md ~/path/to/vault/plannotator/approved/
-```
+Tags: `plannotator` (always) + project name + first 3 H1 words + code block languages.
 
 ### Bear Notes (Alternative)
 
-If you prefer Bear Notes over Obsidian:
-
-1. Toggle ON "Bear Notes" in Settings → Saving tab
-2. Plans are saved via `bear://x-callback-url/create`
-3. Tags are appended as hashtags
-4. Validate callback from terminal:
+Toggle ON **Bear Notes** in Settings → Saving. Plans saved via `bear://x-callback-url/create`. Validate:
 
 ```bash
 open "bear://x-callback-url/create?title=Plannotator%20Check&text=Bear%20callback%20OK"
@@ -510,50 +280,51 @@ open "bear://x-callback-url/create?title=Plannotator%20Check&text=Bear%20callbac
 | Frontmatter | YAML | None (hashtags) |
 | Platforms | macOS/Win/Linux | macOS/iOS |
 
-### Troubleshooting
+### Manual Save (without Approve/Deny)
 
-**Vault not detected:**
+Click **Export → Notes tab → Save** (or **Save All**) at any time to archive work-in-progress plans.
 
-```bash
-# 1. Check Obsidian config exists
-ls ~/Library/Application\ Support/obsidian/obsidian.json  # macOS
+> **Tip:** The Notes tab requires plannotator running in **hook mode** (normal ExitPlanMode hook invocation). In CLI `review`/`annotate` modes, `/api/save-notes` is not active.
 
-# 2. If missing, open Obsidian and create a vault first
-open /Applications/Obsidian.app
-
-# 3. After creating vault, restart plannotator
-```
-
-**Plans not saving:**
-
-```bash
-# Check write permissions on vault folder
-ls -la ~/path/to/vault/plannotator/
-
-# Check browser console for errors (F12 → Console)
-```
-
-**Export → Notes tab Save buttons require hook mode:**
-- Export → Notes tab Save buttons require plannotator running in **hook mode** (stdin JSON input). In CLI `review`/`annotate` modes, the `/api/save-notes` endpoint is not active. Normal Claude Code hook invocation (ExitPlanMode hook) always runs in hook mode.
-
-**Settings not visible in automated/headless browsers:**
-- Obsidian Integration settings must be configured in the **system browser** that plannotator auto-opens. Settings are stored in cookies (not localStorage). Automated/headless browser profiles (Playwright, Puppeteer) use isolated cookie jars and will not see these settings.
-
-**Bear export not working:**
-- Confirm Bear app is installed and opened at least once
-- Confirm `open "bear://x-callback-url/create?..."` works from terminal
-- Use system browser session for plannotator settings; automated/headless sessions can block custom URI handlers
-
-**Settings not persisting:**
-- Settings are stored in cookies (not localStorage)
-- Ensure cookies are enabled for localhost
-- Settings persist across different ports
+> **Tip (settings not persisting):** Ensure cookies are enabled for localhost. Automated/headless browser profiles (Playwright, Puppeteer) use isolated cookie jars and will not see settings — always use the system browser plannotator auto-opens.
 
 ---
 
-## Auto-save (Summary)
+## Recommended Workflow
 
-> Obsidian integration is **optional** — plans can still be reviewed and approved without it.
+### Quick Start
+
+```bash
+bash scripts/install.sh --all   # Install + configure all AI tools
+bash scripts/check-status.sh    # Verify
+# Restart your AI tools
+```
+
+### Claude Code
+
+```
+1. bash scripts/install.sh --with-plugin
+2. bash scripts/setup-hook.sh          ← skip if using plugin
+3. bash scripts/check-status.sh
+4. [Code with agent in plan mode → Shift+Tab×2]
+5. bash scripts/review.sh              ← after agent finishes coding
+```
+
+### Gemini CLI
+
+```
+1. bash scripts/install.sh
+2. bash scripts/setup-gemini-hook.sh
+3. gemini --approval-mode plan
+```
+
+### Codex CLI
+
+```
+1. bash scripts/install.sh
+2. bash scripts/setup-codex-hook.sh
+3. /prompts:plannotator
+```
 
 ---
 
@@ -572,5 +343,5 @@ ls -la ~/path/to/vault/plannotator/
 - [GitHub: backnotprop/plannotator](https://github.com/backnotprop/plannotator)
 - [Official site: plannotator.ai](https://plannotator.ai)
 - [Obsidian download](https://obsidian.md/download)
-- [Hook README: apps/hook/README.md](https://github.com/backnotprop/plannotator/blob/main/apps/hook/README.md)
-- [OpenCode plugin: apps/opencode-plugin/README.md](https://github.com/backnotprop/plannotator/blob/main/apps/opencode-plugin/README.md)
+- [Hook README](https://github.com/backnotprop/plannotator/blob/main/apps/hook/README.md)
+- [OpenCode plugin README](https://github.com/backnotprop/plannotator/blob/main/apps/opencode-plugin/README.md)

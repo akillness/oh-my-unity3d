@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>skill-autoresearch: plannotator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color: #e6edf3; padding: 24px; }
+  h1 { font-size: 1.4rem; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { color: #8b949e; font-size: 0.85rem; margin-bottom: 32px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; }
+  .card h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8b949e; margin-bottom: 12px; }
+  .big-number { font-size: 2.5rem; font-weight: 700; line-height: 1; }
+  .big-number.green { color: #3fb950; }
+  .big-number.red { color: #f85149; }
+  .big-number.yellow { color: #d29922; }
+  .delta { font-size: 0.8rem; color: #8b949e; margin-top: 4px; }
+  .delta .up { color: #3fb950; }
+  .delta .down { color: #f85149; }
+  .progress-bar-wrap { background: #21262d; border-radius: 4px; height: 8px; margin-top: 8px; overflow: hidden; }
+  .progress-bar { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #238636, #3fb950); transition: width 0.3s; }
+
+  /* Eval table */
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th { text-align: left; padding: 8px 12px; color: #8b949e; font-weight: 500; border-bottom: 1px solid #30363d; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  td { padding: 10px 12px; border-bottom: 1px solid #21262d; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .pass { color: #3fb950; font-weight: 600; }
+  .fail { color: #f85149; font-weight: 600; }
+
+  /* Progression chart */
+  .chart-section { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin-bottom: 24px; }
+  .chart-section h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8b949e; margin-bottom: 20px; }
+  .chart { display: flex; align-items: flex-end; gap: 12px; height: 120px; padding-bottom: 24px; position: relative; }
+  .chart::after { content: ''; position: absolute; bottom: 24px; left: 0; right: 0; height: 1px; background: #30363d; }
+  .bar-group { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+  .bar { width: 100%; background: #238636; border-radius: 3px 3px 0 0; position: relative; min-height: 4px; transition: height 0.3s; }
+  .bar.baseline { background: #f85149; }
+  .bar-label { font-size: 0.7rem; color: #8b949e; text-align: center; position: absolute; bottom: -22px; white-space: nowrap; left: 50%; transform: translateX(-50%); }
+  .bar-val { font-size: 0.72rem; color: #e6edf3; font-weight: 600; text-align: center; position: absolute; top: -18px; width: 100%; }
+
+  /* Mutation timeline */
+  .timeline { list-style: none; position: relative; padding-left: 20px; }
+  .timeline::before { content: ''; position: absolute; left: 0; top: 4px; bottom: 4px; width: 2px; background: #30363d; }
+  .timeline li { position: relative; margin-bottom: 20px; }
+  .timeline li::before { content: ''; position: absolute; left: -24px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: #3fb950; border: 2px solid #0d1117; }
+  .mutation-id { display: inline-block; background: #21262d; border: 1px solid #30363d; border-radius: 4px; font-size: 0.7rem; font-weight: 600; padding: 1px 6px; margin-right: 6px; color: #8b949e; }
+  .mutation-name { font-weight: 600; font-size: 0.9rem; }
+  .mutation-desc { font-size: 0.8rem; color: #8b949e; margin-top: 4px; }
+  .mutation-score { display: inline-block; margin-top: 6px; font-size: 0.75rem; background: #1f2f1f; border: 1px solid #238636; border-radius: 4px; padding: 2px 8px; color: #3fb950; }
+
+  /* Eval detail section */
+  .eval-table-wrap { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin-bottom: 24px; overflow-x: auto; }
+  .eval-table-wrap h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8b949e; margin-bottom: 16px; }
+
+  .full-width { grid-column: 1 / -1; }
+  .tag { display: inline-block; font-size: 0.7rem; padding: 2px 6px; border-radius: 3px; margin-right: 4px; }
+  .tag.fixed { background: #1f2f1f; color: #3fb950; border: 1px solid #238636; }
+  .tag.kept { background: #1c2a3a; color: #58a6ff; border: 1px solid #1f6feb; }
+</style>
+</head>
+<body>
+
+<h1>skill-autoresearch — plannotator SKILL.md</h1>
+<p class="subtitle">Run: 2026-03-22 &nbsp;|&nbsp; Source: .unity-skills/plannotator/SKILL.md &nbsp;|&nbsp; 5 mutations &nbsp;|&nbsp; 6 evals</p>
+
+<div class="grid">
+  <div class="card">
+    <h2>Baseline Score</h2>
+    <div class="big-number red">1 / 6</div>
+    <div class="delta">17% pass rate</div>
+    <div class="progress-bar-wrap" style="margin-top:10px"><div class="progress-bar" style="width:17%;background:linear-gradient(90deg,#6e2020,#f85149)"></div></div>
+  </div>
+  <div class="card">
+    <h2>Final Score</h2>
+    <div class="big-number green">6 / 6</div>
+    <div class="delta"><span class="up">+83pp improvement</span> &nbsp; 100% pass rate</div>
+    <div class="progress-bar-wrap" style="margin-top:10px"><div class="progress-bar" style="width:100%"></div></div>
+  </div>
+  <div class="card">
+    <h2>Line Count</h2>
+    <div class="big-number yellow">577 → 278</div>
+    <div class="delta"><span class="up">−52% reduction</span> &nbsp; (299 lines removed)</div>
+  </div>
+  <div class="card">
+    <h2>Mutations Applied</h2>
+    <div class="big-number" style="color:#58a6ff">5</div>
+    <div class="delta">All 5 mutations converged in single pass</div>
+  </div>
+</div>
+
+<div class="chart-section">
+  <h2>Score Progression by Mutation</h2>
+  <div class="chart">
+    <!-- max height = 100px for 6/6 = 100% -->
+    <div class="bar-group">
+      <div class="bar baseline" style="height:17px">
+        <span class="bar-val">1/6</span>
+        <span class="bar-label">Baseline</span>
+      </div>
+    </div>
+    <div class="bar-group">
+      <div class="bar" style="height:33px">
+        <span class="bar-val">2/6</span>
+        <span class="bar-label">M1</span>
+      </div>
+    </div>
+    <div class="bar-group">
+      <div class="bar" style="height:50px">
+        <span class="bar-val">3/6</span>
+        <span class="bar-label">M2</span>
+      </div>
+    </div>
+    <div class="bar-group">
+      <div class="bar" style="height:67px">
+        <span class="bar-val">4/6</span>
+        <span class="bar-label">M3</span>
+      </div>
+    </div>
+    <div class="bar-group">
+      <div class="bar" style="height:83px">
+        <span class="bar-val">5/6</span>
+        <span class="bar-label">M4</span>
+      </div>
+    </div>
+    <div class="bar-group">
+      <div class="bar" style="height:100px">
+        <span class="bar-val">6/6</span>
+        <span class="bar-label">M5 (Final)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="eval-table-wrap">
+  <h2>Eval Results Detail</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Eval</th>
+        <th>Description</th>
+        <th>Baseline</th>
+        <th>After M1</th>
+        <th>After M2</th>
+        <th>After M3</th>
+        <th>After M4</th>
+        <th>Final</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>EVAL1</strong></td>
+        <td>Pattern numbering sequential</td>
+        <td class="fail">FAIL</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+      </tr>
+      <tr>
+        <td><strong>EVAL2</strong></td>
+        <td>Core patterns within first 200 lines</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+      </tr>
+      <tr>
+        <td><strong>EVAL3</strong></td>
+        <td>Obsidian/Bear section under 80 lines</td>
+        <td class="fail">FAIL</td>
+        <td class="fail">FAIL</td>
+        <td class="fail">FAIL</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+      </tr>
+      <tr>
+        <td><strong>EVAL4</strong></td>
+        <td>Troubleshooting collocated with patterns</td>
+        <td class="fail">FAIL</td>
+        <td class="fail">FAIL</td>
+        <td class="fail">FAIL</td>
+        <td class="fail">FAIL</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+      </tr>
+      <tr>
+        <td><strong>EVAL5</strong></td>
+        <td>Do-not-use section present</td>
+        <td class="fail">FAIL</td>
+        <td class="fail">FAIL</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+        <td class="pass">PASS</td>
+      </tr>
+      <tr>
+        <td><strong>EVAL6</strong></td>
+        <td>Skill under 450 lines</td>
+        <td class="fail">FAIL</td>
+        <td class="fail">FAIL</td>
+        <td class="fail">FAIL</td>
+        <td class="fail">FAIL</td>
+        <td class="fail">FAIL</td>
+        <td class="pass">PASS</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="chart-section">
+  <h2>Mutation Timeline</h2>
+  <ul class="timeline">
+    <li>
+      <span class="mutation-id">M1</span>
+      <span class="mutation-name">Fix Pattern Numbering</span>
+      <p class="mutation-desc">Reordered patterns from 1,2,3,4,5,6,7,8,<b>10</b>,<b>9</b> to strict sequential 1–10. Promoted OpenCode Setup to Pattern 9. Merged Manual Save into Pattern 10.</p>
+      <span class="mutation-score">2/6 — EVAL1 fixed</span>
+      <span class="tag fixed">EVAL1</span>
+    </li>
+    <li>
+      <span class="mutation-id">M2</span>
+      <span class="mutation-name">Add Do-Not-Use Section</span>
+      <p class="mutation-desc">Added "Do not use this skill when" section with 3 exclusion criteria. Changed frontmatter keyword from generic "plan" to "plannotator".</p>
+      <span class="mutation-score">3/6 — EVAL5 fixed</span>
+      <span class="tag fixed">EVAL5</span>
+    </li>
+    <li>
+      <span class="mutation-id">M3</span>
+      <span class="mutation-name">Condense Notes Section</span>
+      <p class="mutation-desc">Merged Obsidian (~170 lines) + Bear + Manual Save into single Pattern 10 (~55 lines). Removed folder organization, redundant bash detection commands.</p>
+      <span class="mutation-score">4/6 — EVAL3 fixed</span>
+      <span class="tag fixed">EVAL3</span>
+    </li>
+    <li>
+      <span class="mutation-id">M4</span>
+      <span class="mutation-name">Inline Troubleshooting</span>
+      <p class="mutation-desc">Converted standalone Troubleshooting section (lines 513–551) to "> Tip:" blockquote callouts inline with their related patterns.</p>
+      <span class="mutation-score">5/6 — EVAL4 fixed</span>
+      <span class="tag fixed">EVAL4</span>
+    </li>
+    <li>
+      <span class="mutation-id">M5</span>
+      <span class="mutation-name">Trim Overall Length</span>
+      <p class="mutation-desc">Removed verbose "What it does:" lists, consolidated python3 JSON tip (Gemini reference → Codex), removed Auto-save stub section. 577 → 278 lines.</p>
+      <span class="mutation-score">6/6 — EVAL6 fixed</span>
+      <span class="tag fixed">EVAL6</span>
+    </li>
+  </ul>
+</div>
+
+<div class="card" style="margin-bottom:24px">
+  <h2>Unchanged Evals</h2>
+  <p style="font-size:0.85rem;color:#8b949e;margin-top:8px"><span class="tag kept">EVAL2</span> Core patterns within first 200 lines — already passing at baseline. Install (Pattern 1), Hook Setup (Pattern 2), Plan Review (Pattern 3) all appear within line 130. All mutations preserved this property.</p>
+</div>
+
+<div class="card">
+  <h2>Workspace Artifacts</h2>
+  <table style="font-size:0.8rem">
+    <tr><td style="color:#8b949e;padding:4px 12px 4px 0">SKILL.md.baseline</td><td>Original 577-line file (read-only reference)</td></tr>
+    <tr><td style="color:#8b949e;padding:4px 12px 4px 0">results.tsv</td><td>Eval pass/fail matrix across all mutations</td></tr>
+    <tr><td style="color:#8b949e;padding:4px 12px 4px 0">results.json</td><td>Full structured results with eval definitions and mutation details</td></tr>
+    <tr><td style="color:#8b949e;padding:4px 12px 4px 0">changelog.md</td><td>Human-readable description of each mutation and rationale</td></tr>
+    <tr><td style="color:#8b949e;padding:4px 12px 4px 0">dashboard.html</td><td>This file</td></tr>
+  </table>
+</div>
+
+</body>
+</html>

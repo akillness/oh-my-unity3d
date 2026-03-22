@@ -1,0 +1,110 @@
+{
+  "skill": "plannotator",
+  "skill_path": ".unity-skills/plannotator/SKILL.md",
+  "run_date": "2026-03-22",
+  "baseline_lines": 577,
+  "final_lines": 278,
+  "baseline_score": "1/6",
+  "final_score": "6/6",
+  "baseline_pct": 17,
+  "final_pct": 100,
+  "evals": [
+    {
+      "id": "EVAL1",
+      "description": "Pattern numbering sequential (no gaps, no reordering)",
+      "question": "Are all patterns numbered in strict ascending order?",
+      "pass_criteria": "Pattern 1, 2, 3, ..., N with no gaps or reordering",
+      "fail_criteria": "Any numbering gap, skip, or out-of-order pattern",
+      "baseline": "FAIL",
+      "final": "PASS",
+      "notes": "Baseline had order 1,2,3,4,5,6,7,8,10,9. Fixed to 1-10 sequential."
+    },
+    {
+      "id": "EVAL2",
+      "description": "Core patterns (install, hook, plan review) within first 200 lines",
+      "question": "Can an agent find install + hook setup + plan review within 200 lines?",
+      "pass_criteria": "All three core patterns appear before line 200",
+      "fail_criteria": "Any core pattern appears after line 200",
+      "baseline": "PASS",
+      "final": "PASS",
+      "notes": "Already passing at baseline. Preserved through all mutations."
+    },
+    {
+      "id": "EVAL3",
+      "description": "Obsidian/Bear notes section under 80 lines",
+      "question": "Is the Obsidian/Bear notes section under 80 lines?",
+      "pass_criteria": "Under 80 lines",
+      "fail_criteria": "80+ lines",
+      "baseline": "FAIL",
+      "final": "PASS",
+      "notes": "Baseline Pattern 9 was ~170 lines (386-555). Condensed to ~55 lines by merging Obsidian+Bear+ManualSave, removing folder organization details and redundant bash checks."
+    },
+    {
+      "id": "EVAL4",
+      "description": "Troubleshooting collocated with related patterns",
+      "question": "Are troubleshooting tips placed near their related patterns?",
+      "pass_criteria": "Each troubleshooting tip is within 20 lines of its related pattern",
+      "fail_criteria": "Troubleshooting is in a separate section far from related patterns",
+      "baseline": "FAIL",
+      "final": "PASS",
+      "notes": "Baseline had a separate Troubleshooting section at lines 513-551. Moved all tips inline as '> **Tip:**' callouts within their related patterns."
+    },
+    {
+      "id": "EVAL5",
+      "description": "Do-not-use section present with at least 2 criteria",
+      "question": "Does the skill have a 'Do not use' or 'When not to use' section?",
+      "pass_criteria": "Section exists with at least 2 exclusion criteria",
+      "fail_criteria": "No such section",
+      "baseline": "FAIL",
+      "final": "PASS",
+      "notes": "Added '## Do not use this skill when' section with 3 exclusion criteria after 'When to use this skill'."
+    },
+    {
+      "id": "EVAL6",
+      "description": "Skill under 450 lines total",
+      "question": "Is the skill under 450 lines total?",
+      "pass_criteria": "Under 450 lines",
+      "fail_criteria": "450+ lines",
+      "baseline": "FAIL",
+      "final": "PASS",
+      "notes": "Baseline was 577 lines. Final is 278 lines (52% reduction). Achieved by: condensing Obsidian section, removing verbose 'What it does:' lists, merging duplicate python3 JSON examples into single Tip callouts, removing folder organization detail."
+    }
+  ],
+  "mutations": [
+    {
+      "id": "M1",
+      "name": "Fix pattern numbering",
+      "description": "Reorder patterns to strict sequential 1-10. OpenCode Setup promoted from prose section to Pattern 9. Manual Save merged into Pattern 10.",
+      "evals_fixed": ["EVAL1"],
+      "score_after": "2/6"
+    },
+    {
+      "id": "M2",
+      "name": "Add Do-not-use section",
+      "description": "Added '## Do not use this skill when' with 3 exclusion criteria after 'When to use this skill'.",
+      "evals_fixed": ["EVAL5"],
+      "score_after": "3/6"
+    },
+    {
+      "id": "M3",
+      "name": "Condense Obsidian/Bear section",
+      "description": "Merged Pattern 9 (Obsidian) + Pattern 10 (Manual Save) + Bear Notes into single ~55 line Pattern 10. Removed folder organization details, redundant bash detection commands.",
+      "evals_fixed": ["EVAL3"],
+      "score_after": "4/6"
+    },
+    {
+      "id": "M4",
+      "name": "Inline troubleshooting",
+      "description": "Moved each troubleshooting item to a '> **Tip:**' callout within its related pattern. Removed standalone Troubleshooting section.",
+      "evals_fixed": ["EVAL4"],
+      "score_after": "5/6"
+    },
+    {
+      "id": "M5",
+      "name": "Trim overall length",
+      "description": "Removed verbose 'What it does:' lists, condensed Gemini/Codex patterns (single shared python3 tip reference), removed duplicate examples, removed verbose Remote section description.",
+      "evals_fixed": ["EVAL6"],
+      "score_after": "6/6"
+    }
+  ]
+}
