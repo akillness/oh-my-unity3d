@@ -1,13 +1,13 @@
 ---
 name: omu
-description: "OMU - Integrated AI agent orchestration skill. Plan with ralph+plannotator, execute with team/bmad, verify browser behavior with agent-browser, and auto-cleanup worktrees after completion. Supports Claude, Codex, Gemini CLI, and OpenCode."
+description: "OMU - Integrated AI agent orchestration skill for Unity3D game development. Manages game lifecycle (기획→개발→QA→수익성) via .omu folder, plan with ralph+plannotator, execute with team/bmad, verify with unity-mcp, and auto-cleanup. Supports Claude, Codex, Gemini CLI, and OpenCode."
 compatibility: "Requires git, node>=18, bash. Optional: bun, docker."
 allowed-tools: Read Write Bash Grep Glob Task
 metadata:
-  tags: omu, orchestration, ralph, plannotator, team, bmad, omc, omx, ohmg, agent-browser, multi-agent, workflow, worktree-cleanup, browser-verification
+  tags: omu, orchestration, ralph, plannotator, team, bmad, omc, omx, ohmg, agent-browser, multi-agent, workflow, worktree-cleanup, browser-verification, game-lifecycle, planning-docs
   platforms: Claude, Codex, Gemini, OpenCode
   keyword: omu
-  version: 2.0.0
+  version: 2.1.0
   source: akillness/oh-my-unity3d
 ---
 
@@ -15,9 +15,13 @@ metadata:
 
 > Keyword: `omu` | Platforms: Claude Code, Codex CLI, Gemini CLI, OpenCode
 >
-> Workflow: Plan (`ralph` + `plannotator`) -> Execute (`team` or `bmad`) -> Verify (`agent-browser`) -> Cleanup (`worktree-cleanup`)
+> Workflow: Plan (`ralph` + `plannotator`) -> Execute (`team` or `bmad`) -> Verify (`unity-mcp` / `agent-browser`) -> Cleanup (`worktree-cleanup`)
+>
+> Game Lifecycle: 기획 (Plan) → 개발 (Execute) → QA (Verify) → 수익성 (Monetize)
 
-OMU is the release-oriented orchestration skill package shipped in this repository. It standardizes one path through planning, implementation, browser verification, and worktree cleanup across the supported AI coding tools.
+OMU is the release-oriented orchestration skill package shipped in this repository. It standardizes one path through planning, implementation, Unity3D verification, and worktree cleanup across the supported AI coding tools.
+
+The `.omu/` folder is the persistent game project management hub — long-term plans, short-term sprints, progress tracking, and history archiving are all managed here across OMU workflow runs.
 
 `agentation`, `annotate`, and `agentui` are intentionally removed in `v2.0.0`. UI review is handled with `agent-browser` snapshots and normal edit loops only.
 
@@ -60,6 +64,56 @@ Create the working state directories:
 ```bash
 mkdir -p .omc/state .omc/plans .omc/logs
 ```
+
+---
+
+### STEP 0.1: .omu Game Plan Bootstrap
+
+Before planning, check and initialize the `.omu/` game management folder.
+
+#### 0.1a — Create `.omu/` if it doesn't exist
+
+```bash
+if [ ! -d ".omu" ]; then
+  mkdir -p .omu/history
+  echo "(.omu folder created — populate long-term-plan.md and short-term-plan.md)"
+fi
+```
+
+If `.omu/long-term-plan.md` does not exist, create it from the template at `.unity-skills/omu/templates/.omu/long-term-plan.md` (or use the built-in template below).
+
+#### 0.1b — Read existing plans
+
+Read all `.omu/` documents in parallel and build context:
+
+| File | Purpose | Action |
+|------|---------|--------|
+| `.omu/long-term-plan.md` | 기획 컨셉, 규칙, 게임성 | Read → extract current concept and constraints |
+| `.omu/short-term-plan.md` | 시스템, 밸런스, 배치, 연출 | Read → identify sprint scope and backlog |
+| `.omu/progress.md` | 진행내용 체크리스트 | Read → find unchecked items and blockers |
+
+#### 0.1c — Detect current game development stage
+
+Based on `.omu/progress.md` content, detect and log the active stage:
+
+```
+기획 (Planning)  → GDD not complete, concept not finalized
+개발 (Development) → Core loop implemented, systems in progress
+QA (Quality Assurance) → Implementation complete, testing in progress
+수익성 (Monetization) → QA passed, analytics/IAP integration in progress
+```
+
+Update `.omc/state/omu-state.json`:
+```json
+{
+  "game_stage": "기획 | 개발 | QA | 수익성",
+  "omu_docs_loaded": true
+}
+```
+
+User-facing message:
+> `OMU activated. Game Stage: [stage]. Phase: PLAN.`
+> `Plan docs loaded from .omu/ — [N] pending items found.`
 
 If `.omc/state/omu-state.json` does not exist, create it with:
 
@@ -179,6 +233,21 @@ When execution is complete, update the state file:
 }
 ```
 
+#### .omu Progress Update (EXECUTE 단계 완료 시)
+
+After each completed task during EXECUTE, update `.omu/progress.md`:
+
+1. Mark completed items with `- [x]`
+2. Add newly discovered tasks under the appropriate section
+3. Update `short-term-plan.md` if sprint scope changes
+
+```bash
+# Example: mark a system as complete
+# .omu/progress.md: "- [ ] 코어 루프 구현" → "- [x] 코어 루프 구현"
+```
+
+New short-term tasks discovered during execution should be appended to `.omu/short-term-plan.md` under **Backlog**.
+
 ---
 
 ## 3. VERIFY
@@ -269,6 +338,44 @@ Cleanup rule:
 - warn before cleanup if there are uncommitted changes
 - clean extra worktrees only
 - never delete unrelated user work
+
+#### .omu Archive (CLEANUP 단계)
+
+Archive completed work from `.omu/` to history:
+
+```bash
+# 1. Generate archive filename
+ARCHIVE_DATE=$(date +%Y%m%d)
+ARCHIVE_FILE=".omu/history/${ARCHIVE_DATE}-$(echo "$TASK" | tr ' ' '-' | tr '[:upper:]' '[:lower:]' | head -c 40).md"
+
+# 2. Extract completed items from progress.md (lines with [x])
+grep -E "^\s*- \[x\]" .omu/progress.md > /tmp/completed_items.txt
+
+# 3. Write archive entry
+cat > "$ARCHIVE_FILE" << EOF
+# Archive: $TASK
+**Date**: $ARCHIVE_DATE
+**Stage**: $(jq -r '.game_stage' .omc/state/omu-state.json)
+**Sprint**: (from short-term-plan.md)
+
+## Completed Items
+$(cat /tmp/completed_items.txt)
+
+## Notes
+(Add retrospective notes here)
+EOF
+
+# 4. Remove completed items from progress.md
+sed -i '' '/^\s*- \[x\]/d' .omu/progress.md
+
+# 5. Remove completed items from short-term-plan.md
+sed -i '' '/^\s*- \[x\]/d' .omu/short-term-plan.md
+```
+
+`.omu/` post-cleanup state:
+- `progress.md` — only unchecked (`- [ ]`) items remain
+- `short-term-plan.md` — backlog updated, completed sprint items removed
+- `history/YYYYMMDD-<task>.md` — permanent record of what was done
 
 ---
 

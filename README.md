@@ -4,14 +4,14 @@
 
 <div align="center">
 
-[![Version](https://img.shields.io/badge/version-2.5.0-blue?style=flat-square)](https://github.com/akillness/oh-my-unity3d/releases)
+[![Version](https://img.shields.io/badge/version-2.6.0-blue?style=flat-square)](https://github.com/akillness/oh-my-unity3d/releases)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Unity](https://img.shields.io/badge/Unity-2021.3%2B-black?style=flat-square&logo=unity)](https://unity.com)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-supported-orange?style=flat-square)](https://claude.ai)
 [![Codex CLI](https://img.shields.io/badge/Codex%20CLI-supported-green?style=flat-square)](https://openai.com)
 [![Gemini CLI](https://img.shields.io/badge/Gemini%20CLI-supported-blue?style=flat-square)](https://gemini.google.com)
 [![OpenCode](https://img.shields.io/badge/OpenCode-supported-purple?style=flat-square)](https://opencode.ai)
-[![Skills](https://img.shields.io/badge/skills-47-yellow?style=flat-square)](#-skills-index)
+[![Skills](https://img.shields.io/badge/skills-48-yellow?style=flat-square)](#-skills-index)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
 **AI-driven Unity3D game development orchestration — Plan → Execute → Verify → Cleanup**
@@ -44,13 +44,25 @@ Plan ──► Execute ──► Verify ──► Cleanup
 
 ---
 
-## ✨ What's New in v2.5.0
+## ✨ What's New in v2.6.0
+
+| # | Change | Details |
+|---|--------|---------|
+| 🆕 | **.omu Game Management Folder** | New `.omu/` folder tracks game lifecycle (기획→개발→QA→수익성) with long-term plans, sprint plans, progress checklists, and history archives |
+| 🆕 | **Game Lifecycle Flow** | OMU SKILL.md now includes game stage detection (Planning/Development/QA/Monetization) with `.omu/` read/update at each phase |
+| 🆕 | **Persistent Plan Tracking** | `long-term-plan.md` (concept/rules/gameplay) and `short-term-plan.md` (systems/balance/placement/production) auto-read at PLAN start |
+| 🆕 | **Progress & History Archive** | `progress.md` auto-updates with `[x]` checks during EXECUTE; CLEANUP archives completed items to `history/YYYYMMDD-<task>.md` and removes them |
+
+<details>
+<summary>v2.5.0</summary>
 
 | # | Change | Details |
 |---|--------|---------|
 | 🆕 | **AI auto-configure MCP** | `unity-mcp` SKILL.md now instructs the AI agent to automatically write correct MCP config to `settings.json` when invoked |
 | 🔄 | **Step-by-step setup flow** | SKILL.md rewritten with explicit Step 1–4 guide (Package → Start → Config → Verify) |
 | 🐛 | **Compatibility note fix** | Removed incorrect Python 3.10+/uv requirement from skill metadata |
+
+</details>
 
 <details>
 <summary>v2.1.0</summary>
@@ -276,7 +288,13 @@ All workflows are orchestrated by `omu` with an automatic Unity3D verification l
 ```
 oh-my-unity3d/
 ├── README.md                    ← You are here
-├── SKILLS-INDEX.md              ← Full 47-skill directory
+├── SKILLS-INDEX.md              ← Full 48-skill directory
+├── .omu/                        ← Game management hub 🆕
+│   ├── README.md                ← .omu usage guide
+│   ├── long-term-plan.md        ← Concept, rules, gameplay (기획)
+│   ├── short-term-plan.md       ← Systems, balance, placement, production (개발)
+│   ├── progress.md              ← Active checklist (auto-updated by OMU)
+│   └── history/                 ← Completed task archives (auto-archived by OMU)
 ├── GETTING-STARTED.md           ← Installation & first workflow
 ├── WORKFLOWS.md                 ← 5 Unity3D workflow guides
 ├── CLAUDE.md                    ← AI agent project context
@@ -317,7 +335,37 @@ oh-my-unity3d/
 
 ---
 
+## 📁 .omu — Game Management Hub
+
+`.omu/` is the persistent game project management folder, auto-read and updated by the OMU workflow.
+
+```
+.omu/
+├── README.md              ← Usage guide
+├── long-term-plan.md      ← Concept, rules, gameplay (기획)
+├── short-term-plan.md     ← Systems, balance, placement, production (개발)
+├── progress.md            ← Active checklist — auto-checked during EXECUTE
+└── history/               ← Archived completed tasks (CLEANUP)
+    └── YYYYMMDD-<task>.md
+```
+
+| Stage | OMU Phase | .omu File | Action |
+|-------|-----------|-----------|--------|
+| **기획** (Planning) | PLAN | `long-term-plan.md` | Read concept/rules/gameplay |
+| **개발** (Development) | EXECUTE | `short-term-plan.md` | Check off completed systems |
+| **QA** | VERIFY | `progress.md` | Track test results and bugs |
+| **수익성** (Monetization) | CLEANUP | `history/` | Archive completed sprint |
+
+---
+
 ## 📋 Changelog
+
+### `v2.6.0` — Game Lifecycle Management
+
+- **Added** `.omu/` game management folder — `long-term-plan.md`, `short-term-plan.md`, `progress.md`, `history/`
+- **Added** OMU SKILL.md Step 0.1: `.omu` bootstrap, game stage detection (기획/개발/QA/수익성), plan auto-read
+- **Added** EXECUTE phase `.omu/progress.md` auto-update with `[x]` checks and new task appending
+- **Added** CLEANUP phase history archive — completed items move to `history/YYYYMMDD-<task>.md` and are removed from active docs
 
 ### `v2.5.0` — Stability & Installation Improvements
 

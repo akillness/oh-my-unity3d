@@ -347,6 +347,32 @@ When executing this guide in an AI agent context (non-interactive terminal):
 | Optimize performance | `omu "Performance optimization: <symptom>"` |
 | Generate GDD | `/bmad-gds-gdd` |
 | Review code | `/code-review` |
+| View game plan | `cat .omu/long-term-plan.md` |
+| Check sprint progress | `cat .omu/progress.md` |
+| View task history | `ls .omu/history/` |
+
+---
+
+## .omu Game Management
+
+The `.omu/` folder is created automatically when you run `omu`. It tracks the full game lifecycle:
+
+```
+기획 (Plan) → 개발 (Execute) → QA (Verify) → 수익성 (Monetize)
+```
+
+| File | Purpose |
+|------|---------|
+| `.omu/long-term-plan.md` | Game concept, rules, gameplay loop, monetization strategy |
+| `.omu/short-term-plan.md` | Current sprint: systems, balance, placement, production |
+| `.omu/progress.md` | Active checklist — auto-checked `[x]` during OMU EXECUTE |
+| `.omu/history/` | Completed task archives (auto-moved during CLEANUP) |
+
+The OMU workflow automatically:
+1. **Reads** `.omu/` docs at PLAN start to load context
+2. **Updates** `progress.md` with `[x]` as tasks complete during EXECUTE
+3. **Archives** completed items to `history/YYYYMMDD-<task>.md` during CLEANUP
+4. **Removes** completed items from active docs to keep them clean
 
 ---
 
