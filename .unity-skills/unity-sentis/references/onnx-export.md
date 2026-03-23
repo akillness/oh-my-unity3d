@@ -1,4 +1,6 @@
-# ONNX Export Guide for Unity Sentis
+# ONNX Export Guide for Unity Sentis / Unity AI Inference
+
+Sentis documentation now notes that the product is renamed to *Inference Engine*. Existing `Unity.Sentis` projects remain common, so export guidance should be written to preserve both the current runtime API and the migration path in documentation.
 
 ## Export from PyTorch
 
@@ -28,7 +30,7 @@ torch.onnx.export(
     model,
     dummy_input,
     "npc_brain.onnx",
-    opset_version=17,           # Sentis requires opset 17
+    opset_version=17,
     input_names=["observations"],
     output_names=["actions"],
     dynamic_axes={"observations": {0: "batch_size"}},
@@ -44,7 +46,7 @@ mlagents-learn config/trainer.yaml --run-id=my_npc --train
 # Trained model saved to: results/my_npc/NPCBrain.onnx
 ```
 
-Copy `NPCBrain.onnx` to Unity `Assets/Models/`.
+Keep the ML-Agents `Behavior Name` aligned with the runtime model contract. Copy `NPCBrain.onnx` to Unity `Assets/Models/`.
 
 ## Export from scikit-learn (using skl2onnx)
 
@@ -81,6 +83,7 @@ for out in model.graph.output:
 ## Sentis compatibility checklist
 
 - [ ] opset_version = 17
-- [ ] No dynamic control flow (if/else) — use static graphs
-- [ ] Input/output names are valid C# identifiers
-- [ ] No unsupported operators (check Unity Sentis supported ops list)
+- [ ] Input/output names are stable and easy to map in C#
+- [ ] Runtime observation shape matches training-time shape
+- [ ] Unsupported operators checked before Unity integration
+- [ ] First-run warmup strategy decided for editor and production startup

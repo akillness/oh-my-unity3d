@@ -1,0 +1,45 @@
+{
+  "skill_name": "unity-mcp",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Configure my AI client to talk to Unity MCP over the default local HTTP server.",
+      "expected_output": "Configuration that points the client to http://localhost:8080/mcp and notes the Unity-side start flow.",
+      "assertions": [
+        "http://localhost:8080/mcp is included",
+        "Window > MCP for Unity start flow is mentioned",
+        "HTTP is presented as the default transport"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My MCP client prefers stdio. Show me the right Unity MCP config.",
+      "expected_output": "A stdio config using uvx and mcp-for-unity with --transport stdio.",
+      "assertions": [
+        "uvx is used",
+        "mcp-for-unity appears in args",
+        "--transport stdio is present"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I have two Unity Editors open. How do I make sure the agent edits the correct project?",
+      "expected_output": "Use unity_instances to inspect available editors, then set_active_instance before any mutating tool calls.",
+      "assertions": [
+        "unity_instances is mentioned",
+        "set_active_instance is mentioned",
+        "The response warns against editing before selecting the instance"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Before generating a complex Unity script, how should an agent verify the API surface?",
+      "expected_output": "Guidance to use unity_docs and unity_reflect before create_script/manage_script and then validate_script/read_console after.",
+      "assertions": [
+        "unity_docs is mentioned",
+        "unity_reflect is mentioned",
+        "validate_script and read_console are both included"
+      ]
+    }
+  ]
+}

@@ -1,243 +1,207 @@
 ---
 name: unity-sentis
 description: >
-  Integrate and run ML models directly inside Unity at runtime using Unity Sentis
-  (Unity 6.3+). Use when importing ONNX models into Unity, setting up runtime
-  inference for NPC behavior, animation, physics prediction, or player analysis,
-  selecting GPU/CPU backend, profiling performance, and deploying on-device AI.
-  Even if the user doesn't say "Sentis" — also triggers on: ONNX in Unity,
-  on-device ML Unity, runtime AI inference Unity, Unity ML runtime, neural network
-  Unity, Unity AI model, Unity machine learning runtime, Unity 6 AI, Sentis GPU,
-  NPC AI inference, Unity brain model.
+  Run ONNX models inside Unity at runtime with Unity Sentis and the newer Unity
+  AI Inference package path. Use when importing ONNX models, creating Workers,
+  choosing GPU/CPU backends, warming up inference, profiling runtime cost, or
+  deploying on-device NPC and gameplay models. Triggers on: Unity Sentis, Unity
+  Inference Engine, ONNX in Unity, runtime inference, Unity neural network,
+  BackendType.GPUCompute, Sentis Worker, on-device NPC AI, inference warmup.
 allowed-tools: Bash Read Write Edit Glob Grep
 compatibility: >
-  Requires Unity 6.3+ (com.unity.sentis >= 2.1.0). Supports ONNX format models.
-  GPU backend requires a GPU with Compute Shader support. CPU backend available on all platforms.
+  Unity 2021.3+ with Sentis package support. Current Sentis docs are published as
+  2.1.3 and note that Sentis is now branded as Unity AI Inference. ONNX import
+  required. GPU backends need compute shader support; CPU backend remains the
+  universal fallback.
 metadata:
-  tags: unity, sentis, onnx, ml-inference, npc, on-device-ai, runtime-ai, unity6
-  keyword: unity-sentis
-  version: "1.0"
+  tags: unity, sentis, inference-engine, onnx, runtime-ai, npc, unity6
+  version: "1.1"
   source: akillness/oh-my-unity3d
 ---
 
-# unity-sentis — On-Device ML Inference in Unity
+# unity-sentis
 
-Unity Sentis is the official Unity ML runtime (Unity 6.3+). Import ONNX models directly into Unity and run inference in-game — no server required. Supports GPU and CPU backends via Compute Shaders and Burst respectively.
+Use this skill when a trained model already exists and the job is to make it run reliably inside Unity. The core problems are model import, backend selection, warmup, inference cadence, and platform-safe deployment.
 
 ## When to use this skill
 
-- Importing a pre-trained ONNX model (ML-Agents, PyTorch export, scikit-learn) into Unity
-- Running NPC behavior inference at runtime without network calls
-- Animating characters with physics prediction models
-- Analyzing player behavior in real-time for adaptive difficulty
-- Profiling ML inference cost with Unity Profiler
-- Deploying AI to mobile/console with CPU backend
+- Importing an ONNX model into Unity and running inference in play mode
+- Migrating from older Sentis wording to the current Unity AI Inference package path
+- Choosing between `BackendType.GPUCompute`, `BackendType.CPU`, and fallback behavior
+- Running NPC or gameplay inference without a Python runtime
+- Profiling model cost and reducing frame spikes
+- Connecting ML-Agents training output to runtime deployment
 
-## Quick Start
+## Instructions
 
-### Install Unity Sentis package
+### Step 1: Install the package and note the rename
 
-In Unity Package Manager, add:
+Current Sentis docs state that Sentis is now called *Inference Engine* and the latest guidance is moving to `com.unity.ai.inference@latest`. Existing Sentis 2.1.x projects still use the `Unity.Sentis` API surface.
 
-```
-com.unity.sentis@2.1.0
-```
-
-Or add to `Packages/manifest.json`:
+`Packages/manifest.json`:
 
 ```json
 {
   "dependencies": {
-    "com.unity.sentis": "2.1.0"
+    "com.unity.sentis": "2.1.3"
   }
 }
 ```
 
-### Import an ONNX model
+If your project is already migrating to the newer package path, keep the skill focused on runtime concepts: import model, create worker, schedule execution, and manage backend/platform constraints.
 
-1. Export your model to ONNX format (see `references/onnx-export.md`)
-2. Drag the `.onnx` file into your Unity `Assets/Models/` folder
-3. Unity auto-converts it to a `ModelAsset`
-
-## Instructions
-
-### Step 1: Load model and create worker
+### Step 2: Load the model and create a worker
 
 ```csharp
+using UnityEngine;
 using Unity.Sentis;
 
-public class NPCBrainController : MonoBehaviour
+public class NpcInferenceController : MonoBehaviour
 {
     [SerializeField] private ModelAsset modelAsset;
-    private Worker worker;
     private Model runtimeModel;
+    private Worker worker;
 
-    void Start()
+    private void Start()
     {
         runtimeModel = ModelLoader.Load(modelAsset);
-
-        // Choose backend based on platform capability
         var backend = SystemInfo.supportsComputeShaders
             ? BackendType.GPUCompute
             : BackendType.CPU;
-
         worker = new Worker(runtimeModel, backend);
     }
 
-    void OnDestroy()
+    private void OnDestroy()
     {
         worker?.Dispose();
     }
 }
 ```
 
-### Step 2: Prepare input tensor
+Use `GPUPixel` only when compute shaders are unavailable and you still need a GPU path. Prefer `GPUCompute` or `CPU`.
+
+### Step 3: Schedule inference and warm it up
+
+Official Sentis docs note that the first scheduled run in the Unity Editor can be slow because code, shaders, and internal buffers are compiled and allocated on first use. Warm the model once during startup if user-facing latency matters.
 
 ```csharp
-void RunInference(float[] observationData)
+private bool warmedUp;
+
+public void RunInference(float[] observations)
 {
-    // Create input tensor matching model's expected shape
-    // e.g., [1, observationSize] for a single agent observation
     using var inputTensor = new Tensor<float>(
-        new TensorShape(1, observationData.Length),
-        observationData
+        new TensorShape(1, observations.Length),
+        observations
     );
 
     worker.Schedule(inputTensor);
-}
-```
 
-### Step 3: Read output tensor
-
-```csharp
-void ApplyInferenceResult()
-{
-    // Peek output without blocking (non-blocking read)
-    var outputTensor = worker.PeekOutput() as Tensor<float>;
-
-    if (outputTensor != null)
+    if (!warmedUp)
     {
-        // Read values — force sync download from GPU
-        var results = outputTensor.DownloadToArray();
-        ApplyActionToNPC(results);
+        var _ = worker.PeekOutput() as Tensor<float>;
+        warmedUp = true;
     }
 }
 ```
 
-### Step 4: Profile performance
-
-In Unity Profiler, look for:
-- `Sentis.Worker.Execute` — inference time per frame
-- `Sentis.Tensor.DownloadToArray` — GPU→CPU readback cost
-
-Target: inference should take ≤ 5% of frame time (< 0.8ms at 60fps).
-
-To reduce cost:
-- Use `BackendType.GPUCompute` when GPU is available
-- Batch multiple agent inferences in a single call
-- Run inference every N frames, not every frame
+### Step 4: Read outputs without stalling more than necessary
 
 ```csharp
-private int inferenceInterval = 5; // run every 5 frames
-private int frameCount = 0;
-
-void Update()
+public float[] ReadActions()
 {
-    frameCount++;
-    if (frameCount % inferenceInterval == 0)
-    {
-        RunInference(GetObservations());
-    }
+    var output = worker.PeekOutput() as Tensor<float>;
+    return output != null ? output.DownloadToArray() : System.Array.Empty<float>();
 }
 ```
 
-### Step 5: Deploy to target platform
+Practical rules:
+- keep tensor shapes stable where possible
+- avoid GPU-to-CPU downloads every frame if you can consume results less often
+- batch multiple agents when they share the same observation schema
 
-| Platform | Recommended Backend |
-|----------|-------------------|
-| PC / Console | `GPUCompute` |
-| Mobile (iOS/Android) | `CPU` (Burst) |
-| WebGL | `CPU` |
+### Step 5: Control cadence and backend by platform
 
 ```csharp
-// Runtime backend selection
-#if UNITY_WEBGL
-    var backend = BackendType.CPU;
-#else
-    var backend = SystemInfo.supportsComputeShaders
-        ? BackendType.GPUCompute
-        : BackendType.CPU;
-#endif
+private int inferenceInterval = 4;
+
+private void Update()
+{
+    if (Time.frameCount % inferenceInterval != 0)
+    {
+        return;
+    }
+
+    RunInference(BuildObservationVector());
+    ApplyActions(ReadActions());
+}
 ```
+
+Guidance:
+- PC / console: start with `GPUCompute`
+- mobile / WebGL / weaker devices: validate `CPU` early
+- profile before locking the cadence
+
+### Step 6: Integrate ML-Agents outputs cleanly
+
+If the model came from ML-Agents, keep the observation order and shape identical between training and runtime deployment. Treat the exported ONNX file and the runtime observation builder as a contract pair.
 
 ## Examples
 
-### Example 1: NPC behavior model inference
+### Example 1: NPC movement policy
 
 ```csharp
-public class SimpleNPCBrain : MonoBehaviour
+public void TickNpcBrain()
 {
-    [SerializeField] ModelAsset brainModel;
-    private Worker worker;
-
-    void Awake()
+    var observations = new[]
     {
-        var model = ModelLoader.Load(brainModel);
-        worker = new Worker(model, BackendType.GPUCompute);
-    }
+        transform.localPosition.x / 10f,
+        transform.localPosition.z / 10f,
+        target.localPosition.x / 10f,
+        target.localPosition.z / 10f,
+    };
 
-    public float[] GetAction(float[] observations)
-    {
-        using var input = new Tensor<float>(
-            new TensorShape(1, observations.Length), observations
-        );
-        worker.Schedule(input);
-        var output = worker.PeekOutput() as Tensor<float>;
-        return output?.DownloadToArray() ?? Array.Empty<float>();
-    }
-
-    void OnDestroy() => worker?.Dispose();
+    RunInference(observations);
+    var actions = ReadActions();
+    Move(actions);
 }
 ```
 
-### Example 2: Adaptive difficulty with player model
+### Example 2: Adaptive difficulty model
 
 ```csharp
-// Feed normalized player stats → predict difficulty multiplier
-float[] playerStats = {
-    normalizedScore,
-    normalizedDeathRate,
-    normalizedSessionTime,
-    normalizedAccuracy
+float[] playerStats =
+{
+    normalizedAccuracy,
+    normalizedDeaths,
+    normalizedClearSpeed,
+    normalizedDamageTaken,
 };
-float[] prediction = npcBrain.GetAction(playerStats);
-float difficultyMultiplier = Mathf.Clamp(prediction[0], 0.5f, 2.0f);
+
+RunInference(playerStats);
+float multiplier = Mathf.Clamp(ReadActions()[0], 0.5f, 2.0f);
+ApplyDifficulty(multiplier);
 ```
 
-### Example 3: Integrate with unity-mcp agent
-
-When using via oh-my-unity3d agent workflow:
+### Example 3: Pair Sentis with unity-mcp
 
 ```
-omu "NPC 행동 모델 통합"
-  [PLAN]     unity-sentis 스킬 로드 → 모델 asset 확인
-  [EXECUTE]  unity-mcp: create_script (NPCBrain.cs) → validate_script
-  [VERIFY]   unity-mcp: run_tests → read_console (Error 확인)
-  [CLEANUP]
+omu "Deploy trained ONNX NPC model"
+  -> unity-mcp: manage_packages / create_script / validate_script
+  -> unity-sentis: worker setup, warmup, cadence selection
+  -> unity-mcp: run_tests / read_console / unity_docs
 ```
 
 ## Best practices
 
-1. **Always Dispose workers** — `worker.Dispose()` in `OnDestroy` to prevent GPU memory leaks
-2. **Non-blocking reads** — use `PeekOutput()` not `TakeOutputOwnership()` to avoid stalls
-3. **Batch inference** — process multiple NPC observations in one worker call when possible
-4. **Profile before shipping** — check `Sentis.Worker.Execute` in Profiler for every target platform
-5. **CPU fallback for mobile** — always include `BackendType.CPU` fallback for devices without Compute Shaders
-6. **ONNX opset 17** — export models with opset 17 for maximum Sentis compatibility
+1. Dispose every `Worker` in `OnDestroy`.
+2. Warm up the first schedule during startup or loading screens.
+3. Keep runtime observation ordering identical to training-time ordering.
+4. Prefer `GPUCompute` and `CPU`; treat `GPUPixel` as a fallback path.
+5. Profile both execution and readback cost before shipping.
+6. When deployment is unstable, verify supported ONNX operators before debugging gameplay code.
 
 ## References
 
-- [Unity Sentis Documentation](https://docs.unity3d.com/Packages/com.unity.sentis@2.1/manual/index.html)
-- [Supported ONNX Operators](https://docs.unity3d.com/Packages/com.unity.sentis@2.1/manual/supported-operators.html)
-- [Unity Sentis GitHub Samples](https://github.com/Unity-Technologies/sentis-samples)
-- See `references/onnx-export.md` for model export guides (PyTorch, ML-Agents, scikit-learn)
+- https://docs.unity3d.com/Packages/com.unity.sentis@2.1/manual/create-an-engine.html
+- https://docs.unity3d.com/Packages/com.unity.sentis@2.1/manual/run-a-model.html
+- See `references/onnx-export.md` for export and compatibility guidance
