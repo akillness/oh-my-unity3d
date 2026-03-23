@@ -25,6 +25,18 @@ metadata:
 
 Use the setup and workflow guidance below when installing or operating OMX inside a Unity3D-oriented Codex CLI environment.
 
+## Quick Start
+
+```bash
+npm install -g oh-my-codex
+omx setup
+omx doctor
+```
+
+```text
+$autopilot "scaffold a Unity input action wrapper with verification notes"
+```
+
 ## Examples
 
 **Scenario: Platform setup for a Unity3D project**

@@ -46,6 +46,24 @@ oh-my-ag agent:spawn backend "Set up Unity3D build pipeline" session-unity-01
 
 ---
 
+## Instructions
+
+1. Install `oh-my-ag`, then confirm `doctor` and dashboard checks pass in the Unity workspace.
+2. Map each domain to the CLI that should own it before spawning long-lived agents.
+3. Keep Serena Memory and monitoring enabled so multi-agent Unity work remains auditable.
+
+## Examples
+
+```text
+/coordinate
+```
+
+```bash
+oh-my-ag agent:spawn qa "triage failing Unity regression tests" session-unity-qa
+```
+
+---
+
 ## 1. Core Concepts
 
 ### Specialized Agents
