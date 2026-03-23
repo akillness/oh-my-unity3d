@@ -1,15 +1,15 @@
 ---
 name: ralph
-description: "Specification-first AI development powered by Ouroboros. Socratic questioning exposes hidden assumptions before writing code. Evolutionary loop (Interview → Seed → Execute → Evaluate → Evolve) runs until ontology converges. Ralph mode persists until verification passes — the boulder never stops. Use when user says \"ralph\", \"ooo\", \"don't stop\", \"must complete\", \"until it works\", \"keep going\", \"interview me\", or \"stop prompting\"."
-allowed-tools: Read Write Bash Grep Glob WebFetch
+description: "Ouroboros specification-first AI development — the complete system. Socratic interviewing crystallizes vague ideas into immutable specs (Ambiguity ≤ 0.2) before any code is written. Nine Minds agents (socratic-interviewer, ontologist, seed-architect, evaluator, contrarian, hacker, simplifier, researcher, architect) execute the Double Diamond. Ralph mode loops with state persistence until verification passes — the boulder never stops. Use when user says \"ralph\", \"ooo\", \"ooo interview\", \"ooo seed\", \"ooo run\", \"ooo evaluate\", \"ooo evolve\", \"ooo unstuck\", \"ooo status\", \"ooo ralph\", \"stop prompting\", \"start specifying\", \"specification first\", \"socratic interview\", \"don't stop\", \"must complete\", \"keep going\", or \"the boulder never stops\"."
+allowed-tools: Read Write Bash Grep Glob WebFetch Agent
 metadata:
-  tags: ralph, ouroboros, specification-first, socratic, interview, seed, evaluate, evolve, loop, completion, self-referential, multi-platform, claude, codex, gemini, boulder, ooo
-  platforms: Claude Code, Codex, Gemini-CLI, OpenCode
+  tags: ralph, ouroboros, specification-first, socratic, interview, seed, evaluate, evolve, loop, completion, nine-minds, double-diamond, convergence, drift, boulder, ooo, multi-platform
+  platforms: Claude Code, Codex CLI, Gemini CLI, OpenCode
   keyword: ralph
-  version: 3.0.0
+  version: 4.0.0
   source: Q00/ouroboros
+  license: MIT
 ---
-
 
 # ralph (Ouroboros) — Specification-First AI Development
 
@@ -17,17 +17,20 @@ metadata:
 >
 > *"The beginning is the end, and the end is the beginning."*
 > The serpent doesn't repeat — it evolves.
+>
+> *Most AI coding fails at the input, not the output. Ouroboros fixes the human, not the machine.*
 
 ---
 
 ## When to use this skill
 
-- **Before writing any code** — expose hidden assumptions with Socratic interviewing
-- **Long-running tasks** that need autonomous iteration until verified
-- **Vague requirements** — crystallize them into an immutable spec (Ambiguity ≤ 0.2)
-- **Tasks requiring guaranteed completion** — loop until verification passes
-- **When stuck** — 5 lateral thinking personas break through stagnation
-- **Drift detection** — measure how far execution has deviated from original spec
+- **Before writing any code** — expose hidden assumptions with Socratic interviewing (Ambiguity ≤ 0.2 required)
+- **Vague requirements** — crystallize into an immutable YAML seed spec before touching the keyboard
+- **Long-running tasks** needing autonomous iteration until verified completion
+- **Guaranteed completion tasks** — Ralph loop persists across session boundaries until verification passes
+- **When stuck** — Nine Minds lateral thinking personas break through stagnation
+- **Drift detection** — measure deviation from original seed and course-correct before it's too late
+- **Ontology convergence** — evolutionary loop runs until consecutive generations are ≥ 0.95 similar
 
 ---
 
@@ -59,7 +62,7 @@ ooo ralph "fix all failing editmode tests in the combat package"
 
 ---
 
-## Core Architecture: The Loop
+## Core Architecture: The Ouroboros Loop
 
 ```
     Interview → Seed → Execute → Evaluate
@@ -83,51 +86,42 @@ Each cycle **evolves**, not repeats. Evaluation output feeds back as input for t
     ◇ Ontology        ◇ Evaluation
 ```
 
-The first diamond is **Socratic**: diverge into questions, converge into ontological clarity.
-The second diamond is **pragmatic**: diverge into design options, converge into verified delivery.
+**First diamond (Socratic):** diverge into questions → converge into ontological clarity.
+**Second diamond (Pragmatic):** diverge into design options → converge into verified delivery.
+
+You cannot design what you haven't understood. The first diamond is a prerequisite for the second.
 
 ---
 
-## 1. Commands (Full Reference)
+## Commands
 
-| Command | Trigger Keywords | What It Does |
-|---------|-----------------|--------------|
-| `ooo interview` | `ooo interview`, `interview me`, `clarify requirements`, `socratic questioning` | Socratic questioning → expose hidden assumptions |
-| `ooo seed` | `ooo seed`, `crystallize`, `generate seed`, `freeze requirements` | Crystallize interview into immutable spec (Ambiguity ≤ 0.2) |
-| `ooo run` | `ooo run`, `execute seed`, `ouroboros run` | Execute via Double Diamond decomposition |
-| `ooo evaluate` | `ooo evaluate`, `3-stage check`, `evaluate this`, `verify execution` | 3-stage gate: Mechanical → Semantic → Multi-Model Consensus |
-| `ooo evolve` | `ooo evolve`, `evolutionary loop`, `iterate until converged` | Evolutionary loop until ontology converges (similarity ≥ 0.95) |
-| `ooo unstuck` | `ooo unstuck`, `I'm stuck`, `think sideways`, `lateral thinking` | 5 lateral thinking personas when stuck |
-| `ooo status` | `ooo status`, `am I drifting?`, `drift check`, `session status` | Drift detection + session tracking |
-| `ooo ralph` | `ooo ralph`, `ralph`, `don't stop`, `must complete`, `keep going` | Persistent loop until verified — The boulder never stops |
+| Command | Triggers | What It Does |
+|---------|----------|--------------|
+| `ooo interview` | `ooo interview`, `interview me`, `clarify requirements`, `socratic questioning` | Socratic questioning until Ambiguity ≤ 0.2 |
+| `ooo seed` | `ooo seed`, `crystallize`, `generate seed`, `freeze requirements` | Crystallize into immutable YAML spec |
+| `ooo run` | `ooo run`, `execute seed`, `ouroboros run` | Execute via Double Diamond |
+| `ooo evaluate` | `ooo evaluate`, `3-stage check`, `evaluate this` | 3-stage gate: Mechanical → Semantic → Consensus |
+| `ooo evolve` | `ooo evolve`, `evolutionary loop`, `iterate until converged` | Evolutionary loop until Similarity ≥ 0.95 |
+| `ooo unstuck` | `ooo unstuck`, `I'm stuck`, `think sideways`, `lateral thinking` | Nine Minds lateral thinking personas |
+| `ooo status` | `ooo status`, `am I drifting?`, `drift check` | Drift detection + session tracking |
+| `ooo ralph` | `ooo ralph`, `ralph-ooo`, `don't stop`, `must complete`, `keep going` | Persistent loop until verified |
 | `ooo setup` | `ooo setup` | Register MCP server (one-time) |
-| `ooo help` | `ooo help` | Full reference |
+| `ooo cancel` | `/ouroboros:cancel`, `/ralph-ooo:cancel` | Save checkpoint and exit |
 
 ---
 
-## 2. Interview → Specification Flow
-
-### Philosophy: From Wonder to Ontology
+## Phase 1: Interview — From Wonder to Ontology
 
 > *Wonder → "How should I live?" → "What IS 'live'?" → Ontology* — Socrates
 
-```
-   Wonder                          Ontology
-     💡                               🔬
-"What do I want?"    →    "What IS the thing I want?"
-"Build a task CLI"   →    "What IS a task? What IS priority?"
-"Fix the auth bug"   →    "Is this the root cause, or a symptom?"
-```
-
-### Step 1: Interview (expose hidden assumptions)
+The Socratic Interviewer asks questions until **Ambiguity ≤ 0.2**. This is the gate between vague desire and executable spec.
 
 ```
 ooo interview "I want to build a task management CLI"
 ```
 
-The Socratic Interviewer asks questions until **Ambiguity ≤ 0.2**.
+### Ambiguity Formula
 
-**Ambiguity formula:**
 ```
 Ambiguity = 1 − Σ(clarityᵢ × weightᵢ)
 
@@ -137,23 +131,28 @@ Brownfield: Goal(35%) + Constraint(25%) + Success(25%) + Context(15%)
 Threshold: Ambiguity ≤ 0.2 → ready for Seed
 ```
 
-Example scoring:
+**Example scoring:**
 ```
-Goal:       0.9 × 0.4 = 0.36
-Constraint: 0.8 × 0.3 = 0.24
-Success:    0.7 × 0.3 = 0.21
-                        ──────
+Goal:       0.9 × 0.4 = 0.36   # "Build a CLI task manager" — clear
+Constraint: 0.8 × 0.3 = 0.24   # "Python 3.14+, SQLite only" — defined
+Success:    0.7 × 0.3 = 0.21   # "Tasks create/list/complete" — measurable
+                      ──────
 Clarity             = 0.81
 Ambiguity = 1 − 0.81 = 0.19 ≤ 0.2 → ✓ Ready for Seed
 ```
 
-### Step 2: Seed (crystallize into immutable spec)
+Why 0.2? At 80% weighted clarity, remaining unknowns are small enough for code-level decisions to resolve. Above that threshold, you're still guessing at architecture.
+
+---
+
+## Phase 2: Seed — Immutable Specification
 
 ```
 ooo seed
 ```
 
-Generates YAML specification:
+Generates YAML spec locked from interview answers:
+
 ```yaml
 goal: Build a CLI task management tool
 constraints:
@@ -161,8 +160,8 @@ constraints:
   - No external database
   - SQLite for persistence
 acceptance_criteria:
-  - Tasks can be created
-  - Tasks can be listed
+  - Tasks can be created with title and priority
+  - Tasks can be listed with status filter
   - Tasks can be marked complete
 ontology_schema:
   name: TaskManager
@@ -171,16 +170,32 @@ ontology_schema:
       type: array
     - name: title
       type: string
+    - name: priority
+      type: enum[low, medium, high]
+    - name: status
+      type: enum[open, done]
 ```
 
-### Step 3: Run (execute via Double Diamond)
+**The seed is immutable.** Once generated, it is the ground truth. Drift is measured against it.
+
+---
+
+## Phase 3: Execute — Double Diamond Run
 
 ```
 ooo run seed.yaml
-ooo run  # uses seed from conversation context
+ooo run   # uses seed from conversation context
 ```
 
-### Step 4: Evaluate (3-stage verification)
+Executes the four phases:
+1. **Discover** — research existing patterns, constraints, precedents
+2. **Define** — ontological clarity, edge cases, decision boundaries
+3. **Design** — architecture, component breakdown, interface contracts
+4. **Deliver** — implementation, tests, documentation
+
+---
+
+## Phase 4: Evaluate — 3-Stage Verification Gate
 
 ```
 ooo evaluate <session_id>
@@ -188,133 +203,27 @@ ooo evaluate <session_id>
 
 | Stage | Cost | What It Checks |
 |-------|------|----------------|
-| **Mechanical** | $0 | Lint, build, tests, coverage |
+| **Mechanical** | Free | Lint, build, tests, coverage, type checks |
 | **Semantic** | Standard | AC compliance, goal alignment, drift score |
 | **Consensus** | Frontier (optional) | Multi-model vote, majority ratio |
 
-Drift thresholds:
-- `0.0 – 0.15` — Excellent: on track
-- `0.15 – 0.30` — Acceptable: monitor closely
-- `0.30+` — Exceeded: course correction needed
+### Drift Thresholds
+
+| Score | Status | Action |
+|-------|--------|--------|
+| `0.0 – 0.15` | Excellent | On track |
+| `0.15 – 0.30` | Acceptable | Monitor closely |
+| `0.30+` | Exceeded | Course correction required |
+
+Drift = weighted deviation from seed across three axes: Goal(50%) + Constraint(30%) + Ontology(20%).
 
 ---
 
-## 3. Ralph — Persistent Loop Until Verified
-
-```
-ooo ralph "fix all failing tests"
-/ouroboros:ralph "fix all failing tests"
-```
-
-**"The boulder never stops."**
-Each failure is data for the next attempt. Only complete success or max iterations stops it.
-
-### How Ralph Works
-
-```
-┌─────────────────────────────────┐
-│  1. EXECUTE (parallel)          │
-│     Independent tasks           │
-│     concurrent scheduling       │
-├─────────────────────────────────┤
-│  2. VERIFY                      │
-│     Check completion            │
-│     Validate tests pass         │
-│     Measure drift vs seed       │
-├─────────────────────────────────┤
-│  3. LOOP (if failed)            │
-│     Analyze failure             │
-│     Fix identified issues       │
-│     Repeat from step 1          │
-├─────────────────────────────────┤
-│  4. PERSIST (checkpoint)        │
-│     .omc/state/ralph-state.json │
-│     Resume after interruption   │
-└─────────────────────────────────┘
-```
-
-### State File
-
-Create `.omc/state/ralph-state.json` on start:
-```json
-{
-  "mode": "ralph",
-  "session_id": "<uuid>",
-  "request": "<user request>",
-  "status": "running",
-  "iteration": 0,
-  "max_iterations": 10,
-  "last_checkpoint": null,
-  "verification_history": []
-}
-```
-
-### Loop Logic
-
-```
-while iteration < max_iterations:
-    result = execute_parallel(request, context)
-    verification = verify_result(result, acceptance_criteria)
-    state.verification_history.append({
-        "iteration": iteration,
-        "passed": verification.passed,
-        "score": verification.score,
-        "timestamp": <now>
-    })
-    if verification.passed:
-        save_checkpoint("complete")
-        break
-    iteration += 1
-    save_checkpoint("iteration_{iteration}")
-```
-
-### Progress Report Format
-
-```
-[Ralph Iteration 1/10]
-Executing in parallel...
-
-Verification: FAILED
-Score: 0.65
-Issues:
-- 3 tests still failing
-- Type errors in src/api.py
-
-The boulder never stops. Continuing...
-
-[Ralph Iteration 3/10]
-Executing in parallel...
-
-Verification: PASSED
-Score: 1.0
-
-Ralph COMPLETE
-==============
-Request: Fix all failing tests
-Duration: 8m 32s
-Iterations: 3
-
-Verification History:
-- Iteration 1: FAILED (0.65)
-- Iteration 2: FAILED (0.85)
-- Iteration 3: PASSED (1.0)
-```
-
-### Cancellation
-
-| Action | Command |
-|--------|---------|
-| Save checkpoint & exit | `/ouroboros:cancel` |
-| Force clear all state | `/ouroboros:cancel --force` |
-| Resume after interruption | `ooo ralph continue` or `ralph continue` |
-
----
-
-## 4. Evolutionary Loop (Evolve)
+## Phase 5: Evolve — Ontological Convergence
 
 ```
 ooo evolve "build a task management CLI"
-ooo evolve "build a task management CLI" --no-execute  # ontology-only, fast mode
+ooo evolve "topic" --no-execute   # ontology-only fast mode
 ```
 
 ### Flow
@@ -323,7 +232,7 @@ ooo evolve "build a task management CLI" --no-execute  # ontology-only, fast mod
 Gen 1: Interview → Seed(O₁) → Execute → Evaluate
 Gen 2: Wonder → Reflect → Seed(O₂) → Execute → Evaluate
 Gen 3: Wonder → Reflect → Seed(O₃) → Execute → Evaluate
-...until ontology converges (similarity ≥ 0.95) or max 30 generations
+...until Similarity ≥ 0.95 or 30 generations
 ```
 
 ### Convergence Formula
@@ -332,42 +241,144 @@ Gen 3: Wonder → Reflect → Seed(O₃) → Execute → Evaluate
 Similarity = 0.5 × name_overlap + 0.3 × type_match + 0.2 × exact_match
 Threshold: Similarity ≥ 0.95 → CONVERGED
 
-Gen 1: {Task, Priority, Status}
-Gen 2: {Task, Priority, Status, DueDate}  → similarity 0.78 → CONTINUE
-Gen 3: {Task, Priority, Status, DueDate}  → similarity 1.00 → CONVERGED ✓
+Gen 1: {Task, Priority, Status}                     → baseline
+Gen 2: {Task, Priority, Status, DueDate}            → similarity 0.78 → CONTINUE
+Gen 3: {Task, Priority, Status, DueDate}            → similarity 1.00 → CONVERGED ✓
 ```
 
 ### Stagnation Detection
 
-| Signal | Condition | Meaning |
-|--------|-----------|---------|
-| **Stagnation** | Similarity ≥ 0.95 for 3 consecutive gens | Ontology has stabilized |
-| **Oscillation** | Gen N ≈ Gen N-2 (period-2 cycle) | Stuck bouncing between two designs |
-| **Repetitive feedback** | ≥ 70% question overlap across 3 gens | Wonder asking the same things |
-| **Hard cap** | 30 generations reached | Safety valve |
-
-### Ralph in Evolve Mode
-
-```
-Ralph Cycle 1: evolve_step(lineage, seed) → Gen 1 → action=CONTINUE
-Ralph Cycle 2: evolve_step(lineage)       → Gen 2 → action=CONTINUE
-Ralph Cycle 3: evolve_step(lineage)       → Gen 3 → action=CONVERGED ✓
-                                                └── Ralph stops.
-                                                    The ontology has stabilized.
-```
-
-### Rewind
-
-```
-ooo evolve --status <lineage_id>          # check lineage status
-ooo evolve --rewind <lineage_id> <gen_N>  # roll back to generation N
-```
+| Signal | Condition | Response |
+|--------|-----------|----------|
+| **Stagnation** | Similarity ≥ 0.95 for 3 consecutive gens | Stop — converged |
+| **Oscillation** | Gen N ≈ Gen N-2 (period-2 cycle) | Invoke `contrarian` persona |
+| **Repetitive feedback** | ≥ 70% question overlap across 3 gens | Invoke `researcher` persona |
+| **Hard cap** | 30 generations reached | Stop — safety valve |
 
 ---
 
-## 5. The Nine Minds (Agents)
+## Ralph — Persistent Loop Until Verified
 
-Loaded on-demand — never preloaded:
+```
+ooo ralph "fix all failing tests"
+ooo ralph "implement the payment module"
+```
+
+**"The boulder never stops."**
+Each failure is data for the next attempt. Only verified success or max iterations stops it.
+
+### Loop Architecture
+
+```
+┌─────────────────────────────────────┐
+│  1. EXECUTE (parallel agents)       │
+│     Fire independent sub-tasks      │
+│     concurrently via Agent tool     │
+├─────────────────────────────────────┤
+│  2. VERIFY                          │
+│     Check acceptance criteria       │
+│     Run tests, lint, typecheck      │
+│     Measure drift vs seed           │
+├─────────────────────────────────────┤
+│  3. LOOP (if failed)                │
+│     Analyze failure evidence        │
+│     Fix identified issues           │
+│     Increment iteration counter     │
+│     Repeat from step 1              │
+├─────────────────────────────────────┤
+│  4. PERSIST (each iteration)        │
+│     .omc/state/ralph-ooo-state.json │
+│     Resume after interruption       │
+└─────────────────────────────────────┘
+```
+
+### State File Schema
+
+Create `.omc/state/ralph-ooo-state.json` on start:
+
+```json
+{
+  "mode": "ralph-ooo",
+  "session_id": "<uuid>",
+  "request": "<user request>",
+  "status": "running",
+  "iteration": 0,
+  "max_iterations": 10,
+  "last_checkpoint": null,
+  "seed_path": null,
+  "verification_history": []
+}
+```
+
+### Loop Logic (Pseudocode)
+
+```python
+while iteration < max_iterations:
+    result = execute_parallel(request, context)
+    verification = verify_result(result, acceptance_criteria)
+    state.verification_history.append({
+        "iteration": iteration,
+        "passed": verification.passed,
+        "score": verification.score,
+        "timestamp": now()
+    })
+    save_checkpoint(f"iteration_{iteration}")
+    if verification.passed:
+        save_checkpoint("complete")
+        break
+    iteration += 1
+```
+
+### Progress Report Format
+
+```
+[Ralph-OOO Iteration 1/10]
+Executing in parallel...
+
+Verification: FAILED
+Score: 0.65
+Issues:
+  - 3 tests still failing
+  - Type error in src/api.py:42
+
+The boulder never stops. Continuing...
+
+[Ralph-OOO Iteration 3/10]
+Verification: PASSED ✓
+Score: 1.0
+
+Ralph-OOO COMPLETE
+==================
+Request: Fix all failing tests
+Duration: 8m 32s
+Iterations: 3
+Verification History:
+  - Iteration 1: FAILED (0.65)
+  - Iteration 2: FAILED (0.85)
+  - Iteration 3: PASSED (1.0)
+```
+
+### Completion Promise (Codex / Gemini)
+
+```xml
+<promise>DONE</promise>
+```
+
+Default promise: `DONE` | Default max iterations: `10`
+
+### Cancellation
+
+| Action | Command |
+|--------|---------|
+| Save checkpoint & exit | `/ouroboros:cancel` or `/ralph-ooo:cancel` |
+| Force clear all state | `/ouroboros:cancel --force` |
+| Resume after interruption | `ooo ralph continue` |
+
+---
+
+## The Nine Minds
+
+Loaded on-demand — never preloaded. Each mind has a single core question it cannot stop asking.
 
 | Agent | Role | Core Question |
 |-------|------|--------------|
@@ -381,163 +392,33 @@ Loaded on-demand — never preloaded:
 | **Researcher** | Stops coding, starts investigating | *"What evidence do we actually have?"* |
 | **Architect** | Identifies structural causes | *"If we started over, would we build it this way?"* |
 
+See [references/nine-minds.md](./references/nine-minds.md) for full agent profiles.
+
 ---
 
-## 6. Unstuck — Lateral Thinking
+## Unstuck — Lateral Thinking
 
-When blocked after repeated failures, choose a persona:
+When blocked after repeated failures:
 
 ```
-ooo unstuck                 # auto-select based on situation
-ooo unstuck simplifier      # cut scope to MVP — "Start with exactly 2 tables"
-ooo unstuck hacker          # make it work first, elegance later
-ooo unstuck contrarian      # challenge all assumptions
-ooo unstuck researcher      # stop coding, find missing information
-ooo unstuck architect       # restructure the approach entirely
+ooo unstuck                  # auto-select based on context
+ooo unstuck simplifier       # cut scope to MVP
+ooo unstuck hacker           # make it work first, elegance later
+ooo unstuck contrarian       # challenge all assumptions
+ooo unstuck researcher       # stop coding, find missing information
+ooo unstuck architect        # restructure the approach entirely
 ```
 
-**When to use each:**
+**Decision guide:**
 - Repeated similar failures → `contrarian` (challenge assumptions)
-- Too many options → `simplifier` (reduce scope)
-- Missing information → `researcher` (seek data)
-- Analysis paralysis → `hacker` (just make it work)
-- Structural issues → `architect` (redesign)
+- Too many options / paralysis → `simplifier` (reduce scope)
+- Missing information / unclear root cause → `researcher` (seek evidence)
+- Analysis paralysis / need momentum → `hacker` (just make it work)
+- Structural issues / wrong foundation → `architect` (redesign)
 
 ---
 
-## 7. Platform Installation & Usage
-
-### Claude Code (Native Plugin — Full Mode)
-
-```bash
-# Install
-claude plugin marketplace add Q00/ouroboros
-claude plugin install ouroboros@ouroboros
-
-# One-time setup
-ooo setup
-
-# Use
-ooo interview "I want to build a task CLI"
-ooo seed
-ooo run
-ooo evaluate <session_id>
-ooo ralph "fix all failing tests"
-```
-
-All `ooo` commands work natively. Hooks auto-activate:
-- `UserPromptSubmit` → keyword-detector.mjs detects triggers
-- `PostToolUse(Write|Edit)` → drift-monitor.mjs tracks deviation
-- `SessionStart` → session initialization
-
-**Claude Code hooks.json** (installed at `${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json`):
-```json
-{
-  "hooks": {
-    "SessionStart": [{ "matcher": "*", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/session-start.mjs\"", "timeout": 5 }] }],
-    "UserPromptSubmit": [{ "matcher": "*", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/keyword-detector.mjs\"", "timeout": 5 }] }],
-    "PostToolUse": [{ "matcher": "Write|Edit", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/drift-monitor.mjs\"", "timeout": 3 }] }]
-  }
-}
-```
-
-### Codex CLI (Adapted Mode — bash loop)
-
-Codex CLI has no native AfterAgent hooks. Use the setup script to configure:
-
-```bash
-# Setup
-bash <your-agent-skills>/ralph/scripts/setup-codex-hook.sh
-
-# Restart Codex, then use:
-/prompts:ralph              # load ralph loop context
-/prompts:ouroboros          # load full ouroboros context
-
-# Use ooo commands in conversation:
-ooo interview "build a REST API"
-ooo ralph "fix all TypeScript errors"
-```
-
-**Codex ralph loop contract:**
-1. Treat `/ralph "<task>" [--completion-promise=TEXT] [--max-iterations=N]` as a contract command
-2. Parse completion signal inside XML: `<promise>VALUE</promise>`
-3. If promise missing and iteration < max-iterations → continue immediately with same original command
-4. If promise found or max-iterations reached → finish with status report
-
-**Completion promise syntax:**
-```xml
-<promise>DONE</promise>
-```
-
-Manual state management for Codex:
-- Create `.omc/state/ralph-state.json` at loop start
-- Update `iteration` counter each cycle
-- Set `status: "complete"` when promise found
-- Default completion promise: `DONE` | Default max iterations: `10`
-
-### Gemini CLI (AfterAgent Hook Mode)
-
-```bash
-# Install via extensions
-gemini extensions install https://github.com/Q00/ouroboros
-# OR install skills-template
-gemini extensions install https://github.com/akillness/oh-my-skills
-```
-
-Required in `~/.gemini/settings.json`:
-```json
-{
-  "hooksConfig": { "enabled": true },
-  "context": {
-    "includeDirectories": ["~/.gemini/extensions/ralph"]
-  }
-}
-```
-
-AfterAgent hook for loop continuation (add to `~/.gemini/settings.json`):
-```json
-{
-  "hooks": {
-    "AfterAgent": [{
-      "matcher": "*",
-      "hooks": [{
-        "type": "command",
-        "command": "bash ~/.gemini/hooks/ralph-check.sh",
-        "timeout": 10
-      }]
-    }]
-  }
-}
-```
-
-Run in sandbox + YOLO mode to prevent constant confirmation prompts:
-```bash
-gemini -s -y
-```
-
-Then use `ooo` commands directly:
-```
-ooo interview "build a task CLI"
-ooo ralph "fix all tests"
-```
-
-⚠️ **Gemini v0.30.0 bug**: `stop_hook_active` always `false` in hook JSON.
-Workaround: check `.omc/state/ralph-state.json` directly instead of relying on the hook field.
-
----
-
-## 8. Platform Support Matrix
-
-| Platform | Native Support | Mechanism | ooo Commands | Loop |
-|----------|---------------|-----------|-------------|------|
-| **Claude Code** | ✅ Full | Plugin + hooks | All `ooo` commands | Auto via hooks |
-| **Codex CLI** | 🔧 Adapted | bash + `/prompts:ralph` | Via conversation | Manual state file |
-| **Gemini CLI** | ✅ Native | AfterAgent hook | All `ooo` commands | Auto via hook |
-| **OpenCode** | ✅ Native | Skills system | All `ooo` commands | Auto via loop |
-
----
-
-## 9. Quick Reference
+## Quick Reference
 
 | Action | Command |
 |--------|---------|
@@ -551,28 +432,64 @@ Workaround: check `.omc/state/ralph-state.json` directly instead of relying on t
 | Check drift | `ooo status [session_id]` |
 | First-time setup | `ooo setup` |
 | Cancel | `/ouroboros:cancel` |
-| Force cancel + clear | `/ouroboros:cancel --force` |
+| Force cancel | `/ouroboros:cancel --force` |
 | Resume | `ooo ralph continue` |
-| Cancel (Gemini/Codex) | `/ralph:cancel` |
 
 ---
 
-## 10. Installation
+## Available Scripts
+
+Run from the skill directory:
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/setup-codex-hook.sh` | Configure Codex CLI for ralph-ooo (developer_instructions + prompts) |
+| `scripts/setup-gemini-hook.sh` | Configure Gemini CLI AfterAgent hook for loop continuation |
+| `scripts/ooo-state.sh` | Manage `.omc/state/ralph-ooo-state.json` (init/status/checkpoint/reset/resume) |
+
+---
+
+## Platform Support Matrix
+
+| Platform | Support | Mechanism | ooo Commands | Auto Loop |
+|----------|---------|-----------|-------------|-----------|
+| **Claude Code** | Full | Skills system + hooks | All `ooo` commands | Via hooks |
+| **Codex CLI** | Adapted | bash loop + `/prompts:ralph-ooo` | Via conversation | Manual state file |
+| **Gemini CLI** | Native | AfterAgent hook | All `ooo` commands | Via hook |
+| **OpenCode** | Native | Skills system | All `ooo` commands | Via loop |
+
+---
+
+## Installation
 
 ```bash
-# Claude Code
+# Claude Code (via oh-my-skills)
+npx skills add https://github.com/akillness/oh-my-skills --skill ralph-ooo
+
+# Codex CLI setup
+bash .agent-skills/ralph-ooo/scripts/setup-codex-hook.sh
+
+# Gemini CLI setup
+bash .agent-skills/ralph-ooo/scripts/setup-gemini-hook.sh
+
+# Ouroboros native plugin
 claude plugin marketplace add Q00/ouroboros
 claude plugin install ouroboros@ouroboros
 ooo setup
-
-# Codex CLI
-bash <skills>/ralph/scripts/setup-codex-hook.sh
-
-# Gemini CLI (extensions)
-gemini extensions install https://github.com/Q00/ouroboros
-
-# All platforms via skills-template
-npx skills add https://github.com/akillness/oh-my-skills --skill ralph
 ```
+
+---
+
+## References
+
+Detailed documentation in `references/`:
+
+| File | Contents |
+|------|---------|
+| `references/ouroboros-commands.md` | Full ooo command syntax, parameters, output formats, state schemas |
+| `references/nine-minds.md` | All 9 agent profiles, core questions, when to invoke, unstuck guide |
+| `references/platform-setup.md` | Per-platform setup, hooks.json, AfterAgent config, Gemini bug workarounds |
+
+---
 
 Source: [Q00/ouroboros](https://github.com/Q00/ouroboros) — MIT License
