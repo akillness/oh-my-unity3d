@@ -95,14 +95,14 @@ fi
 
 STDERR_FILE="${FEEDBACK_DIR}/plannotator_stderr.txt"
 # Ensure lock is always cleaned up on script exit
-trap 'rm -f /tmp/omu-plannotator-direct.lock' EXIT INT TERM
+trap 'rm -f "${_TMPDIR:-${TMPDIR:-/tmp}}/omu-plannotator-direct-${SESSION_KEY}.lock"' EXIT INT TERM
 
 attempt=1
 while (( attempt <= MAX_RESTARTS )); do
   : > "$FEEDBACK_FILE"
   : > "$STDERR_FILE"
   # Create lock BEFORE starting plannotator to prevent ExitPlanMode hook double-launch
-  touch /tmp/omu-plannotator-direct.lock
+  touch "${_TMPDIR:-${TMPDIR:-/tmp}}/omu-plannotator-direct-${SESSION_KEY}.lock"
 
   python3 -c "
 import json, sys
@@ -111,7 +111,7 @@ sys.stdout.write(json.dumps({'tool_input': {'plan': plan, 'permission_mode': 'ac
 " "$PLAN_FILE" | env HOME="$RUNTIME_HOME" PLANNOTATOR_HOME="$RUNTIME_HOME" plannotator > "$FEEDBACK_FILE" 2>"$STDERR_FILE" || true
 
   # Release lock immediately after plannotator exits
-  rm -f /tmp/omu-plannotator-direct.lock
+  rm -f "${_TMPDIR:-${TMPDIR:-/tmp}}/omu-plannotator-direct-${SESSION_KEY}.lock"
 
   # Merge stderr into feedback for error detection (keep JSON intact at start of FEEDBACK_FILE)
   if [[ -s "$STDERR_FILE" ]]; then

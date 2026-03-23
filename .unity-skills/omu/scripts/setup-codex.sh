@@ -276,6 +276,7 @@ def main() -> int:
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
+        timeout=1800,  # 30 min guard — prevents infinite block if plannotator UI is never closed
     )
     write_result(cwd, result.returncode)
     if result.stdout:
