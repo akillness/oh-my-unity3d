@@ -5,10 +5,17 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Cross-platform temp dir: respects TMPDIR (macOS/Linux) TMP/TEMP (Windows Git Bash)
+_TMPDIR="${TMPDIR:-${TMP:-${TEMP:-/tmp}}}"
 PLAN_FILE="${1:-plan.md}"
 FEEDBACK_FILE="${2:-}"
 MAX_RESTARTS="${3:-3}"
-PORT_ERROR_REGEX='Failed to start server\. Is port .* in use|EADDRINUSE|EPERM|operation not permitted|Failed to listen|Cannot GET|404 Not Found|500 Internal Server Error|SyntaxError|Unexpected token|page error|ReferenceError|TypeError.*Cannot read'
+# Dedicated port for plannotator (IANA unassigned — rarely conflicts with other services).
+# Override with: PLANNOTATOR_PORT=XXXXX bash plannotator-plan-loop.sh ...
+PLANNOTATOR_PORT="${PLANNOTATOR_PORT:-47291}"
+# Seconds to wait for plannotator to bind its port after launch (startup detection).
+PLANNOTATOR_START_TIMEOUT="${PLANNOTATOR_START_TIMEOUT:-15}"
+PORT_ERROR_REGEX='Failed to start server\. Is port .* in use|EADDRINUSE|EPERM|operation not permitted|Failed to listen'
 
 if ! command -v plannotator >/dev/null 2>&1; then
   if ! bash "$SCRIPT_DIR/ensure-plannotator.sh" --quiet; then
@@ -29,8 +36,19 @@ if ! [[ "$MAX_RESTARTS" =~ ^[0-9]+$ ]] || [[ "$MAX_RESTARTS" -lt 1 ]]; then
   exit 2
 fi
 
+PLAN_HASH="$(python3 - "$PLAN_FILE" <<'PYEOF'
+import hashlib, pathlib, sys
+path = pathlib.Path(sys.argv[1])
+try:
+    data = path.read_text(encoding="utf-8")
+except Exception:
+    data = ""
+print(hashlib.sha256(data.encode("utf-8")).hexdigest() if data else "")
+PYEOF
+)"
+
 SESSION_KEY="$(python3 -c "import hashlib,os; print(hashlib.md5(os.getcwd().encode()).hexdigest()[:8])" 2>/dev/null || echo "default")"
-FEEDBACK_DIR="/tmp/omu-${SESSION_KEY}"
+FEEDBACK_DIR="${_TMPDIR}/omu-${SESSION_KEY}"
 RUNTIME_HOME="${FEEDBACK_DIR}/.plannotator"
 mkdir -p "$FEEDBACK_DIR" "$RUNTIME_HOME"
 
@@ -66,78 +84,306 @@ if os.path.exists(f):
 " 2>/dev/null || true
 }
 
-probe_local_listen() {
+persist_plan_state() {
+  local gate_status="$1"
+  local approved="$2"
+  local review_method="${3:-plannotator}"
+  local feedback_path="${4:-}"
+  OMU_GATE_STATUS="$gate_status" \
+  OMU_APPROVED="$approved" \
+  OMU_REVIEW_METHOD="$review_method" \
+  OMU_PLAN_HASH="$PLAN_HASH" \
+  OMU_FEEDBACK_FILE="$feedback_path" \
+  python3 - <<'PYEOF'
+import datetime
+import json
+import os
+import subprocess
+
+try:
+    root = subprocess.check_output(
+        ["git", "rev-parse", "--show-toplevel"],
+        stderr=subprocess.DEVNULL,
+        text=True,
+    ).strip()
+except Exception:
+    root = os.getcwd()
+
+state_path = os.path.join(root, ".omc", "state", "omu-state.json")
+if not os.path.exists(state_path):
+    raise SystemExit(0)
+
+try:
+    import fcntl
+except Exception:
+    fcntl = None
+
+feedback_payload = None
+feedback_file = os.environ.get("OMU_FEEDBACK_FILE", "")
+if feedback_file and os.path.exists(feedback_file):
+    try:
+        feedback_payload = json.load(open(feedback_file))
+    except Exception:
+        feedback_payload = None
+
+with open(state_path, "r+", encoding="utf-8") as fh:
+    if fcntl:
+        fcntl.flock(fh, fcntl.LOCK_EX)
+    try:
+        state = json.load(fh)
+        gate_status = os.environ.get("OMU_GATE_STATUS", "pending")
+        approved = os.environ.get("OMU_APPROVED", "false").lower() == "true"
+        review_method = os.environ.get("OMU_REVIEW_METHOD", "plannotator")
+        plan_hash = os.environ.get("OMU_PLAN_HASH", "")
+        state["plan_gate_status"] = gate_status
+        state["plan_approved"] = approved
+        state["plan_review_method"] = review_method
+        state["plan_current_hash"] = plan_hash
+        state["last_reviewed_plan_hash"] = plan_hash
+        state["last_reviewed_plan_at"] = datetime.datetime.utcnow().isoformat() + "Z"
+        if approved:
+            state["phase"] = "execute"
+            state["ralphmode_requested"] = True
+        elif gate_status == "feedback_required" and feedback_payload is not None:
+            state["plannotator_feedback"] = feedback_payload
+        state["updated_at"] = datetime.datetime.utcnow().isoformat() + "Z"
+        fh.seek(0)
+        json.dump(state, fh, ensure_ascii=False, indent=2)
+        fh.truncate()
+    finally:
+        if fcntl:
+            fcntl.flock(fh, fcntl.LOCK_UN)
+PYEOF
+}
+
+prepare_state_for_plan_hash() {
+  OMU_PLAN_HASH="$PLAN_HASH" python3 - <<'PYEOF'
+import datetime
+import json
+import os
+import subprocess
+import sys
+
+try:
+    root = subprocess.check_output(
+        ["git", "rev-parse", "--show-toplevel"],
+        stderr=subprocess.DEVNULL,
+        text=True,
+    ).strip()
+except Exception:
+    root = os.getcwd()
+
+state_path = os.path.join(root, ".omc", "state", "omu-state.json")
+if not os.path.exists(state_path):
+    raise SystemExit(0)
+
+state = json.load(open(state_path, encoding="utf-8"))
+current_hash = os.environ.get("OMU_PLAN_HASH", "")
+last_hash = state.get("last_reviewed_plan_hash")
+gate_status = state.get("plan_gate_status", "pending")
+
+if current_hash and last_hash == current_hash and gate_status in {"approved", "manual_approved"}:
+    print("SKIP_APPROVED")
+    raise SystemExit(0)
+if current_hash and last_hash == current_hash and gate_status == "feedback_required":
+    print("SKIP_FEEDBACK")
+    raise SystemExit(0)
+if current_hash and last_hash == current_hash and gate_status == "infrastructure_blocked":
+    print("SKIP_BLOCKED")
+    raise SystemExit(0)
+
+state["plan_current_hash"] = current_hash
+if current_hash and last_hash and current_hash != last_hash and gate_status != "pending":
+    state["plan_gate_status"] = "pending"
+    state["plan_approved"] = False
+    state["updated_at"] = datetime.datetime.utcnow().isoformat() + "Z"
+    with open(state_path, "w", encoding="utf-8") as f:
+        json.dump(state, f, ensure_ascii=False, indent=2)
+    print("RESET_FOR_NEW_HASH")
+PYEOF
+}
+
+STATE_PLAN_GUARD="$(prepare_state_for_plan_hash 2>/dev/null || true)"
+case "$STATE_PLAN_GUARD" in
+  SKIP_APPROVED)
+    echo "[OMU][PLAN] plan gate already approved for current plan hash — skipping re-entry." >&2
+    exit 0
+    ;;
+  SKIP_FEEDBACK)
+    echo "[OMU][PLAN] feedback already recorded for current plan hash — revise the plan before re-opening plannotator." >&2
+    exit 10
+    ;;
+  SKIP_BLOCKED)
+    echo "[OMU][PLAN] infrastructure-blocked state already recorded for current plan hash — plannotator 설치 후 재시도하세요." >&2
+    exit 32
+    ;;
+  RESET_FOR_NEW_HASH)
+    echo "[OMU][PLAN] detected revised plan content — resetting gate status to pending." >&2
+    ;;
+esac
+
+# probe_plannotator_port PORT
+# Returns:
+#   0 — port is free and localhost bind is permitted (plannotator can start)
+#   1 — port is already in use (conflict — another instance may be running)
+#   2 — localhost bind is not permitted (sandbox/CI restriction)
+probe_plannotator_port() {
+  local port="${1:-$PLANNOTATOR_PORT}"
+  # Primary: Node.js probe on the exact plannotator port
   if command -v node >/dev/null 2>&1; then
-    node -e "const http=require('http');const s=http.createServer(()=>{});s.on('error',()=>process.exit(1));s.listen({host:'127.0.0.1',port:0},()=>s.close(()=>process.exit(0)));" >/dev/null 2>&1
+    node -e "
+const net=require('net');
+const s=net.createServer();
+s.on('error',(e)=>{
+  process.exitCode = e.code==='EADDRINUSE' ? 1 : 2;
+  process.exit();
+});
+s.listen({host:'127.0.0.1',port:${port}},()=>s.close(()=>process.exit(0)));
+" >/dev/null 2>&1
     return $?
   fi
+  # Fallback: Python3 socket probe on the exact port
+  if command -v python3 >/dev/null 2>&1; then
+    python3 -c "
+import socket, sys
+port = int(sys.argv[1])
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 0)
+try:
+    s.bind(('127.0.0.1', port))
+    s.close()
+    sys.exit(0)
+except OSError as e:
+    import errno
+    sys.exit(1 if e.errno in (errno.EADDRINUSE,) else 2)
+" "$port" 2>/dev/null
+    return $?
+  fi
+  # Neither available — assume free (conservative default)
   return 0
 }
 
-# Non-interactive environment (Codex sandbox, CI, piped stdin): plannotator is required.
-# TUI fallback is disabled — plannotator must be available.
-if [[ ! -t 0 || ! -t 1 ]]; then
-  echo "[OMU][PLAN] plannotator UI가 필요합니다. 비대화형 환경에서는 plannotator 없이 PLAN을 승인할 수 없습니다." >&2
-  echo "[OMU][PLAN] plannotator를 설치하려면: bash scripts/ensure-plannotator.sh" >&2
-  write_state_gate_status "plannotator_required"
-  exit 32
-fi
+# wait_for_listen PORT PID [TIMEOUT_SECS]
+# Polls until plannotator binds PORT, the process dies, or timeout is reached.
+# Returns:
+#   0 — plannotator is listening (browser UI ready)
+#   1 — process exited before binding
+#   2 — timeout reached (process still alive but port not yet bound)
+wait_for_listen() {
+  local port="$1" pid="$2" timeout="${3:-$PLANNOTATOR_START_TIMEOUT}"
+  local elapsed=0
+  while [[ $elapsed -lt $timeout ]]; do
+    kill -0 "$pid" 2>/dev/null || return 1
+    # Primary: bash built-in /dev/tcp (no subprocess, available on Linux/macOS)
+    if ( exec 3<>/dev/tcp/127.0.0.1/"$port" ) 2>/dev/null; then
+      return 0
+    fi
+    # Fallback: Python3 socket connect (Windows Git Bash, systems without /dev/tcp)
+    if command -v python3 >/dev/null 2>&1; then
+      python3 -c "
+import socket, sys
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.settimeout(0.5)
+try:
+    s.connect(('127.0.0.1', int(sys.argv[1])))
+    s.close()
+    sys.exit(0)
+except Exception:
+    sys.exit(1)
+" "$port" 2>/dev/null && return 0
+    fi
+    sleep 1
+    (( elapsed++ )) || true
+  done
+  return 2
+}
 
-# Some sandboxes disallow localhost bind(). In that environment plannotator hook mode cannot run.
-if [[ "${OMU_SKIP_LISTEN_PROBE:-0}" != "1" ]]; then
-  if ! probe_local_listen; then
-    echo "[OMU][PLAN] localhost bind 실패 — plannotator를 실행할 수 없습니다." >&2
-    echo "[OMU][PLAN] plannotator는 PLAN 단계에서 필수입니다. TUI 폴백은 비활성화되어 있습니다." >&2
-    write_state_gate_status "infrastructure_blocked"
-    exit 32
+# Guard: if claude-plan-gate.py (Claude Code ExitPlanMode hook) holds its lock,
+# that hook is already managing plannotator — this direct call would cause a
+# second plannotator window. Exit immediately rather than racing on the port probe.
+# Stale lock guard: ignore files older than 1 hour (hook crash without cleanup).
+_OMU_CLAUDE_GATE_LOCK="${_TMPDIR}/omu-plannotator-claude-gate.lock"
+if [[ -f "$_OMU_CLAUDE_GATE_LOCK" ]]; then
+  _gate_age=$(( $(date +%s) - $(python3 -c "import os; print(int(os.path.getmtime('${_OMU_CLAUDE_GATE_LOCK}')))" 2>/dev/null || echo 0) ))
+  if [[ "$_gate_age" -lt 3600 ]]; then
+    echo "[OMU][PLAN] claude-plan-gate.py lock active — ExitPlanMode hook is managing plannotator (direct call would cause double execution). Deferring." >&2
+    exit 0
   fi
 fi
 
-STDERR_FILE="${FEEDBACK_DIR}/plannotator_stderr.txt"
+# Pre-launch probe: verify the dedicated port is available before starting plannotator.
+if [[ "${OMU_SKIP_LISTEN_PROBE:-0}" != "1" ]]; then
+  set +e
+  probe_plannotator_port "$PLANNOTATOR_PORT"
+  probe_port_rc=$?
+  set -e
+  if [[ "$probe_port_rc" -eq 2 ]]; then
+    echo "[OMU][PLAN] localhost bind probe failed — listen not permitted (sandbox/CI)." >&2
+    echo "[OMU][PLAN] plannotator는 PLAN 단계에서 필수입니다. TUI 폴백은 비활성화되어 있습니다." >&2
+    write_state_gate_status "infrastructure_blocked"
+    exit 32
+  elif [[ "$probe_port_rc" -eq 1 ]]; then
+    echo "[OMU][PLAN] port ${PLANNOTATOR_PORT} already in use — ExitPlanMode hook already launched plannotator, deferring." >&2
+    exit 0
+  fi
+  echo "[OMU][PLAN] port ${PLANNOTATOR_PORT} is available — starting plannotator." >&2
+fi
+
 # Ensure lock is always cleaned up on script exit
-trap 'rm -f "${_TMPDIR:-${TMPDIR:-/tmp}}/omu-plannotator-direct-${SESSION_KEY}.lock"' EXIT INT TERM
+trap 'rm -f "${_TMPDIR}/omu-plannotator-direct-${SESSION_KEY}.lock"' EXIT INT TERM
+# Create lock BEFORE starting plannotator to prevent ExitPlanMode hook double-launch
+touch "${_TMPDIR}/omu-plannotator-direct-${SESSION_KEY}.lock"
 
 attempt=1
 while (( attempt <= MAX_RESTARTS )); do
   : > "$FEEDBACK_FILE"
-  : > "$STDERR_FILE"
-  # Create lock BEFORE starting plannotator to prevent ExitPlanMode hook double-launch
-  touch "${_TMPDIR:-${TMPDIR:-/tmp}}/omu-plannotator-direct-${SESSION_KEY}.lock"
 
+  # Write plan JSON to a temp file so plannotator can be backgrounded (enables PID tracking)
+  PLAN_JSON_FILE="${FEEDBACK_DIR}/plan_input.json"
   python3 -c "
 import json, sys
 plan = open(sys.argv[1]).read()
 sys.stdout.write(json.dumps({'tool_input': {'plan': plan, 'permission_mode': 'acceptEdits'}}))
-" "$PLAN_FILE" | env HOME="$RUNTIME_HOME" PLANNOTATOR_HOME="$RUNTIME_HOME" plannotator > "$FEEDBACK_FILE" 2>"$STDERR_FILE" || true
+" "$PLAN_FILE" > "$PLAN_JSON_FILE"
 
-  # Release lock immediately after plannotator exits
-  rm -f "${_TMPDIR:-${TMPDIR:-/tmp}}/omu-plannotator-direct-${SESSION_KEY}.lock"
+  # Launch plannotator with the dedicated port so we can monitor its binding state.
+  PORT="$PLANNOTATOR_PORT" env HOME="$RUNTIME_HOME" PLANNOTATOR_HOME="$RUNTIME_HOME" \
+    plannotator < "$PLAN_JSON_FILE" > "$FEEDBACK_FILE" 2>&1 &
+  PLANNOTATOR_PID=$!
 
-  # Merge stderr into feedback for error detection (keep JSON intact at start of FEEDBACK_FILE)
-  if [[ -s "$STDERR_FILE" ]]; then
-    echo "" >> "$FEEDBACK_FILE"
-    cat "$STDERR_FILE" >> "$FEEDBACK_FILE"
-  fi
+  # Phase 1: STARTING — wait for plannotator to bind the port (browser UI ready).
+  set +e
+  wait_for_listen "$PLANNOTATOR_PORT" "$PLANNOTATOR_PID" "$PLANNOTATOR_START_TIMEOUT"
+  listen_rc=$?
+  set -e
+  case "$listen_rc" in
+    0)
+      echo "[OMU][PLAN] plannotator listening on port ${PLANNOTATOR_PORT} — waiting for user input." >&2
+      ;;
+    1)
+      echo "[OMU][PLAN] plannotator exited during startup (attempt ${attempt}/${MAX_RESTARTS})." >&2
+      wait "$PLANNOTATOR_PID" 2>/dev/null || true
+      ((attempt++)) || true
+      continue
+      ;;
+    2)
+      echo "[OMU][PLAN] plannotator startup timeout (${PLANNOTATOR_START_TIMEOUT}s) — port ${PLANNOTATOR_PORT} not bound yet; continuing to wait." >&2
+      ;;
+  esac
+
+  # Phase 2: LISTENING / RUNNING — block while browser session is active.
+  while kill -0 "$PLANNOTATOR_PID" 2>/dev/null; do
+    sleep 1
+  done
+  wait "$PLANNOTATOR_PID" 2>/dev/null || true
 
   set +e
   python3 - "$FEEDBACK_FILE" <<'PYEOF'
 import json, sys
 path = sys.argv[1]
-payload = None
-# Read only the first valid JSON object (ignore appended stderr lines)
 try:
-    with open(path) as fh:
-        content = fh.read()
-    # Try full file first, then first non-empty line
-    for chunk in [content, content.split('\n')[0]]:
-        try:
-            payload = json.loads(chunk.strip())
-            break
-        except Exception:
-            pass
+    payload = json.load(open(path))
 except Exception:
-    pass
-if payload is None:
     sys.exit(20)
 approved = payload.get("approved")
 if approved is True:
@@ -151,52 +397,14 @@ PYEOF
 
   if [[ "$rc" -eq 0 ]]; then
     echo "[OMU][PLAN] approved=true"
-    # Persist approval to omu-state.json so agent skips re-calling on next turn
-    python3 - <<'PYEOF'
-import json, os, datetime
-state_path = os.path.join(os.getcwd(), '.omc/state/omu-state.json')
-if os.path.exists(state_path):
-    try:
-        s = json.load(open(state_path))
-        s['plan_approved'] = True
-        s['phase'] = 'execute'
-        s['plan_gate_status'] = 'approved'
-        s['ralphmode_requested'] = True
-        s['updated_at'] = datetime.datetime.utcnow().isoformat() + 'Z'
-        with open(state_path, 'w') as f:
-            json.dump(s, f, indent=2)
-    except Exception:
-        pass
-PYEOF
+    persist_plan_state "approved" "true" "plannotator" "$FEEDBACK_FILE"
     echo "[OMU][PLAN] ralphmode: permission profile activation requested — invoke /ralphmode before executing"
     exit 0
   fi
 
   if [[ "$rc" -eq 10 ]]; then
     echo "[OMU][PLAN] approved=false (feedback)"
-    # Persist feedback to omu-state.json so agent reads it on next turn
-    python3 - "$FEEDBACK_FILE" <<'PYEOF'
-import json, os, sys, datetime
-state_path = os.path.join(os.getcwd(), '.omc/state/omu-state.json')
-feedback_path = sys.argv[1] if len(sys.argv) > 1 else ''
-if os.path.exists(state_path):
-    try:
-        s = json.load(open(state_path))
-        fb = {}
-        if feedback_path and os.path.exists(feedback_path):
-            try:
-                fb = json.load(open(feedback_path))
-            except Exception:
-                pass
-        s['plan_approved'] = False
-        s['plannotator_feedback'] = fb
-        s['plan_gate_status'] = 'feedback_required'
-        s['updated_at'] = datetime.datetime.utcnow().isoformat() + 'Z'
-        with open(state_path, 'w') as f:
-            json.dump(s, f, indent=2)
-    except Exception:
-        pass
-PYEOF
+    persist_plan_state "feedback_required" "false" "plannotator" "$FEEDBACK_FILE"
     exit 10
   fi
 
@@ -207,12 +415,37 @@ PYEOF
     exit 32
   fi
 
-  echo "[OMU][PLAN] session ended unexpectedly (attempt ${attempt}/${MAX_RESTARTS}). restarting..." >&2
+  # Classify crash type for clearer diagnostics before retrying
+  if [[ -s "$FEEDBACK_FILE" ]]; then
+    echo "[OMU][PLAN] browser crash detected (non-JSON output, attempt ${attempt}/${MAX_RESTARTS}). restarting..." >&2
+  else
+    echo "[OMU][PLAN] plannotator exited without output (attempt ${attempt}/${MAX_RESTARTS}). restarting..." >&2
+  fi
   ((attempt++))
 done
 
 echo "[OMU][PLAN] plannotator 세션이 ${MAX_RESTARTS}회 종료되었습니다." >&2
 echo "[OMU][PLAN] plannotator가 정상 동작하지 않습니다. TUI 폴백은 비활성화되어 있습니다." >&2
 echo "[OMU][PLAN] 재설치: bash scripts/ensure-plannotator.sh" >&2
+# Write a structured blocked-state file so agent frameworks can parse the situation
+python3 - "${FEEDBACK_DIR}/omu-blocked.json" "$PLAN_FILE" <<'PYEOF'
+import json, sys
+out_path, plan_file = sys.argv[1], sys.argv[2]
+try:
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump({
+            "status": "infrastructure_blocked",
+            "reason": "plannotator_session_exhausted",
+            "max_restarts_reached": True,
+            "action_required": "install_plannotator",
+            "plan_file": plan_file,
+            "instruction": (
+                "plannotator를 재설치하세요: bash scripts/ensure-plannotator.sh "
+                "또는 .omc/state/omu-state.json의 plan_gate_status를 'manual_approved'로 설정하세요."
+            ),
+        }, f, ensure_ascii=False, indent=2)
+except Exception:
+    pass
+PYEOF
 write_state_gate_status "infrastructure_blocked"
 exit 32
