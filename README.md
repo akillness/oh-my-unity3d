@@ -11,7 +11,7 @@
 [![Codex CLI](https://img.shields.io/badge/Codex%20CLI-supported-green?style=flat-square)](https://openai.com)
 [![Gemini CLI](https://img.shields.io/badge/Gemini%20CLI-supported-blue?style=flat-square)](https://gemini.google.com)
 [![OpenCode](https://img.shields.io/badge/OpenCode-supported-purple?style=flat-square)](https://opencode.ai)
-[![Skills](https://img.shields.io/badge/skills-49-yellow?style=flat-square)](#-skills-index)
+[![Skills](https://img.shields.io/badge/skills-50-yellow?style=flat-square)](#-skills-index)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
 **AI-driven Unity3D game development orchestration — Plan → Execute → Verify → Cleanup**
@@ -218,7 +218,7 @@ All workflows are orchestrated by `omu` with an automatic Unity3D verification l
 
 ## 📚 Skills Index
 
-48 skills organized by category:
+49 skills organized by category:
 
 ### 🎮 Game Development (Unity3D)
 
@@ -274,6 +274,12 @@ All workflows are orchestrated by `omu` with an automatic Unity3D verification l
 |-------|-------------|---------|
 | **strix** 🆕 | AI-driven application security testing — authorized vulnerability scans against local dirs, GitHub repos, staging URLs, and domains via Docker + LLM | `strix`, `ai pentest` |
 
+### 📝 Notes & Knowledge
+
+| Skill | Description | Keyword |
+|-------|-------------|---------|
+| **obsidian-cli** 🆕 | Terminal-driven Obsidian automation — run commands, automate daily notes, search, tags, tasks, and developer operations against a running Obsidian vault | `obsidian cli`, `obsidian uri` |
+
 > Full index with quick-select guide → [SKILLS-INDEX.md](SKILLS-INDEX.md)
 
 ---
@@ -294,7 +300,7 @@ All workflows are orchestrated by `omu` with an automatic Unity3D verification l
 ```
 oh-my-unity3d/
 ├── README.md                    ← You are here
-├── SKILLS-INDEX.md              ← Full 49-skill directory
+├── SKILLS-INDEX.md              ← Full 50-skill directory
 ├── .omu/                        ← Game management hub 🆕
 │   ├── README.md                ← .omu usage guide
 │   ├── long-term-plan.md        ← Concept, rules, gameplay (기획)
@@ -324,6 +330,7 @@ oh-my-unity3d/
     ├── autoresearch/            ← Autonomous ML experimentation (Karpathy) 🆕
     ├── skill-autoresearch/      ← Eval-driven skill optimization loop 🆕
     ├── strix/                   ← AI-driven appsec vulnerability scanner 🆕
+    ├── obsidian-cli/            ← Terminal-driven Obsidian vault automation 🆕
     └── [35 domain skills]/
 ```
 
@@ -333,7 +340,7 @@ oh-my-unity3d/
 
 | Document | Description |
 |----------|-------------|
-| [SKILLS-INDEX.md](SKILLS-INDEX.md) | 48-skill directory with categories, keywords, and quick-select guide |
+| [SKILLS-INDEX.md](SKILLS-INDEX.md) | 49-skill directory with categories, keywords, and quick-select guide |
 | [GETTING-STARTED.md](GETTING-STARTED.md) | Installation, platform setup, first workflow walkthrough |
 | [WORKFLOWS.md](WORKFLOWS.md) | 5 Unity3D workflows with step tables and quick-start examples |
 | [CLAUDE.md](CLAUDE.md) | AI agent project context — unity-mcp tools, OMU verify loop |
